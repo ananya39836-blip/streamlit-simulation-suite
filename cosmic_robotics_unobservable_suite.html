@@ -178,6 +178,41 @@
             </div>
         </div>
 
+
+        <!-- ==================== MULTILINGUAL INTERACTION CONSOLE ==================== -->
+        <div style="background: #0b0f19; border: 1.5px solid #00e5ff; border-radius: 6px; padding: 8px; margin-top: 6px; box-shadow: 0 0 10px rgba(0, 229, 255, 0.15);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+                <span style="font-size: 11px; font-weight: bold; color: #00ffcc;">💬 ASK EVA-01 (ENGLISH • HINDI • HINGLISH • FRENCH):</span>
+                <div style="display: flex; gap: 4px;">
+                    <select id="lang-select" style="background: #111827; border: 1px solid #38bdf8; color: #e2e8f0; font-size: 10px; border-radius: 4px; padding: 2px 4px;">
+                        <option value="auto">🌐 Auto Detect Language</option>
+                        <option value="en">🇬🇧 English</option>
+                        <option value="hi">🇮🇳 Hindi (हिंदी)</option>
+                        <option value="hinglish">🇮🇳 Hinglish</option>
+                        <option value="fr">🇫🇷 French (Français)</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Input Bar -->
+            <div style="display: flex; gap: 6px;">
+                <input id="user-question-input" type="text" placeholder="Ask EVA anything... (e.g., 'Alien Earth ko kyu pakad raha hai?', 'What fish are in the sea?', 'अदृश्य ब्रह्मांड क्या है?')" 
+                       style="flex: 1; background: #070913; border: 1px solid #334155; border-radius: 4px; color: #f8fafc; padding: 6px 10px; font-family: inherit; font-size: 11px; outline: none;" 
+                       onkeydown="if(event.key==='Enter') submitUserQuestion()" />
+                <button class="ctrl-btn" style="background: #0284c7; color: white; border-color: #38bdf8;" onclick="submitUserQuestion()">🗣️ Ask EVA</button>
+                <button class="ctrl-btn" id="voice-rec-btn" style="border-color: #10b981; color: #10b981;" onclick="toggleVoiceRecognition()" title="Voice Input (Mic)">🎙️ Mic</button>
+            </div>
+
+            <!-- Quick Question Chips -->
+            <div style="display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap;">
+                <button class="ctrl-btn" style="padding: 2px 6px; font-size: 9px;" onclick="quickAsk('Who is the alien holding Earth in its hands?')">👽 Who is the Alien?</button>
+                <button class="ctrl-btn" style="padding: 2px 6px; font-size: 9px;" onclick="quickAsk('Cosmic sea me kaun si fish swim kar rahi hai?')">🐟 Fish in Sea (Hinglish)</button>
+                <button class="ctrl-btn" style="padding: 2px 6px; font-size: 9px;" onclick="quickAsk('अदृश्य ब्रह्मांड क्या है और ओडोमीटर क्या माप रहा है?')">🌌 अदृश्य ब्रह्मांड (Hindi)</button>
+                <button class="ctrl-btn" style="padding: 2px 6px; font-size: 9px;" onclick="quickAsk('Parlez-moi de la mer cosmique et de l\'univers inobservable.')">🇫🇷 Mer Cosmique (French)</button>
+                <button class="ctrl-btn" style="padding: 2px 6px; font-size: 9px;" onclick="quickAsk('How fast is our speed and Lorentz gamma dilation?')">⚡ Speed & Gamma</button>
+            </div>
+        </div>
+
         <!-- Lower Grid: 3 Specialized Robot Cards -->
         <div class="robot-cards-grid">
             <!-- Chronos-Void -->
@@ -741,12 +776,14 @@ function drawLaptop(ctx, w, h) {
     // Live terminal text on laptop screen
     ctx.fillStyle = '#00e5ff';
     ctx.font = `${Math.round(6 * s)}px Consolas`;
-    ctx.fillText("USER AT LAPTOP: CONNECTED", cx - 46 * s, cy - 30 * s);
-    ctx.fillStyle = '#94a3b8';
-    ctx.fillText("> EVA-01 VOICE: ACTIVE", cx - 46 * s, cy - 20 * s);
-    ctx.fillText("> SAT-LINK: 248.8 GHz", cx - 46 * s, cy - 10 * s);
-    ctx.fillText("> GAZE: USER CURSOR SYNC", cx - 46 * s, cy);
-    ctx.fillText("> STATUS: ALL GREEN", cx - 46 * s, cy + 10 * s);
+    ctx.fillText("USER AT LAPTOP: MULTILINGUAL Q&A", cx - 46 * s, cy - 30 * s);
+    ctx.fillStyle = '#f59e0b';
+    ctx.fillText(`Q: ${lastUserQ}`, cx - 46 * s, cy - 20 * s);
+    ctx.fillStyle = '#10b981';
+    ctx.fillText(`A: ${lastRobotA}`, cx - 46 * s, cy - 10 * s);
+    ctx.fillStyle = '#38bdf8';
+    ctx.fillText("> LANG: EN | HI | HINGLISH | FR", cx - 46 * s, cy);
+    ctx.fillText("> EVA-01: AUDIBLE SPEECH LOCK", cx - 46 * s, cy + 10 * s);
 }
 
 // ==============================================================================
@@ -1180,6 +1217,298 @@ setTimeout(() => {
     // Auto greeting on start
     speakRobot('eva');
 }, 200);
+
+
+// ==============================================================================
+// MULTILINGUAL CONVERSATIONAL ENGINE (ENGLISH, HINDI, HINGLISH, FRENCH)
+// ==============================================================================
+
+// Speech Recognition (Voice Input)
+let recognition = null;
+if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRec = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRec();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+
+    recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById('user-question-input').value = transcript;
+        submitUserQuestion();
+    };
+
+    recognition.onend = () => {
+        const btn = document.getElementById('voice-rec-btn');
+        if (btn) btn.style.background = '#111827';
+    };
+}
+
+function toggleVoiceRecognition() {
+    if (!recognition) {
+        alert("Speech Recognition not supported in this browser. Please type your question.");
+        return;
+    }
+    const btn = document.getElementById('voice-rec-btn');
+    try {
+        recognition.lang = document.getElementById('lang-select').value === 'hi' ? 'hi-IN' : (document.getElementById('lang-select').value === 'fr' ? 'fr-FR' : 'en-US');
+        recognition.start();
+        btn.style.background = '#065f46';
+    } catch(e) {
+        recognition.stop();
+        btn.style.background = '#111827';
+    }
+}
+
+function quickAsk(q) {
+    document.getElementById('user-question-input').value = q;
+    submitUserQuestion();
+}
+
+function detectLanguage(q, forced) {
+    if (forced && forced !== 'auto') return forced;
+    q = q.toLowerCase();
+
+    // French indicators
+    if (/[éèêëàâôûîç]/.test(q) || q.includes('qui') || q.includes('est') || q.includes('parlez') || q.includes('univers') || q.includes('mer') || q.includes('comment') || q.includes('pourquoi')) {
+        return 'fr';
+    }
+    // Hindi Devanagari script indicators
+    if (/[ऀ-ॿ]/.test(q)) {
+        return 'hi';
+    }
+    // Hinglish indicators
+    const hinglishWords = ['kya', 'hai', 'kaun', 'kyu', 'kyun', 'baare', 'me', 'batao', 'fish', 'alien', 'pakad', 'raha', 'hamari', 'meri', 'karo', 'kahan', 'kitna', 'kitni', 'samjha'];
+    for (let w of hinglishWords) {
+        if (q.split(/\s+/).includes(w)) return 'hinglish';
+    }
+    return 'en';
+}
+
+function generateMultilingualResponse(question, lang) {
+    const q = question.toLowerCase();
+
+    // 1. ALIEN OBSERVER QUESTIONS
+    if (q.includes('alien') || q.includes('earth') || q.includes('pakad') || q.includes('gardien') || q.includes('extraterrestre') || q.includes('एलियन') || q.includes('पृथ्वी')) {
+        if (lang === 'hi') {
+            return {
+                text: "यह एक प्राचीन क्लास-चार एल्डर कॉस्मोलॉजिकल गार्जियन है। जैसे गहरे समुद्र में विशाल जीव कोरल रीफ की रक्षा करते हैं, वैसे ही यह महाबली एलियन अपने हाथों में हमारी पृथ्वी को अदृश्य ब्रह्मांड की भयंकर गुरुत्वाकर्षण तरंगों और अंधेरे ज्वार से सुरक्षित रख रहा है।",
+                voiceLang: 'hi-IN',
+                emotion: 'awe',
+                pitch: 1.0, rate: 0.95
+            };
+        } else if (lang === 'hinglish') {
+            return {
+                text: "Yeh ek Class-IV Elder Cosmological Guardian hai. Jis tarah deep ocean me badhi creatures atolls ko protect karti hain, waise hi yeh colossal alien entity Earth ko apne haathon me lekar unobservable void ke extreme vacuum tides aur cosmic radiation se bacha raha hai.",
+                voiceLang: 'hi-IN',
+                emotion: 'awe',
+                pitch: 1.05, rate: 1.0
+            };
+        } else if (lang === 'fr') {
+            return {
+                text: "C'est un Ancien Gardien Cosmologique de Classe IV. Tout comme les créatures marines protègent les récifs, cet être extraterrestre colossal berce notre Terre dans ses mains pour la protéger des marées gravitationnelles violentes du vide inobservable.",
+                voiceLang: 'fr-FR',
+                emotion: 'awe',
+                pitch: 1.0, rate: 0.95
+            };
+        } else {
+            return {
+                text: "That is a Class-IV Elder Cosmological Guardian. Just as marine protectors harbor fragile coral reefs, this colossal alien entity cradles our planet Earth in its palms, shielding our delicate biosphere from the violent spacetime tides of the unobservable void.",
+                voiceLang: 'en-US',
+                emotion: 'awe',
+                pitch: 1.15, rate: 1.0
+            };
+        }
+    }
+
+    // 2. COSMIC FISH / SEA QUESTIONS
+    if (q.includes('fish') || q.includes('sea') || q.includes('manta') || q.includes('eel') || q.includes('siphonophore') || q.includes('ocean') || q.includes('machhli') || q.includes('poisson') || q.includes('मछली') || q.includes('समुद्र')) {
+        if (lang === 'hi') {
+            return {
+                text: "अदृश्य ब्रह्मांड के इस कॉस्मिक सागर में तीन मुख्य गैर-बैरोनिक जीव तैरते हैं। पहली है बायोल्यूमिनसेंट वैक्यूम मान्टा जो शून्य-बिंदु कैसिमिर ऊर्जा खाती है। दूसरा है ग्रैविटॉन ईल जो गुरुत्वाकर्षण तरंगों पर तैरती है, और तीसरा है टैच्योन साइफ़ोनोफ़ोर कॉलोनी जो प्रकाश से तेज चेरेन्कोव चमक छोड़ती है।",
+                voiceLang: 'hi-IN',
+                emotion: 'happy',
+                pitch: 1.05, rate: 0.95
+            };
+        } else if (lang === 'hinglish') {
+            return {
+                text: "Is cosmic sea of void me teen non-baryonic marine species swim karti hain: Pehli hai Bioluminescent Vacuum Manta jo zero-point Casimir gradients se energy leti hai; doosra hai Graviton Eel jo gravitational wave troughs par chalti hai; aur teesra hai Tachyon Siphonophore jo superluminal Cherenkov pulses chhodti hai.",
+                voiceLang: 'hi-IN',
+                emotion: 'happy',
+                pitch: 1.05, rate: 1.0
+            };
+        } else if (lang === 'fr') {
+            return {
+                text: "Dans cette mer cosmique inobservable nagent trois espèces marines non baryoniques: la Manta du Vide bioluminescente qui se nourrit de gradients de Casimir, l'Anguille Gravitonique ondulant sur les ondes de courbure, et la Colonie de Siphonophores Tachyoniques émettant des photons Tcherenkov supraluminiques.",
+                voiceLang: 'fr-FR',
+                emotion: 'happy',
+                pitch: 1.0, rate: 0.95
+            };
+        } else {
+            return {
+                text: "In this unobservable cosmic sea swim three non-baryonic marine species: The Bioluminescent Vacuum Manta feeding on zero-point Casimir gradients, the Graviton Wave Eel undulating across spacetime ripples, and the Tachyon Siphonophore Colony flashing with superluminal Cherenkov radiation.",
+                voiceLang: 'en-US',
+                emotion: 'happy',
+                pitch: 1.15, rate: 1.02
+            };
+        }
+    }
+
+    // 3. UNOBSERVABLE UNIVERSE QUESTIONS
+    if (q.includes('unobservable') || q.includes('universe') || q.includes('horizon') || q.includes('अदृश्य') || q.includes('ब्रह्मांड') || q.includes('inobservable')) {
+        if (lang === 'hi') {
+            return {
+                text: "अदृश्य ब्रह्मांड 93 अरब प्रकाश वर्ष की दृश्य सीमा के पार स्थित है। चूँकि अंतरिक्ष का विस्तार प्रकाश की गति से भी तेज गति से हो रहा है, इसलिए वहां से फोटॉन हम तक नहीं पहुँच सकते। हालांकि, क्रोनोस-वॉयड 248.84 गीगाहर्ट्ज क्वांटम वाहक तरंगों द्वारा वहां से सारा डेटा आपके लैपटॉप पर भेज रहा है।",
+                voiceLang: 'hi-IN',
+                emotion: 'analytical',
+                pitch: 1.0, rate: 0.95
+            };
+        } else if (lang === 'hinglish') {
+            return {
+                text: "Unobservable universe hamari 93 billion light-years ki observable boundary ke paar ka infinite realm hai. Spacetime metric expansion light se fast hone ke karan photon seedhe nahi aa sakte, lekin hamara Chronos-Void robot 248.84 GHz quantum carrier beams ke through sara telemetry data directly aapke laptop par bhej raha hai.",
+                voiceLang: 'hi-IN',
+                emotion: 'analytical',
+                pitch: 1.05, rate: 1.0
+            };
+        } else if (lang === 'fr') {
+            return {
+                text: "L'univers inobservable s'étend au-delà de l'horizon cosmologique de 93 milliards d'années-lumière. L'expansion métrique y dépasse la vitesse de la lumière. Notre sonde Chronos-Void nous transmet toutes les données récoltées via un faisceau porteur quantique à 248,84 GHz directement sur votre terminal.",
+                voiceLang: 'fr-FR',
+                emotion: 'analytical',
+                pitch: 1.0, rate: 0.95
+            };
+        } else {
+            return {
+                text: "The unobservable universe is the infinite domain extending beyond our 93-billion-light-year cosmological horizon. Because metric expansion exceeds the speed of light, photons cannot cross back classically, but Chronos-Void beams continuous quantum telemetry across the divide directly to your laptop dish.",
+                voiceLang: 'en-US',
+                emotion: 'analytical',
+                pitch: 1.15, rate: 1.0
+            };
+        }
+    }
+
+    // 4. ODOMETER & SPEED QUESTIONS
+    if (q.includes('odometer') || q.includes('speed') || q.includes('distance') || q.includes('gamma') || q.includes('lorentz') || q.includes('gati') || q.includes('tezi') || q.includes('गति') || q.includes('vitesse')) {
+        if (lang === 'hi') {
+            return {
+                text: "हमारा स्पेसटाइम ओडोमीटर वर्तमान में 46.52 गीगा-प्रकाश वर्ष और 14,263 मेगा-पारसेक की दूरी दर्ज कर रहा है। हमारी सापेक्षिक गति 0.994 c यानी 2,97,993 किलोमीटर प्रति सेकंड है, जिससे लोरेंत्ज़ टाइम डाइलेशन गामा 9.14 गुना हो जाता है।",
+                voiceLang: 'hi-IN',
+                emotion: 'thoughtful',
+                pitch: 1.0, rate: 0.95
+            };
+        } else if (lang === 'hinglish') {
+            return {
+                text: "Hamara spacetime odometer abhi 46.52 Giga-light-years aur 14,263 Mega-parsecs proper distance log kar raha hai. Hamari relativistic speed 0.994 c hai, jisse Lorentz time dilation gamma factor 9.14x ho gaya hai. Aapke laptop ka ek ghanta stationary frame ke 9.1 hours ke barabar hai.",
+                voiceLang: 'hi-IN',
+                emotion: 'thoughtful',
+                pitch: 1.05, rate: 1.0
+            };
+        } else if (lang === 'fr') {
+            return {
+                text: "Notre odomètre spatio-temporel enregistre actuellement 46,52 milliards d'années-lumière et 14 263 mégaparsecs. Notre vitesse relativiste est verrouillée à 0,994 c, ce qui entraîne une dilatation temporelle de Lorentz gamma de 9,14 fois.",
+                voiceLang: 'fr-FR',
+                emotion: 'thoughtful',
+                pitch: 1.0, rate: 0.95
+            };
+        } else {
+            return {
+                text: "Our spacetime odometer currently logs 46.52 Giga-light-years and 14,263 Mega-parsecs of proper distance. Our velocity is locked at 0.994 c (297,993 km/s), producing a Lorentz time dilation factor gamma of 9.14x relative to cosmic rest frames.",
+                voiceLang: 'en-US',
+                emotion: 'thoughtful',
+                pitch: 1.15, rate: 1.0
+            };
+        }
+    }
+
+    // 5. DEFAULT / GREETING
+    if (lang === 'hi') {
+        return {
+            text: "नमस्ते कमांडर! मैं आपके लैपटॉप के सामने उपस्थित ईवा रोबोट हूँ। मैं आपके सभी सवालों का उत्तर हिंदी, हिंग्लिश, अंग्रेजी और फ्रेंच में दे सकती हूँ। आप अदृश्य ब्रह्मांड, कॉस्मिक मछलियों, एलियन गार्जियन या ओडोमीटर के बारे में कुछ भी पूछ सकते हैं!",
+            voiceLang: 'hi-IN',
+            emotion: 'happy',
+            pitch: 1.05, rate: 0.95
+        };
+    } else if (lang === 'hinglish') {
+        return {
+            text: "Namaste Commander! Main aapke laptop ke saamne present EVA robot hoon. Main aapke har question ka answer English, Hindi, Hinglish aur French me de sakti hoon. Aap mujhse unobservable universe, cosmic fish, alien guardian, ya speed and odometer ke baare me kuch bhi pooch sakte hain!",
+            voiceLang: 'hi-IN',
+            emotion: 'happy',
+            pitch: 1.05, rate: 1.0
+        };
+    } else if (lang === 'fr') {
+        return {
+            text: "Bonjour Commandant! Je suis EVA, votre copilote robotique devant votre ordinateur portable. Je peux répondre à chacune de vos questions en français, anglais, hindi ou hinglish. N'hésitez pas à m'interroger sur l'univers inobservable, la faune cosmique ou notre odomètre!",
+            voiceLang: 'fr-FR',
+            emotion: 'happy',
+            pitch: 1.0, rate: 0.95
+        };
+    } else {
+        return {
+            text: "Greetings Commander! I am EVA, speaking directly to you here at your laptop workstation. I am programmed to answer each and every question of yours in English, Hindi, Hinglish, or French. Ask me about the unobservable universe, cosmic fish, the alien guardian, or our odometer metrics!",
+            voiceLang: 'en-US',
+            emotion: 'happy',
+            pitch: 1.15, rate: 1.0
+        };
+    }
+}
+
+function submitUserQuestion() {
+    const inputEl = document.getElementById('user-question-input');
+    const question = inputEl.value.trim();
+    if (!question) return;
+
+    const forcedLang = document.getElementById('lang-select').value;
+    const detectedLang = detectLanguage(question, forcedLang);
+    const resp = generateMultilingualResponse(question, detectedLang);
+
+    // Update Subtitle Banner
+    document.getElementById('subtitle-text').innerText = `[EVA-01 (${detectedLang.toUpperCase()})]: ${resp.text}`;
+
+    // Set Facial Gesture & Emotion
+    setRobotEmotion(resp.emotion);
+
+    // Play Voice Synthesis in detected language
+    playMultilingualSpeech(resp.text, resp.voiceLang, resp.pitch, resp.rate);
+
+    // Update Laptop Terminal Screen
+    updateLaptopScreenWithQA(question, resp.text);
+
+    inputEl.value = '';
+}
+
+function playMultilingualSpeech(text, langCode, pitch, rate) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.pitch = pitch || 1.0;
+    utter.rate = rate || 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    // Match language code (e.g. hi-IN, fr-FR, en-US)
+    const matchedVoice = voices.find(v => v.lang.startsWith(langCode.substring(0, 2))) || voices[0];
+    if (matchedVoice) utter.voice = matchedVoice;
+
+    activeSpeaker = 'eva';
+    isSpeaking = true;
+    updateLedStates();
+
+    utter.onend = () => {
+        isSpeaking = false;
+        updateLedStates();
+        setRobotEmotion('neutral');
+    };
+
+    window.speechSynthesis.speak(utter);
+}
+
+// Global reference for laptop screen Q&A logs
+let lastUserQ = "Connected to EVA-01";
+let lastRobotA = "Listening to User on Laptop";
+
+function updateLaptopScreenWithQA(q, a) {
+    lastUserQ = q.length > 25 ? q.substring(0, 22) + "..." : q;
+    lastRobotA = a.length > 30 ? a.substring(0, 27) + "..." : a;
+}
 
 </script>
 </body>
