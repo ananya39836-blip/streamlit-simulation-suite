@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cosmic Robotics Observatory :: Question 4 Unobservable Universe Simulation</title>
+<style>
+    * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+    body {
+        background: #060810;
+        color: #e2e8f0;
+        font-family: 'Consolas', 'Courier New', monospace;
+        overflow: hidden;
+        width: 100vw;
+        height: 100vh;
+    }
+    #main-container {
+        display: flex;
+        width: 100%;
+        height: calc(100vh - 46px);
+        position: relative;
+    }
+    /* Left Half: Robots Squad & User at Laptop */
+    #left-half {
+        width: 50%;
+        height: 100%;
+        background: #090d16;
+        border-right: 2px solid #00e5ff;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        position: relative;
+        box-shadow: inset -5px 0 25px rgba(0, 229, 255, 0.15);
+    }
+    /* Right Half: Cosmic Ocean, Alien, Orbits & Instruments */
+    #right-half {
+        width: 50%;
+        height: 100%;
+        background: #070913;
+        display: flex;
+        flex-direction: column;
+        padding: 10px;
+        position: relative;
+    }
+    /* Subtitle Banner at bottom */
+    #subtitle-banner {
+        height: 46px;
+        width: 100%;
+        background: #04060a;
+        border-top: 1.5px solid #00e5ff;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+        font-size: 13px;
+        color: #00ffcc;
+        box-shadow: 0 -4px 15px rgba(0, 229, 255, 0.2);
+    }
+    .badge {
+        background: #111827;
+        border: 1px solid #1f2937;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        color: #38bdf8;
+        font-weight: bold;
+    }
+    .ctrl-btn {
+        background: #111827;
+        border: 1px solid #00e5ff;
+        color: #e2e8f0;
+        padding: 6px 12px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 11px;
+        font-weight: bold;
+        transition: all 0.2s;
+    }
+    .ctrl-btn:hover {
+        background: #00e5ff;
+        color: #060810;
+        box-shadow: 0 0 10px #00e5ff;
+    }
+    .hud-title {
+        color: #00e5ff;
+        font-size: 13px;
+        font-weight: bold;
+        letter-spacing: 0.05em;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        padding-bottom: 4px;
+        border-bottom: 1px solid rgba(0, 229, 255, 0.3);
+    }
+    /* Robot card grid */
+    .robot-cards-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-top: 8px;
+        height: 180px;
+    }
+    .robot-card {
+        background: #0f1422;
+        border: 1px solid #1e293b;
+        border-radius: 6px;
+        padding: 6px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        position: relative;
+    }
+    .robot-card:hover {
+        border-color: #00e5ff;
+        background: #131a2d;
+    }
+    .robot-card.active {
+        border-color: #00ffcc;
+        box-shadow: 0 0 12px rgba(0, 255, 204, 0.3);
+    }
+    .speaking-led {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #334155;
+        position: absolute;
+        top: 6px;
+        right: 6px;
+    }
+    .speaking-led.active {
+        background: #10b981;
+        box-shadow: 0 0 8px #10b981;
+        animation: pulse-led 0.6s infinite alternate;
+    }
+    @keyframes pulse-led {
+        from { opacity: 0.4; }
+        to { opacity: 1.0; }
+    }
+    /* Overlay for Satellite Signal */
+    #satellite-canvas {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 50;
+    }
+</style>
+</head>
+<body>
+
+<canvas id="satellite-canvas"></canvas>
+
+<div id="main-container">
+    <!-- ==================== LEFT HALF: ROBOTS SQUAD ==================== -->
+    <div id="left-half">
+        <div class="hud-title">
+            <span>[PARTITION A] CYBERNETIC ROBOTS SQUAD (HUMAN-FACIAL INTERACTION)</span>
+            <span class="badge" id="sapi-status">SPEECH: ONLINE (VOICE ACTIVE)</span>
+        </div>
+
+        <!-- Upper Stage: Corner Robot EVA-01 with Laptop Workstation -->
+        <div style="flex: 1; background: #0c101c; border: 1px solid #00e5ff; border-radius: 6px; padding: 8px; position: relative; display: flex; flex-direction: column;">
+            <div style="font-size: 11px; color: #38bdf8; font-weight: bold; margin-bottom: 4px; display: flex; justify-content: space-between;">
+                <span>EVA-01 :: CORNER ROBOT SPEAKING TO USER AT LAPTOP</span>
+                <span id="eva-status" style="color: #10b981;">[GAZE LOCKED ON USER SCREEN]</span>
+            </div>
+            
+            <div style="flex: 1; display: flex; position: relative;">
+                <!-- Robot Face Canvas -->
+                <canvas id="eva-face-canvas" style="width: 55%; height: 100%;"></canvas>
+                
+                <!-- Laptop Workstation Canvas -->
+                <canvas id="laptop-canvas" style="width: 45%; height: 100%;"></canvas>
+            </div>
+        </div>
+
+        <!-- Lower Grid: 3 Specialized Robot Cards -->
+        <div class="robot-cards-grid">
+            <!-- Chronos-Void -->
+            <div class="robot-card" id="card-chronos" onclick="speakRobot('chronos')">
+                <div class="speaking-led" id="led-chronos"></div>
+                <canvas id="face-chronos" width="120" height="110"></canvas>
+                <div style="font-size: 10px; font-weight: bold; color: #c084fc; margin-top: 4px;">CHRONOS-VOID</div>
+                <div style="font-size: 8px; color: #94a3b8; text-align: center;">Unobservable Data Nexus</div>
+            </div>
+
+            <!-- Thalassa-Bio -->
+            <div class="robot-card" id="card-thalassa" onclick="speakRobot('thalassa')">
+                <div class="speaking-led" id="led-thalassa"></div>
+                <canvas id="face-thalassa" width="120" height="110"></canvas>
+                <div style="font-size: 10px; font-weight: bold; color: #2dd4bf; margin-top: 4px;">THALASSA-BIO</div>
+                <div style="font-size: 8px; color: #94a3b8; text-align: center;">Cosmic Sea & Alien Presences</div>
+            </div>
+
+            <!-- Velox-Tachyon -->
+            <div class="robot-card" id="card-velox" onclick="speakRobot('velox')">
+                <div class="speaking-led" id="led-velox"></div>
+                <canvas id="face-velox" width="120" height="110"></canvas>
+                <div style="font-size: 10px; font-weight: bold; color: #fbbf24; margin-top: 4px;">VELOX-TACHYON</div>
+                <div style="font-size: 8px; color: #94a3b8; text-align: center;">Relativistic Speed & Odometer</div>
+            </div>
+        </div>
+
+        <!-- Controls Toolbar -->
+        <div style="display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap;">
+            <button class="ctrl-btn" onclick="speakRobot('eva')">🎙️ EVA Speak to User</button>
+            <button class="ctrl-btn" onclick="speakRobot('chronos')">📡 Chronos Void Data</button>
+            <button class="ctrl-btn" onclick="speakRobot('thalassa')">🐟 Thalassa Fish & Alien</button>
+            <button class="ctrl-btn" onclick="speakRobot('velox')">⚡ Velox Warp Speed</button>
+            <button class="ctrl-btn" onclick="pulseSatellite()">💫 Satellite Pulse</button>
+            <button class="ctrl-btn" onclick="toggleRightView()">🔄 Toggle View (Sea/Orbits)</button>
+        </div>
+    </div>
+
+    <!-- ==================== RIGHT HALF: SIMULATION & INSTRUMENTS ==================== -->
+    <div id="right-half">
+        <div class="hud-title">
+            <span id="right-view-title">[PARTITION B] SEA OF UNOBSERVABLE UNIVERSE (ALIEN & FISH)</span>
+            <span class="badge" id="sensor-status">LiDAR 360: ACTIVE | CV: LOCKED</span>
+        </div>
+
+        <!-- Top Canvas: Sea of Unobservable Universe OR Orbits Simulator -->
+        <div style="flex: 1.4; background: #060913; border: 1px solid #1e293b; border-radius: 6px; position: relative; overflow: hidden;">
+            <canvas id="universe-canvas" style="width: 100%; height: 100%;"></canvas>
+            
+            <div style="position: absolute; top: 8px; right: 10px; display: flex; gap: 6px;">
+                <span class="badge" id="mode-badge" style="border-color: #00e5ff; color: #00e5ff;">VIEW: COSMIC SEA</span>
+            </div>
+        </div>
+
+        <!-- Bottom Row: Odometer Gauge & Relativistic Speedometer -->
+        <div style="flex: 0.9; display: flex; gap: 8px; margin-top: 8px;">
+            <!-- Cosmic Distance Odometer -->
+            <div style="flex: 1; background: #0c101c; border: 1px solid #00e5ff; border-radius: 6px; padding: 8px; display: flex; flex-direction: column;">
+                <div style="font-size: 11px; font-weight: bold; color: #00e5ff; display: flex; justify-content: space-between;">
+                    <span>COSMIC DISTANCE ODOMETER</span>
+                    <span style="color: #10b981;">ODOS-METRIC</span>
+                </div>
+                
+                <!-- Rolling Digit Drum -->
+                <div id="odometer-drum" style="margin: 8px 0; background: #000; border: 1.5px solid #334155; border-radius: 4px; height: 38px; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: 900; letter-spacing: 4px; color: #f8fafc; font-family: 'Courier New', monospace;">
+                    0046.52 <span style="font-size: 12px; color: #ff4b4b; margin-left: 6px;">Gly</span>
+                </div>
+
+                <div style="font-size: 9px; color: #94a3b8; line-height: 1.4;">
+                    <div>• PROPER DISTANCE : <span id="dist-gly" style="color: #00ffcc;">46.52 Gly</span> (Giga-light-years)</div>
+                    <div>• COMOVING DIST   : <span id="dist-mpc" style="color: #38bdf8;">14,263 Mpc</span> (Mega-parsecs)</div>
+                    <div>• HORIZON STATUS  : <span style="color: #c084fc; font-weight: bold;">UNOBSERVABLE OCEAN DOMAIN</span></div>
+                </div>
+            </div>
+
+            <!-- Relativistic Speedometer -->
+            <div style="flex: 1; background: #0c101c; border: 1px solid #f59e0b; border-radius: 6px; padding: 8px; display: flex; flex-direction: column;">
+                <div style="font-size: 11px; font-weight: bold; color: #f59e0b; display: flex; justify-content: space-between;">
+                    <span>RELATIVISTIC TACHOMETER</span>
+                    <span style="color: #ef4444;">VELOX-TACHYON</span>
+                </div>
+
+                <div style="display: flex; align-items: center; justify-content: space-around; margin: 4px 0;">
+                    <canvas id="tachometer-canvas" width="100" height="60"></canvas>
+                    <div style="text-align: right;">
+                        <div id="speed-fraction" style="font-size: 22px; font-weight: 900; color: #fbbf24;">0.994 c</div>
+                        <div id="speed-kms" style="font-size: 10px; color: #94a3b8;">297,993 km/s</div>
+                        <div id="lorentz-gamma" style="font-size: 10px; color: #f43f5e; font-weight: bold;">γ = 9.14x DILATION</div>
+                    </div>
+                </div>
+
+                <button class="ctrl-btn" style="border-color: #f59e0b; padding: 4px 8px; font-size: 10px;" onclick="cycleSpeedPreset()">⚡ Cycle Speed: 0.12c → 0.65c → 0.994c → 2.45c Warp</button>
+            </div>
+        </div>
+
+        <!-- Telemetry Status Footer -->
+        <div style="margin-top: 6px; background: #0a0e1a; border: 1px solid #1e293b; border-radius: 4px; padding: 4px 8px; font-size: 9px; color: #38bdf8; display: flex; justify-content: space-between;">
+            <span>[CV TRACK: 1 ALIEN + 3 FISH]</span>
+            <span>[LiDAR 360° SWEEP: 2.8 rad/s]</span>
+            <span>[CARRIER: 248.84 GHz @ -42 dBm]</span>
+            <span>[CONTROLLER: PID ARMED]</span>
+        </div>
+    </div>
+</div>
+
+<!-- Subtitle Banner -->
+<div id="subtitle-banner">
+    <div style="width: 10px; height: 10px; border-radius: 50%; background: #10b981; margin-right: 12px; box-shadow: 0 0 8px #10b981;" id="audio-icon"></div>
+    <div id="subtitle-text" style="flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+        [EVA-01]: Greetings, Commander. I am speaking directly to you here at your laptop. We are guarding the simulation of the unobservable universe.
+    </div>
+</div>
+
+<script>
+// ==============================================================================
+// COSMIC ROBOTICS OBSERVATORY :: DUAL-PARTITION SYSTEM SCRIPT
+// ==============================================================================
+
+// App State
+let activeSpeaker = 'eva';
+let isSpeaking = false;
+let rightViewMode = 'ocean'; // 'ocean' or 'orbits'
+let speedPresetIdx = 2;
+const speeds = [0.12, 0.65, 0.994, 2.45];
+let currentSpeedC = 0.994;
+let properDistGly = 46.52;
+let comovingDistMpc = 14263.0;
+
+// Speech Dialogues
+const SPEECHES = {
+    eva: [
+        "Greetings, Commander. I am speaking directly to you here at your laptop. We are guarding the simulation of the unobservable universe.",
+        "Look into the cosmic sea on your right. Notice the alien observer entity cradling planet Earth in its palms.",
+        "Our distance odometer is advancing. We have traversed forty-six billion light-years beyond the observable horizon.",
+        "I am synchronizing all computer vision reticles and LiDAR sweeps directly with your laptop terminal."
+    ],
+    chronos: [
+        "Chronos-Void streaming telemetry from the unobservable void. Dark energy expansion here exceeds the speed of light.",
+        "Every data packet collected from beyond the cosmic microwave background is being beamed to your station.",
+        "Trans-horizon carrier locked at 248.84 GHz. Spacetime curvature indicates infinite non-baryonic matter reservoirs.",
+        "Quantum entanglement coherence remains at ninety-nine point eight percent across the event horizon boundary."
+    ],
+    thalassa: [
+        "Thalassa-Bio reporting. In this cosmic ocean, we observe exotic non-baryonic fish swimming through gravitational wave tides.",
+        "Bioluminescent Vacuum Mantas feed on zero-point Casimir gradients, undulating through dark matter currents.",
+        "Notice the Elder Cosmological Observer detected on our optical scan. These colossal alien beings protect fragile infant worlds like Earth.",
+        "Graviton Eels and Tachyon Siphonophores are tracked live by our computer vision filters."
+    ],
+    velox: [
+        "Velox-Tachyon online! Tachometer reading registered at zero point nine nine four c. Relativistic gamma is nine point one four.",
+        "Time dilation active! One hour on your laptop terminal equals nine point one hours in the stationary cosmic rest frame.",
+        "Distance odometer advancing. Metric expansion adds millions of kilometers every second.",
+        "Engaging metric spacetime warp pulse! Apparent velocity expanding faster than photon propagation."
+    ]
+};
+
+// Natural Web Speech synthesis
+function playSpeech(text, pitch, rate) {
+    if (!('speechSynthesis' in window)) return;
+    window.speechSynthesis.cancel();
+    
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.pitch = pitch || 1.0;
+    utter.rate = rate || 1.0;
+    
+    // Choose high quality English voice if available
+    const voices = window.speechSynthesis.getVoices();
+    const engVoice = voices.find(v => v.lang.startsWith('en')) || voices[0];
+    if (engVoice) utter.voice = engVoice;
+
+    isSpeaking = true;
+    updateLedStates();
+
+    utter.onend = () => {
+        isSpeaking = false;
+        updateLedStates();
+    };
+
+    window.speechSynthesis.speak(utter);
+}
+
+function speakRobot(robotKey) {
+    activeSpeaker = robotKey;
+    const lines = SPEECHES[robotKey];
+    const text = lines[Math.floor(Math.random() * lines.length)];
+    
+    document.getElementById('subtitle-text').innerText = `[${robotKey.toUpperCase()}]: ${text}`;
+
+    let pitch = 1.0, rate = 1.0;
+    if (robotKey === 'eva') { pitch = 1.15; rate = 1.02; }
+    else if (robotKey === 'chronos') { pitch = 0.85; rate = 0.95; pulseSatellite(); }
+    else if (robotKey === 'thalassa') { pitch = 1.05; rate = 0.98; }
+    else if (robotKey === 'velox') { pitch = 0.95; rate = 1.15; }
+
+    playSpeech(text, pitch, rate);
+    highlightActiveCard(robotKey);
+}
+
+function highlightActiveCard(key) {
+    ['chronos', 'thalassa', 'velox'].forEach(k => {
+        const el = document.getElementById(`card-${k}`);
+        if (el) el.classList.toggle('active', k === key);
+    });
+}
+
+function updateLedStates() {
+    ['chronos', 'thalassa', 'velox'].forEach(k => {
+        const el = document.getElementById(`led-${k}`);
+        if (el) el.classList.toggle('active', isSpeaking && activeSpeaker === k);
+    });
+    const evaEl = document.getElementById('eva-status');
+    if (evaEl) {
+        evaEl.innerText = (isSpeaking && activeSpeaker === 'eva') ? '[SPEAKING TO USER VIA LAPTOP]' : '[GAZE LOCKED ON USER SCREEN]';
+        evaEl.style.color = (isSpeaking && activeSpeaker === 'eva') ? '#00e5ff' : '#10b981';
+    }
+}
+
+function toggleRightView() {
+    rightViewMode = (rightViewMode === 'ocean') ? 'orbits' : 'ocean';
+    const titleEl = document.getElementById('right-view-title');
+    const badgeEl = document.getElementById('mode-badge');
+    if (rightViewMode === 'ocean') {
+        titleEl.innerText = "[PARTITION B] SEA OF UNOBSERVABLE UNIVERSE (ALIEN & FISH)";
+        badgeEl.innerText = "VIEW: COSMIC SEA";
+        badgeEl.style.borderColor = "#00e5ff";
+        badgeEl.style.color = "#00e5ff";
+    } else {
+        titleEl.innerText = "[PARTITION B] 93 Gly COSMIC HORIZON & MULTI-SCALE ORBITS";
+        badgeEl.innerText = "VIEW: 93 Gly ORBITS";
+        badgeEl.style.borderColor = "#f59e0b";
+        badgeEl.style.color = "#f59e0b";
+    }
+}
+
+function cycleSpeedPreset() {
+    speedPresetIdx = (speedPresetIdx + 1) % speeds.length;
+    currentSpeedC = speeds[speedPresetIdx];
+    
+    let gamma = (currentSpeedC < 1.0) ? (1.0 / Math.sqrt(1.0 - currentSpeedC * currentSpeedC)) : (currentSpeedC * 8.5);
+    let kms = currentSpeedC * 299792;
+
+    document.getElementById('speed-fraction').innerText = currentSpeedC.toFixed(3) + ' c';
+    document.getElementById('speed-kms').innerText = Math.round(kms).toLocaleString() + ' km/s';
+    document.getElementById('lorentz-gamma').innerText = 'γ = ' + gamma.toFixed(2) + 'x ' + (currentSpeedC > 1.0 ? 'WARP' : 'DILATION');
+}
+
+// ==============================================================================
+// 1. EVA-01 FACE RENDERING (HUMAN FACIAL EXPRESSIONS & LIPSYNC)
+// ==============================================================================
+const evaCanvas = document.getElementById('eva-face-canvas');
+const evaCtx = evaCanvas.getContext('2d');
+
+let blinkProgress = 0;
+let isBlinking = false;
+let blinkTimer = 0;
+let mouseX = 0, mouseY = 0;
+
+window.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX / window.innerWidth) * 2 - 1;
+    mouseY = (e.clientY / window.innerHeight) * 2 - 1;
+});
+
+function drawFace(ctx, w, h, isSpeakingNow, robotType) {
+    ctx.clearRect(0, 0, w, h);
+    const cx = w * 0.5;
+    const cy = h * 0.52;
+    const s = Math.min(w, h) / 220;
+
+    // Head base (Porcelain synthetic humanoid skin)
+    ctx.fillStyle = (robotType === 'chronos') ? '#2e2538' : (robotType === 'thalassa' ? '#1e3a3a' : (robotType === 'velox' ? '#2e281e' : '#f0e6dc'));
+    ctx.beginPath();
+    ctx.ellipse(cx, cy, 55 * s, 75 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Neck & Hydraulics
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(cx - 20 * s, cy + 60 * s, 40 * s, 45 * s);
+    ctx.strokeStyle = '#64748b';
+    ctx.lineWidth = 2 * s;
+    ctx.beginPath();
+    ctx.moveTo(cx - 10 * s, cy + 60 * s); ctx.lineTo(cx - 10 * s, cy + 95 * s);
+    ctx.moveTo(cx + 10 * s, cy + 60 * s); ctx.lineTo(cx + 10 * s, cy + 95 * s);
+    ctx.stroke();
+
+    // Cybernetic Titanium Temporal Plates
+    ctx.fillStyle = '#94a3b8';
+    ctx.beginPath();
+    ctx.ellipse(cx - 56 * s, cy, 8 * s, 20 * s, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx + 56 * s, cy, 8 * s, 20 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Glowing ear cores
+    ctx.fillStyle = (robotType === 'chronos') ? '#c084fc' : (robotType === 'thalassa' ? '#2dd4bf' : (robotType === 'velox' ? '#fbbf24' : '#00e5ff'));
+    ctx.beginPath();
+    ctx.arc(cx - 56 * s, cy + 5 * s, 4 * s, 0, Math.PI * 2);
+    ctx.arc(cx + 56 * s, cy + 5 * s, 4 * s, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Eyes
+    const eyeSpacing = 26 * s;
+    const eyeY = cy - 8 * s;
+    const eyeW = 20 * s;
+    const eyeH = 12 * s * (isBlinking ? (1 - blinkProgress) : 1);
+
+    [-1, 1].forEach(side => {
+        const ex = cx + side * eyeSpacing;
+        // Sclera
+        ctx.fillStyle = '#f8fafc';
+        ctx.beginPath();
+        ctx.ellipse(ex, eyeY, eyeW * 0.5, Math.max(1, eyeH * 0.5), 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Gaze tracking
+        const gx = ex + mouseX * 4 * s;
+        const gy = eyeY + mouseY * 2 * s;
+
+        // Iris
+        ctx.fillStyle = (robotType === 'chronos') ? '#a855f7' : (robotType === 'thalassa' ? '#0d9488' : (robotType === 'velox' ? '#d97706' : '#00b4d8'));
+        ctx.beginPath();
+        ctx.arc(gx, gy, 6 * s, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Pupil
+        ctx.fillStyle = '#0f172a';
+        ctx.beginPath();
+        ctx.arc(gx, gy, 3 * s, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Glint
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(gx - 2 * s, gy - 2 * s, 1.5 * s, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // Eyebrows
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 2.5 * s;
+    ctx.beginPath();
+    ctx.moveTo(cx - 36 * s, cy - 22 * s); ctx.lineTo(cx - 16 * s, cy - 22 * s);
+    ctx.moveTo(cx + 16 * s, cy - 22 * s); ctx.lineTo(cx + 36 * s, cy - 22 * s);
+    ctx.stroke();
+
+    // Nose
+    ctx.strokeStyle = 'rgba(100, 116, 139, 0.4)';
+    ctx.lineWidth = 1.5 * s;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - 5 * s); ctx.lineTo(cx, cy + 12 * s);
+    ctx.stroke();
+
+    // Lips & Mouth Visemes
+    const mouthY = cy + 28 * s;
+    const openness = isSpeakingNow ? (Math.sin(Date.now() * 0.015) * 6 + 7) * s : 2 * s;
+    const mouthW = (isSpeakingNow ? 18 : 22) * s;
+
+    // Oral cavity
+    if (openness > 3 * s) {
+        ctx.fillStyle = '#450a0a';
+        ctx.beginPath();
+        ctx.ellipse(cx, mouthY, mouthW * 0.4, openness * 0.5, 0, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Lip line
+    ctx.strokeStyle = (robotType === 'chronos') ? '#c084fc' : (robotType === 'thalassa' ? '#2dd4bf' : (robotType === 'velox' ? '#fbbf24' : '#fb7185'));
+    ctx.lineWidth = 3 * s;
+    ctx.beginPath();
+    ctx.moveTo(cx - mouthW * 0.5, mouthY);
+    ctx.quadraticCurveTo(cx, mouthY + openness * 0.5, cx + mouthW * 0.5, mouthY);
+    ctx.stroke();
+}
+
+// ==============================================================================
+// 2. LAPTOP WORKSTATION RENDERING
+// ==============================================================================
+const laptopCanvas = document.getElementById('laptop-canvas');
+const lapCtx = laptopCanvas.getContext('2d');
+
+function drawLaptop(ctx, w, h) {
+    ctx.clearRect(0, 0, w, h);
+    const cx = w * 0.5;
+    const cy = h * 0.55;
+    const s = Math.min(w, h) / 180;
+
+    // Laptop Base / Keyboard deck
+    ctx.fillStyle = '#1e293b';
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(cx - 65 * s, cy + 30 * s);
+    ctx.lineTo(cx + 65 * s, cy + 30 * s);
+    ctx.lineTo(cx + 75 * s, cy + 50 * s);
+    ctx.lineTo(cx - 75 * s, cy + 50 * s);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Keyboard glow
+    ctx.fillStyle = 'rgba(0, 229, 255, 0.4)';
+    ctx.fillRect(cx - 50 * s, cy + 33 * s, 100 * s, 8 * s);
+
+    // Trackpad
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(cx - 15 * s, cy + 43 * s, 30 * s, 6 * s);
+
+    // Laptop Screen (standing upright)
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(cx - 55 * s, cy - 45 * s, 110 * s, 75 * s);
+    ctx.strokeStyle = '#00e5ff';
+    ctx.strokeRect(cx - 55 * s, cy - 45 * s, 110 * s, 75 * s);
+
+    // Screen Glass
+    ctx.fillStyle = '#030712';
+    ctx.fillRect(cx - 51 * s, cy - 41 * s, 102 * s, 67 * s);
+
+    // Webcam at top
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath();
+    ctx.arc(cx, cy - 43 * s, 2 * s, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Live terminal text on laptop screen
+    ctx.fillStyle = '#00e5ff';
+    ctx.font = `${Math.round(6 * s)}px Consolas`;
+    ctx.fillText("USER AT LAPTOP: CONNECTED", cx - 46 * s, cy - 30 * s);
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillText("> EVA-01 VOICE: ACTIVE", cx - 46 * s, cy - 20 * s);
+    ctx.fillText("> SAT-LINK: 248.8 GHz", cx - 46 * s, cy - 10 * s);
+    ctx.fillText("> GAZE: USER CURSOR SYNC", cx - 46 * s, cy);
+    ctx.fillText("> STATUS: ALL GREEN", cx - 46 * s, cy + 10 * s);
+}
+
+// ==============================================================================
+// 3. UNIVERSE CANVAS: SEA OF UNOBSERVABLE UNIVERSE, ALIEN OBSERVER & FISH
+// ==============================================================================
+const uniCanvas = document.getElementById('universe-canvas');
+const uniCtx = uniCanvas.getContext('2d');
+
+let waveTime = 0;
+let lidarAngle = 0;
+const lidarPoints = [];
+
+// Cosmic Fish instances
+const fishes = [
+    { type: 'manta', x: 120, y: 150, vx: 0.8, vy: -0.2, color: '#00e5ff', name: 'Vacuum Manta' },
+    { type: 'eel', x: 280, y: 220, vx: -0.7, vy: 0.3, color: '#c084fc', name: 'Graviton Wave Eel' },
+    { type: 'siphon', x: 200, y: 300, vx: 0.5, vy: 0.4, color: '#fbbf24', name: 'Tachyon Siphonophore' }
+];
+
+function drawUniverse(ctx, w, h) {
+    ctx.clearRect(0, 0, w, h);
+    waveTime += 0.03;
+
+    if (rightViewMode === 'ocean') {
+        // 1. Spacetime Deep Ocean Background & Gravitational Waves
+        ctx.fillStyle = '#040711';
+        ctx.fillRect(0, 0, w, h);
+
+        // Fluid wave grid lines
+        ctx.strokeStyle = 'rgba(0, 229, 255, 0.12)';
+        ctx.lineWidth = 1;
+        for (let y = 30; y < h; y += 25) {
+            ctx.beginPath();
+            ctx.moveTo(0, y);
+            for (let x = 0; x < w; x += 30) {
+                const dy = Math.sin(x * 0.02 + waveTime + y * 0.05) * 6;
+                ctx.lineTo(x, y + dy);
+            }
+            ctx.stroke();
+        }
+
+        // 2. Elder Alien Presence Holding Earth in Hands
+        drawElderAlien(ctx, w * 0.52, h * 0.48, Math.min(w, h) / 320);
+
+        // 3. Cosmic Fish Swimming in the Sea
+        fishes.forEach(f => {
+            f.x += f.vx;
+            f.y += f.vy;
+            if (f.x < -30) f.x = w + 30;
+            if (f.x > w + 30) f.x = -30;
+            if (f.y < -30) f.y = h + 30;
+            if (f.y > h + 30) f.y = -30;
+
+            drawFish(ctx, f);
+        });
+
+    } else {
+        // Multi-Scale 93 Gly Orbits View (Images 2, 3, 4)
+        drawCosmicOrbits(ctx, w, h);
+    }
+
+    // 4. 360-Degree LiDAR Sweep & Target Reticles
+    drawLidarSweep(ctx, w, h);
+}
+
+function drawElderAlien(ctx, ax, ay, s) {
+    // Cranium
+    ctx.fillStyle = '#334155';
+    ctx.beginPath();
+    ctx.ellipse(ax, ay - 35 * s, 35 * s, 48 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Cranial ridges (as in uploaded alien image)
+    ctx.strokeStyle = '#1e293b';
+    ctx.lineWidth = 1.5 * s;
+    for (let r = -25; r <= 10; r += 6) {
+        ctx.beginPath();
+        ctx.arc(ax, ay + (r - 35) * s, 25 * s, 0.2 * Math.PI, 0.8 * Math.PI);
+        ctx.stroke();
+    }
+
+    // Piercing luminous eyes (cyan/emerald as in image)
+    [-1, 1].forEach(side => {
+        const ex = ax + side * 14 * s;
+        const ey = ay - 30 * s;
+        ctx.fillStyle = '#00ffcc';
+        ctx.beginPath();
+        ctx.ellipse(ex, ey, 6 * s, 4 * s, side * 0.2, 0, Math.PI * 2);
+        ctx.fill();
+    });
+
+    // Alien Arms and Elongated Hands Cradling Earth
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 6 * s;
+    ctx.beginPath();
+    ctx.arc(ax - 28 * s, ay + 15 * s, 25 * s, 0.4 * Math.PI, 1.1 * Math.PI);
+    ctx.arc(ax + 28 * s, ay + 15 * s, 25 * s, 1.9 * Math.PI, 0.6 * Math.PI);
+    ctx.stroke();
+
+    // Glowing Earth Globe in Alien's Hands
+    const ex = ax;
+    const ey = ay + 18 * s;
+    const er = 20 * s;
+
+    // Blue Ocean
+    ctx.fillStyle = '#0284c7';
+    ctx.beginPath();
+    ctx.arc(ex, ey, er, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Green Continents
+    ctx.fillStyle = '#10b981';
+    ctx.beginPath();
+    ctx.arc(ex - 4 * s, ey - 3 * s, 8 * s, 0, Math.PI * 2);
+    ctx.arc(ex + 6 * s, ey + 4 * s, 6 * s, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Atmospheric Glow rim
+    ctx.strokeStyle = 'rgba(56, 189, 248, 0.8)';
+    ctx.lineWidth = 2 * s;
+    ctx.beginPath();
+    ctx.arc(ex, ey, er, 0, Math.PI * 2);
+    ctx.stroke();
+
+    // Computer Vision Bounding Box & Reticle on Alien
+    drawCVBox(ctx, ax - 45 * s, ay - 85 * s, 90 * s, 115 * s, "CLASS-IV ELDER OBSERVER [EARTH GUARDIAN]", 0.985);
+}
+
+function drawFish(ctx, f) {
+    ctx.save();
+    ctx.translate(f.x, f.y);
+    const angle = Math.atan2(f.vy, f.vx);
+    ctx.rotate(angle);
+
+    if (f.type === 'manta') {
+        // Vacuum Manta
+        ctx.fillStyle = f.color;
+        ctx.beginPath();
+        ctx.moveTo(18, 0);
+        ctx.lineTo(-10, -18);
+        ctx.lineTo(-6, 0);
+        ctx.lineTo(-10, 18);
+        ctx.closePath();
+        ctx.fill();
+        // Tail
+        ctx.strokeStyle = f.color;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(-6, 0); ctx.lineTo(-24, Math.sin(Date.now() * 0.01) * 4);
+        ctx.stroke();
+    } else if (f.type === 'eel') {
+        // Graviton Eel
+        ctx.strokeStyle = f.color;
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(10, 0);
+        for (let i = 0; i < 6; ++i) {
+            ctx.lineTo(-i * 5, Math.sin(Date.now() * 0.01 + i) * 5);
+        }
+        ctx.stroke();
+    } else {
+        // Tachyon Siphonophore
+        ctx.fillStyle = f.color;
+        ctx.beginPath();
+        ctx.arc(0, 0, 7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = f.color;
+        ctx.lineWidth = 1;
+        for (let t = -4; t <= 4; t += 2) {
+            ctx.beginPath();
+            ctx.moveTo(t, 5); ctx.lineTo(t - 10, 12 + Math.sin(Date.now() * 0.01 + t) * 4);
+            ctx.stroke();
+        }
+    }
+
+    ctx.restore();
+
+    // CV Label
+    ctx.fillStyle = f.color;
+    ctx.font = '9px Consolas';
+    ctx.fillText(f.name, f.x + 10, f.y - 8);
+}
+
+function drawCVBox(ctx, bx, by, bw, bh, label, conf) {
+    ctx.strokeStyle = '#00ffcc';
+    ctx.lineWidth = 1.5;
+    const len = 10;
+    // Corners
+    ctx.beginPath();
+    ctx.moveTo(bx, by + len); ctx.lineTo(bx, by); ctx.lineTo(bx + len, by);
+    ctx.moveTo(bx + bw - len, by); ctx.lineTo(bx + bw, by); ctx.lineTo(bx + bw, by + len);
+    ctx.moveTo(bx, by + bh - len); ctx.lineTo(bx, by + bh); ctx.lineTo(bx + len, by + bh);
+    ctx.moveTo(bx + bw - len, by + bh); ctx.lineTo(bx + bw, by + bh); ctx.lineTo(bx + bw, by + bh - len);
+    ctx.stroke();
+
+    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+    ctx.fillRect(bx, by - 14, bw, 13);
+    ctx.fillStyle = '#00ffcc';
+    ctx.font = '8px Consolas';
+    ctx.fillText(`[CV ${Math.round(conf * 100)}%] ${label}`, bx + 3, by - 4);
+}
+
+function drawCosmicOrbits(ctx, w, h) {
+    ctx.fillStyle = '#040711';
+    ctx.fillRect(0, 0, w, h);
+    const cx = w * 0.5;
+    const cy = h * 0.5;
+
+    // Rings
+    const rings = [35, 75, 120, 170, 220];
+    const labels = ["1 AU (Solar)", "Milky Way Spiral", "Local Group M31", "Virgo Supercluster", "93 Gly HORIZON LIMIT"];
+    const colors = ["#38bdf8", "#fbbf24", "#c084fc", "#4ade80", "#00e5ff"];
+
+    rings.forEach((r, i) => {
+        ctx.strokeStyle = colors[i];
+        ctx.lineWidth = (i === 4) ? 2 : 1;
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Orbit body
+        const ang = waveTime * (1.5 / (i + 1));
+        const bx = cx + Math.cos(ang) * r;
+        const by = cy + Math.sin(ang) * r;
+        ctx.fillStyle = colors[i];
+        ctx.beginPath();
+        ctx.arc(bx, by, 4 + i, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.font = '8px Consolas';
+        ctx.fillText(labels[i], bx + 8, by - 4);
+    });
+}
+
+function drawLidarSweep(ctx, w, h) {
+    const cx = w * 0.5;
+    const cy = h * 0.5;
+    const maxR = Math.min(w, h) * 0.46;
+
+    lidarAngle += 0.04;
+    const lx = cx + Math.cos(lidarAngle) * maxR;
+    const ly = cy + Math.sin(lidarAngle) * maxR;
+
+    ctx.strokeStyle = 'rgba(16, 185, 129, 0.7)';
+    ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy); ctx.lineTo(lx, ly);
+    ctx.stroke();
+
+    // Spawn hits
+    if (Math.random() < 0.3) {
+        lidarPoints.push({
+            x: cx + Math.cos(lidarAngle) * (Math.random() * maxR),
+            y: cy + Math.sin(lidarAngle) * (Math.random() * maxR),
+            life: 1.0
+        });
+    }
+
+    // Render hits
+    for (let i = lidarPoints.length - 1; i >= 0; --i) {
+        const pt = lidarPoints[i];
+        pt.life -= 0.02;
+        if (pt.life <= 0) {
+            lidarPoints.splice(i, 1);
+            continue;
+        }
+        ctx.fillStyle = `rgba(52, 211, 153, ${pt.life})`;
+        ctx.beginPath();
+        ctx.arc(pt.x, pt.y, 2, 0, Math.PI * 2);
+        ctx.fill();
+    }
+}
+
+// ==============================================================================
+// 4. SATELLITE QUANTUM CARRIER BEAM ACROSS PARTITIONS
+// ==============================================================================
+const satCanvas = document.getElementById('satellite-canvas');
+const satCtx = satCanvas.getContext('2d');
+const packets = [];
+
+function pulseSatellite() {
+    for (let i = 0; i < 4; ++i) {
+        packets.push({ progress: 0, speed: 0.015 + i * 0.005 });
+    }
+}
+
+function drawSatelliteSignals() {
+    satCtx.clearRect(0, 0, satCanvas.width, satCanvas.height);
+    const startX = satCanvas.width * 0.75;
+    const startY = satCanvas.height * 0.25;
+    const endX = satCanvas.width * 0.35;
+    const endY = satCanvas.height * 0.30;
+
+    // Carrier beam
+    satCtx.strokeStyle = 'rgba(0, 229, 255, 0.4)';
+    satCtx.lineWidth = 1.5;
+    satCtx.beginPath();
+    satCtx.moveTo(startX, startY);
+    satCtx.quadraticCurveTo(satCanvas.width * 0.5, startY - 40, endX, endY);
+    satCtx.stroke();
+
+    // Transponder dish
+    satCtx.fillStyle = '#a855f7';
+    satCtx.beginPath();
+    satCtx.arc(startX, startY, 7, 0, Math.PI * 2);
+    satCtx.fill();
+
+    // Receiver dish
+    satCtx.fillStyle = '#00e5ff';
+    satCtx.beginPath();
+    satCtx.arc(endX, endY, 6, 0, Math.PI * 2);
+    satCtx.fill();
+
+    // Telemetry packets
+    for (let i = packets.length - 1; i >= 0; --i) {
+        const p = packets[i];
+        p.progress += p.speed;
+        if (p.progress >= 1.0) {
+            packets.splice(i, 1);
+            continue;
+        }
+        const prg = p.progress;
+        const cx = (1 - prg) * (1 - prg) * startX + 2 * (1 - prg) * prg * (satCanvas.width * 0.5) + prg * prg * endX;
+        const cy = (1 - prg) * (1 - prg) * startY + 2 * (1 - prg) * prg * (startY - 40) + prg * prg * endY;
+
+        satCtx.fillStyle = '#ffffff';
+        satCtx.beginPath();
+        satCtx.arc(cx, cy, 3.5, 0, Math.PI * 2);
+        satCtx.fill();
+    }
+}
+
+// ==============================================================================
+// 5. TACHOMETER GAUGE CANVAS
+// ==============================================================================
+const tachoCanvas = document.getElementById('tachometer-canvas');
+const tachoCtx = tachoCanvas.getContext('2d');
+
+function drawTachometer() {
+    tachoCtx.clearRect(0, 0, 100, 60);
+    const cx = 50, cy = 52, r = 38;
+
+    tachoCtx.strokeStyle = '#334155';
+    tachoCtx.lineWidth = 4;
+    tachoCtx.beginPath();
+    tachoCtx.arc(cx, cy, r, Math.PI * 0.8, Math.PI * 2.2);
+    tachoCtx.stroke();
+
+    const frac = Math.min(1.0, currentSpeedC / 2.5);
+    const activeAngle = Math.PI * 0.8 + frac * (Math.PI * 1.4);
+
+    tachoCtx.strokeStyle = currentSpeedC > 1.0 ? '#ec4899' : '#f59e0b';
+    tachoCtx.beginPath();
+    tachoCtx.arc(cx, cy, r, Math.PI * 0.8, activeAngle);
+    tachoCtx.stroke();
+
+    // Needle
+    const nx = cx + Math.cos(activeAngle) * (r - 4);
+    const ny = cy + Math.sin(activeAngle) * (r - 4);
+    tachoCtx.strokeStyle = '#ffffff';
+    tachoCtx.lineWidth = 1.5;
+    tachoCtx.beginPath();
+    tachoCtx.moveTo(cx, cy); tachoCtx.lineTo(nx, ny);
+    tachoCtx.stroke();
+}
+
+// ==============================================================================
+// RESIZE & ANIMATION LOOP
+// ==============================================================================
+function resizeAll() {
+    satCanvas.width = window.innerWidth;
+    satCanvas.height = window.innerHeight;
+
+    evaCanvas.width = evaCanvas.clientWidth;
+    evaCanvas.height = evaCanvas.clientHeight;
+
+    laptopCanvas.width = laptopCanvas.clientWidth;
+    laptopCanvas.height = laptopCanvas.clientHeight;
+
+    uniCanvas.width = uniCanvas.clientWidth;
+    uniCanvas.height = uniCanvas.clientHeight;
+}
+window.addEventListener('resize', resizeAll);
+
+function animate() {
+    requestAnimationFrame(animate);
+
+    // Blinking logic
+    blinkTimer += 0.016;
+    if (!isBlinking && blinkTimer > 3.5) {
+        isBlinking = true;
+        blinkTimer = 0;
+    }
+    if (isBlinking) {
+        blinkProgress += 0.1;
+        if (blinkProgress >= 1.0) {
+            isBlinking = false;
+            blinkProgress = 0;
+        }
+    }
+
+    // Distance odometer increments
+    properDistGly += (currentSpeedC * 0.0002);
+    comovingDistMpc = properDistGly * 1000 / 3.26156;
+    document.getElementById('dist-gly').innerText = properDistGly.toFixed(2) + ' Gly';
+    document.getElementById('dist-mpc').innerText = Math.round(comovingDistMpc).toLocaleString() + ' Mpc';
+    document.getElementById('odometer-drum').innerHTML = `${properDistGly.toFixed(2).padStart(7, '0')} <span style="font-size: 12px; color: #ff4b4b; margin-left: 6px;">Gly</span>`;
+
+    // Render components
+    drawFace(evaCtx, evaCanvas.width, evaCanvas.height, isSpeaking && activeSpeaker === 'eva', 'eva');
+    drawLaptop(lapCtx, laptopCanvas.width, laptopCanvas.height);
+    
+    // Mini faces on robot cards
+    const cCtx = document.getElementById('face-chronos').getContext('2d');
+    drawFace(cCtx, 120, 110, isSpeaking && activeSpeaker === 'chronos', 'chronos');
+
+    const tCtx = document.getElementById('face-thalassa').getContext('2d');
+    drawFace(tCtx, 120, 110, isSpeaking && activeSpeaker === 'thalassa', 'thalassa');
+
+    const vCtx = document.getElementById('face-velox').getContext('2d');
+    drawFace(vCtx, 120, 110, isSpeaking && activeSpeaker === 'velox', 'velox');
+
+    drawUniverse(uniCtx, uniCanvas.width, uniCanvas.height);
+    drawSatelliteSignals();
+    drawTachometer();
+}
+
+setTimeout(() => {
+    resizeAll();
+    animate();
+    // Auto greeting on start
+    speakRobot('eva');
+}, 200);
+
+</script>
+</body>
+</html>
