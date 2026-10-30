@@ -264,7 +264,7 @@ if page == "🌌 Question 4: Unobservable Universe Robotics Simulation Suite (Ro
         if os.path.exists(sim_path):
             with open(sim_path, "r", encoding="utf-8") as f:
                 sim_html = f.read()
-            components.html(sim_html, height=860, scrolling=False)
+            components.html(sim_html, height=980, scrolling=False)
         else:
             st.error("cosmic_robotics_unobservable_suite.html not found.")
 

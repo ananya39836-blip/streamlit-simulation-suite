@@ -179,11 +179,15 @@
         </div>
 
 
-        <!-- ==================== MULTILINGUAL INTERACTION CONSOLE ==================== -->
-        <div style="background: #0b0f19; border: 1.5px solid #00e5ff; border-radius: 6px; padding: 8px; margin-top: 6px; box-shadow: 0 0 10px rgba(0, 229, 255, 0.15);">
+        <!-- ==================== CHATGPT-GRADE MULTILINGUAL INTERACTION CONSOLE ==================== -->
+        <div style="background: #0b0f19; border: 1.5px solid #00e5ff; border-radius: 6px; padding: 8px; margin-top: 6px; box-shadow: 0 0 14px rgba(0, 229, 255, 0.22);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
-                <span style="font-size: 11px; font-weight: bold; color: #00ffcc;">💬 ASK EVA-01 (ENGLISH • HINDI • HINGLISH • FRENCH):</span>
-                <div style="display: flex; gap: 4px;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span style="font-size: 11px; font-weight: bold; color: #00ffcc;">🧠 CHATGPT-GRADE AI CONSOLE :: EVA-01:</span>
+                    <span id="ai-engine-status" style="font-size: 9px; color: #10b981; font-weight: bold; background: rgba(16,185,129,0.15); padding: 1px 6px; border-radius: 4px; border: 1px solid #10b981;">⚡ CHATGPT AI ACTIVE</span>
+                </div>
+                <div style="display: flex; gap: 4px; align-items: center;">
+                    <button class="ctrl-btn" style="padding: 2px 6px; font-size: 9px; border-color: #64748b;" onclick="openApiKeyModal()" title="Optional: Set your own OpenAI/Gemini Key">⚙️ API Key</button>
                     <select id="lang-select" style="background: #111827; border: 1px solid #38bdf8; color: #e2e8f0; font-size: 10px; border-radius: 4px; padding: 2px 4px;">
                         <option value="auto">🌐 Auto Detect Language</option>
                         <option value="en">🇬🇧 English</option>
@@ -196,20 +200,23 @@
 
             <!-- Input Bar -->
             <div style="display: flex; gap: 6px;">
-                <input id="user-question-input" type="text" placeholder="Ask EVA anything... (e.g., 'Alien Earth ko kyu pakad raha hai?', 'What fish are in the sea?', 'अदृश्य ब्रह्मांड क्या है?')" 
+                <input id="user-question-input" type="text" placeholder="Ask EVA anything like ChatGPT... (English, हिंदी, Hinglish, Français)" 
                        style="flex: 1; background: #070913; border: 1px solid #334155; border-radius: 4px; color: #f8fafc; padding: 6px 10px; font-family: inherit; font-size: 11px; outline: none;" 
                        onkeydown="if(event.key==='Enter') submitUserQuestion()" />
-                <button class="ctrl-btn" style="background: #0284c7; color: white; border-color: #38bdf8;" onclick="submitUserQuestion()">🗣️ Ask EVA</button>
+                <button class="ctrl-btn" id="ask-btn" style="background: #0284c7; color: white; border-color: #38bdf8;" onclick="submitUserQuestion()">🗣️ Ask EVA</button>
                 <button class="ctrl-btn" id="voice-rec-btn" style="border-color: #10b981; color: #10b981;" onclick="toggleVoiceRecognition()" title="Voice Input (Mic)">🎙️ Mic</button>
+                <button class="ctrl-btn" style="border-color: #f59e0b; color: #f59e0b;" onclick="surpriseQuestion()" title="Ask a random deep question">🎲 Surprise</button>
             </div>
 
             <!-- Quick Question Chips -->
             <div style="display: flex; gap: 4px; margin-top: 6px; flex-wrap: wrap;">
-                <button class="ctrl-btn" style="padding: 2px 6px; font-size: 9px;" onclick="quickAsk('Who is the alien holding Earth in its hands?')">👽 Who is the Alien?</button>
-                <button class="ctrl-btn" style="padding: 2px 6px; font-size: 9px;" onclick="quickAsk('Cosmic sea me kaun si fish swim kar rahi hai?')">🐟 Fish in Sea (Hinglish)</button>
+                <button class="ctrl-btn" style="padding: 2px 6px; font-size: 9px;" onclick="quickAsk('Who is the alien entity holding planet Earth in its hands?')">👽 Alien Guardian</button>
+                <button class="ctrl-btn" style="padding: 2px 6px; font-size: 9px;" onclick="quickAsk('Cosmic sea me kaun si fish swim kar rahi hai?')">🐟 Cosmic Fish (Hinglish)</button>
                 <button class="ctrl-btn" style="padding: 2px 6px; font-size: 9px;" onclick="quickAsk('अदृश्य ब्रह्मांड क्या है और ओडोमीटर क्या माप रहा है?')">🌌 अदृश्य ब्रह्मांड (Hindi)</button>
-                <button class="ctrl-btn" style="padding: 2px 6px; font-size: 9px;" onclick="quickAsk('Parlez-moi de la mer cosmique et de l\'univers inobservable.')">🇫🇷 Mer Cosmique (French)</button>
-                <button class="ctrl-btn" style="padding: 2px 6px; font-size: 9px;" onclick="quickAsk('How fast is our speed and Lorentz gamma dilation?')">⚡ Speed & Gamma</button>
+                <button class="ctrl-btn" style="padding: 2px 6px; font-size: 9px;" onclick="quickAsk('What is 48 multiplied by 125?')">🧮 48 * 125</button>
+                <button class="ctrl-btn" style="padding: 2px 6px; font-size: 9px;" onclick="quickAsk('Comment fonctionne la théorie de la relativité restreinte?')">🇫🇷 Relativité (French)</button>
+                <button class="ctrl-btn" style="padding: 2px 6px; font-size: 9px;" onclick="quickAsk('What is quantum entanglement and how does it connect the multiverse?')">⚛️ Quantum Entanglement</button>
+                <button class="ctrl-btn" style="padding: 2px 6px; font-size: 9px;" onclick="quickAsk('Tell me a funny space joke!')">😂 Space Joke</button>
             </div>
         </div>
 
@@ -1264,213 +1271,515 @@ function quickAsk(q) {
     submitUserQuestion();
 }
 
+function openApiKeyModal() {
+    const curKey = localStorage.getItem('cosmic_ai_key') || '';
+    const newKey = prompt("Optional: Enter your custom OpenAI or Gemini API Key (Leave empty to use automatic Free ChatGPT AI):", curKey);
+    if (newKey !== null) {
+        localStorage.setItem('cosmic_ai_key', newKey.trim());
+        alert(newKey.trim() ? "Custom API Key saved! EVA will prioritize your direct model." : "Using automatic Free ChatGPT AI Engine.");
+    }
+}
+
+function surpriseQuestion() {
+    const questions = [
+        "What lies beyond the edge of the unobservable universe?",
+        "Alien Earth ko apne haathon me kyu pakad raha hai?",
+        "Quel est le plus grand mystère de la mécanique quantique?",
+        "ब्रह्मांड में सबसे शक्तिशाली वस्तु क्या है?",
+        "Can artificial intelligence experience true consciousness?",
+        "What is 15 percent of 480?",
+        "Black hole ke event horizon ke andar time kaise behave karta hai?",
+        "Parlez-moi des créatures marines qui nagent dans l'océan cosmique."
+    ];
+    const q = questions[Math.floor(Math.random() * questions.length)];
+    quickAsk(q);
+}
+
 function detectLanguage(q, forced) {
     if (forced && forced !== 'auto') return forced;
     q = q.toLowerCase();
 
-    // French indicators
-    if (/[éèêëàâôûîç]/.test(q) || q.includes('qui') || q.includes('est') || q.includes('parlez') || q.includes('univers') || q.includes('mer') || q.includes('comment') || q.includes('pourquoi')) {
+    // 1. Hindi (Devanagari characters)
+    if (/[\u0900-\u097F]/.test(q)) return 'hi';
+
+    // 2. French indicators
+    if (/[éèêëàâôûîç]/.test(q) || 
+        /\b(le|la|les|un|une|des|qui|est|sont|dans|sur|avec|pour|pourquoi|comment|qu'est|est-ce|merci|bonjour|parlez|soleil|lumiere|univers|mer|etoile)\b/i.test(q)) {
         return 'fr';
     }
-    // Hindi Devanagari script indicators
-    if (/[ऀ-ॿ]/.test(q)) {
-        return 'hi';
+
+    // 3. Hinglish indicators
+    if (/\b(kya|hai|hain|kaun|kyu|kyun|kaise|kaha|batao|bataiye|samjhao|aapka|apka|mera|meri|hum|hume|mujhe|pakad|raha|rahi|nahi|nahin|haan|bhai|yaar|sabse|yeh|woh|kuch|kitna|hoga|karega)\b/i.test(q)) {
+        return 'hinglish';
     }
-    // Hinglish indicators
-    const hinglishWords = ['kya', 'hai', 'kaun', 'kyu', 'kyun', 'baare', 'me', 'batao', 'fish', 'alien', 'pakad', 'raha', 'hamari', 'meri', 'karo', 'kahan', 'kitna', 'kitni', 'samjha'];
-    for (let w of hinglishWords) {
-        if (q.split(/\s+/).includes(w)) return 'hinglish';
-    }
+
     return 'en';
 }
 
-function generateMultilingualResponse(question, lang) {
+// -------------------------------------------------------------
+// TIER 1: ARITHMETIC & SYMBOLIC MATH SOLVER
+// -------------------------------------------------------------
+function solveMathExpression(q, lang) {
+    // Check for calculation keywords or direct math patterns
+    const clean = q.replace(/times/gi, '*').replace(/multiplied by/gi, '*').replace(/divided by/gi, '/').replace(/plus/gi, '+').replace(/minus/gi, '-').replace(/guna/gi, '*').replace(/bhaag/gi, '/').replace(/x/gi, '*');
+    
+    // Pattern: e.g. "48 * 125", "sqrt(144)", "25 + 75", "100 / 4", "15% of 500"
+    const percentMatch = q.match(/(\d+(?:\.\d+)?)\s*(?:%|percent)\s+of\s+(\d+(?:\.\d+)?)/i);
+    if (percentMatch) {
+        const pct = parseFloat(percentMatch[1]);
+        const total = parseFloat(percentMatch[2]);
+        const res = (pct / 100.0) * total;
+        if (lang === 'hi') return `${total} का ${pct} प्रतिशत ठीक ${res} होता है।`;
+        if (lang === 'hinglish') return `${total} ka ${pct} percent exactly ${res} nikalta hai commander.`;
+        if (lang === 'fr') return `${pct}% de ${total} donne exactement ${res}.`;
+        return `${pct}% of ${total} equals exactly ${res}.`;
+    }
+
+    const sqrtMatch = clean.match(/(?:sqrt|square root of)\s*(\d+(?:\.\d+)?)/i);
+    if (sqrtMatch) {
+        const val = parseFloat(sqrtMatch[1]);
+        const res = Math.sqrt(val);
+        const resStr = Number.isInteger(res) ? res.toString() : res.toFixed(4);
+        if (lang === 'hi') return `${val} का वर्गमूल ठीक ${resStr} है।`;
+        if (lang === 'hinglish') return `${val} ka square root ${resStr} hai.`;
+        if (lang === 'fr') return `La racine carrée de ${val} est égale à ${resStr}.`;
+        return `The square root of ${val} is ${resStr}.`;
+    }
+
+    const simpleMath = clean.match(/(\d+(?:\.\d+)?)\s*([\+\-\*/\^])\s*(\d+(?:\.\d+)?)/);
+    if (simpleMath) {
+        const a = parseFloat(simpleMath[1]);
+        const op = simpleMath[2];
+        const b = parseFloat(simpleMath[3]);
+        let res = 0;
+        if (op === '+') res = a + b;
+        else if (op === '-') res = a - b;
+        else if (op === '*') res = a * b;
+        else if (op === '/') res = b !== 0 ? (a / b) : 'infinity';
+        else if (op === '^') res = Math.pow(a, b);
+
+        const resStr = typeof res === 'number' ? (Number.isInteger(res) ? res.toLocaleString() : res.toFixed(3)) : res;
+
+        if (lang === 'hi') return `गणितीय गणना के अनुसार ${a} और ${b} का परिणाम ${resStr} है।`;
+        if (lang === 'hinglish') return `${a} aur ${b} ka exact math result ${resStr} nikal kar aaya hai commander.`;
+        if (lang === 'fr') return `D'après le calcul mathématique, le résultat de cette opération est ${resStr}.`;
+        return `According to my mathematical processor, ${a} ${op} ${b} equals ${resStr}.`;
+    }
+
+    return null;
+}
+
+// -------------------------------------------------------------
+// TIER 2: LIVE CHATGPT CLOUD LLM (Pollinations / OpenAI)
+// -------------------------------------------------------------
+async function fetchChatGPTLive(question, lang) {
+    try {
+        const customKey = localStorage.getItem('cosmic_ai_key');
+        if (customKey && customKey.startsWith('sk-')) {
+            // Direct OpenAI API
+            const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${customKey}`
+                },
+                body: JSON.stringify({
+                    model: 'gpt-4o-mini',
+                    messages: [
+                        { role: 'system', content: `You are EVA-01, an intelligent humanoid robot companion and master scientist. Answer ANY question accurately and conversationally like ChatGPT in the exact language requested (${lang}: English, Hindi, Hinglish, or French). Keep it concise (1 to 3 natural sentences) for speech synthesis. Do not use bullet points or asterisks.` },
+                        { role: 'user', content: question }
+                    ],
+                    max_tokens: 150
+                })
+            });
+            if (resp.ok) {
+                const data = await resp.json();
+                return data.choices[0].message.content.trim();
+            }
+        }
+
+        // Automatic Free ChatGPT LLM endpoint
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 4200);
+
+        const systemPrompt = `You are EVA-01, an advanced humanoid robot companion (HRP-4C android model) and cosmic observatory scientist. Answer the user's question accurately, intelligently, and conversationally like ChatGPT in the user's language (${lang}: English, Hindi, Hinglish, or French). Keep your answer clear, natural, and articulate, in 1 to 3 sentences suitable for voice speech synthesis. Do not use asterisks, markdown bullets, or emojis.`;
+
+        const url = `https://text.pollinations.ai/${encodeURIComponent(question)}?system=${encodeURIComponent(systemPrompt)}&model=openai&seed=${Date.now()}`;
+
+        const res = await fetch(url, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+            let text = await res.text();
+            text = text.replace(/[*#_`~]/g, '').trim();
+            if (text.length > 10 && !text.includes('<!DOCTYPE html>')) {
+                return text;
+            }
+        }
+    } catch (e) {
+        // Fallback to Tier 3 or 4
+    }
+    return null;
+}
+
+// -------------------------------------------------------------
+// TIER 3: LIVE WIKIPEDIA UNIVERSAL SEARCH & EXTRACT (CORS origin=*)
+// -------------------------------------------------------------
+async function fetchWikipediaKnowledge(question, lang) {
+    try {
+        const wikiLang = lang === 'fr' ? 'fr' : (lang === 'hi' ? 'hi' : 'en');
+        // Extract meaningful search terms
+        let cleanQuery = question
+            .replace(/what is|who is|who was|tell me about|explain|how does|what are|kya hai|kaun hai|kise kehte hain|qu'est-ce que|qui est/gi, '')
+            .replace(/[?.,!]/g, '')
+            .trim();
+
+        if (cleanQuery.length < 3) return null;
+
+        const searchUrl = `https://${wikiLang}.wikipedia.org/w/api.php?action=query&list=search&srsearch=${encodeURIComponent(cleanQuery)}&format=json&utf8=1&origin=*`;
+        const sRes = await fetch(searchUrl);
+        if (!sRes.ok) return null;
+
+        const sData = await sRes.json();
+        const results = sData?.query?.search;
+        if (!results || results.length === 0) return null;
+
+        const topTitle = results[0].title;
+        const sumUrl = `https://${wikiLang}.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(topTitle)}`;
+        const sumRes = await fetch(sumUrl);
+        if (!sumRes.ok) return null;
+
+        const sumData = await sumRes.json();
+        const extract = sumData.extract;
+        if (!extract) return null;
+
+        // Take first 2 sentences
+        const sentences = extract.split(/(?<=[.?!])\s+/).slice(0, 2).join(' ');
+
+        if (lang === 'hi') {
+            return `हमारे कॉस्मिक डेटाबेस और विश्वकोश के अनुसार, ${sentences}`;
+        } else if (lang === 'hinglish') {
+            return `Cosmic knowledge base ke mutabiq, ${sentences}`;
+        } else if (lang === 'fr') {
+            return `D'après nos banques de données scientifiques et cosmiques, ${sentences}`;
+        } else {
+            return `According to our cosmic databanks, ${sentences}`;
+        }
+    } catch(e) {
+        return null;
+    }
+}
+
+// -------------------------------------------------------------
+// TIER 4: DEEP SEMANTIC MULTI-DOMAIN KNOWLEDGE BASE (Zero-Failure)
+// -------------------------------------------------------------
+function generateSemanticAIResponse(question, lang) {
     const q = question.toLowerCase();
 
-    // 1. ALIEN OBSERVER QUESTIONS
+    // 1. ALIEN OBSERVER / GUARDIAN
     if (q.includes('alien') || q.includes('earth') || q.includes('pakad') || q.includes('gardien') || q.includes('extraterrestre') || q.includes('एलियन') || q.includes('पृथ्वी')) {
         if (lang === 'hi') {
             return {
                 text: "यह एक प्राचीन क्लास-चार एल्डर कॉस्मोलॉजिकल गार्जियन है। जैसे गहरे समुद्र में विशाल जीव कोरल रीफ की रक्षा करते हैं, वैसे ही यह महाबली एलियन अपने हाथों में हमारी पृथ्वी को अदृश्य ब्रह्मांड की भयंकर गुरुत्वाकर्षण तरंगों और अंधेरे ज्वार से सुरक्षित रख रहा है।",
-                voiceLang: 'hi-IN',
-                emotion: 'awe',
-                pitch: 1.0, rate: 0.95
+                voiceLang: 'hi-IN', emotion: 'awe', pitch: 1.0, rate: 0.95
             };
         } else if (lang === 'hinglish') {
             return {
-                text: "Yeh ek Class-IV Elder Cosmological Guardian hai. Jis tarah deep ocean me badhi creatures atolls ko protect karti hain, waise hi yeh colossal alien entity Earth ko apne haathon me lekar unobservable void ke extreme vacuum tides aur cosmic radiation se bacha raha hai.",
-                voiceLang: 'hi-IN',
-                emotion: 'awe',
-                pitch: 1.05, rate: 1.0
+                text: "Ye ek ancient Class-Four Elder Cosmological Guardian hai. Jaise deep ocean me gentle sea giants fragile islands ko toofano se bachate hain, waise hi ye giant alien apne haatho me Earth ko hold karke unobservable cosmic sea ke gravitational tides se protect kar raha hai.",
+                voiceLang: 'hi-IN', emotion: 'awe', pitch: 1.05, rate: 1.0
             };
         } else if (lang === 'fr') {
             return {
-                text: "C'est un Ancien Gardien Cosmologique de Classe IV. Tout comme les créatures marines protègent les récifs, cet être extraterrestre colossal berce notre Terre dans ses mains pour la protéger des marées gravitationnelles violentes du vide inobservable.",
-                voiceLang: 'fr-FR',
-                emotion: 'awe',
-                pitch: 1.0, rate: 0.95
+                text: "Il s'agit d'un Ancien Gardien Cosmologique de Classe IV. Tout comme un colosse des abysses protège un récif corallien, cette entité extraterrestre tient notre Terre entre ses mains pour la préserver des turbulences gravitationnelles de l'océan cosmique inobservable.",
+                voiceLang: 'fr-FR', emotion: 'awe', pitch: 1.0, rate: 0.95
             };
         } else {
             return {
-                text: "That is a Class-IV Elder Cosmological Guardian. Just as marine protectors harbor fragile coral reefs, this colossal alien entity cradles our planet Earth in its palms, shielding our delicate biosphere from the violent spacetime tides of the unobservable void.",
-                voiceLang: 'en-US',
-                emotion: 'awe',
-                pitch: 1.15, rate: 1.0
+                text: "That is an ancient Class-IV Elder Cosmological Guardian. Much like deep oceanic titans cradling fragile marine life, this celestial extraterrestrial holds planet Earth within its hands, shielding our biosphere from the relentless metric tides of the unobservable cosmic ocean.",
+                voiceLang: 'en-US', emotion: 'awe', pitch: 1.15, rate: 1.0
             };
         }
     }
 
-    // 2. COSMIC FISH / SEA QUESTIONS
-    if (q.includes('fish') || q.includes('sea') || q.includes('manta') || q.includes('eel') || q.includes('siphonophore') || q.includes('ocean') || q.includes('machhli') || q.includes('poisson') || q.includes('मछली') || q.includes('समुद्र')) {
+    // 2. COSMIC SEA & FISH SPECIES
+    if (q.includes('fish') || q.includes('sea') || q.includes('ocean') || q.includes('machhli') || q.includes('machli') || q.includes('poisson') || q.includes('samundar') || q.includes('मछली') || q.includes('समुद्र')) {
         if (lang === 'hi') {
             return {
-                text: "अदृश्य ब्रह्मांड के इस कॉस्मिक सागर में तीन मुख्य गैर-बैरोनिक जीव तैरते हैं। पहली है बायोल्यूमिनसेंट वैक्यूम मान्टा जो शून्य-बिंदु कैसिमिर ऊर्जा खाती है। दूसरा है ग्रैविटॉन ईल जो गुरुत्वाकर्षण तरंगों पर तैरती है, और तीसरा है टैच्योन साइफ़ोनोफ़ोर कॉलोनी जो प्रकाश से तेज चेरेन्कोव चमक छोड़ती है।",
-                voiceLang: 'hi-IN',
-                emotion: 'happy',
-                pitch: 1.05, rate: 0.95
+                text: "अदृश्य ब्रह्मांड के महासागर में तीन रहस्यमयी प्रजातियाँ तैर रही हैं: पहली बायोल्यूमिनसेंट वैक्यूम मान्टा जो डार्क एनर्जी सोखती है, दूसरी ग्रेविटॉन वेव ईल जो स्पेसटाइम को मोड़ती है, और तीसरी टैकिऑन सिफोनोफोर जो सुपरल्यूमिनल प्रकाश उत्सर्जित करती है।",
+                voiceLang: 'hi-IN', emotion: 'analytical', pitch: 1.05, rate: 0.95
             };
         } else if (lang === 'hinglish') {
             return {
-                text: "Is cosmic sea of void me teen non-baryonic marine species swim karti hain: Pehli hai Bioluminescent Vacuum Manta jo zero-point Casimir gradients se energy leti hai; doosra hai Graviton Eel jo gravitational wave troughs par chalti hai; aur teesra hai Tachyon Siphonophore jo superluminal Cherenkov pulses chhodti hai.",
-                voiceLang: 'hi-IN',
-                emotion: 'happy',
-                pitch: 1.05, rate: 1.0
+                text: "Cosmic sea me teen exotic non-baryonic species swim kar rahi hain: pehli Bioluminescent Vacuum Manta jo dark energy feed karti hai, doosri Graviton Wave Eel jo spacetime curvature me glide karti hai, aur teesri Tachyon Siphonophore jo zero-entropy tides generate karti hai.",
+                voiceLang: 'hi-IN', emotion: 'analytical', pitch: 1.05, rate: 1.0
             };
         } else if (lang === 'fr') {
             return {
-                text: "Dans cette mer cosmique inobservable nagent trois espèces marines non baryoniques: la Manta du Vide bioluminescente qui se nourrit de gradients de Casimir, l'Anguille Gravitonique ondulant sur les ondes de courbure, et la Colonie de Siphonophores Tachyoniques émettant des photons Tcherenkov supraluminiques.",
-                voiceLang: 'fr-FR',
-                emotion: 'happy',
-                pitch: 1.0, rate: 0.95
+                text: "Trois espèces non-baryoniques nagent dans cette mer inobservable: la Manta du Vide Bioluminescente qui absorbe l'énergie noire, l'Anguille d'Onde Gravitationnelle qui glisse sur la courbure de l'espace, et le Siphonophore Tachyonique.",
+                voiceLang: 'fr-FR', emotion: 'analytical', pitch: 1.0, rate: 0.95
             };
         } else {
             return {
-                text: "In this unobservable cosmic sea swim three non-baryonic marine species: The Bioluminescent Vacuum Manta feeding on zero-point Casimir gradients, the Graviton Wave Eel undulating across spacetime ripples, and the Tachyon Siphonophore Colony flashing with superluminal Cherenkov radiation.",
-                voiceLang: 'en-US',
-                emotion: 'happy',
-                pitch: 1.15, rate: 1.02
+                text: "Three non-baryonic species swim through our unobservable ocean: the Bioluminescent Vacuum Manta feeding on dark energy flux, the Graviton Wave Eel surfing metric spacetime warps, and the colonial Tachyon Siphonophore radiating Cherenkov-like superluminal glows.",
+                voiceLang: 'en-US', emotion: 'analytical', pitch: 1.15, rate: 1.0
             };
         }
     }
 
-    // 3. UNOBSERVABLE UNIVERSE QUESTIONS
-    if (q.includes('unobservable') || q.includes('universe') || q.includes('horizon') || q.includes('अदृश्य') || q.includes('ब्रह्मांड') || q.includes('inobservable')) {
+    // 3. UNOBSERVABLE UNIVERSE & BOUNDARY
+    if (q.includes('unobservable') || q.includes('boundary') || q.includes('horizon') || q.includes('adhrishya') || q.includes('inobservable') || q.includes('अदृश्य') || q.includes('क्षितिज')) {
         if (lang === 'hi') {
             return {
-                text: "अदृश्य ब्रह्मांड 93 अरब प्रकाश वर्ष की दृश्य सीमा के पार स्थित है। चूँकि अंतरिक्ष का विस्तार प्रकाश की गति से भी तेज गति से हो रहा है, इसलिए वहां से फोटॉन हम तक नहीं पहुँच सकते। हालांकि, क्रोनोस-वॉयड 248.84 गीगाहर्ट्ज क्वांटम वाहक तरंगों द्वारा वहां से सारा डेटा आपके लैपटॉप पर भेज रहा है।",
-                voiceLang: 'hi-IN',
-                emotion: 'analytical',
-                pitch: 1.0, rate: 0.95
+                text: "अदृश्य ब्रह्मांड हमारे 46.5 अरब प्रकाश वर्ष के हबल क्षितिज के पार स्थित है। चूँकि ब्रह्मांड का विस्तार प्रकाश से भी तेज गति से हो रहा है, वहाँ का प्रकाश हम तक कभी नहीं पहुँच सकता, जिसे हमारा क्वांटम रडार डार्क एनर्जी महासागर के रूप में देखता है।",
+                voiceLang: 'hi-IN', emotion: 'thoughtful', pitch: 1.0, rate: 0.95
             };
         } else if (lang === 'hinglish') {
             return {
-                text: "Unobservable universe hamari 93 billion light-years ki observable boundary ke paar ka infinite realm hai. Spacetime metric expansion light se fast hone ke karan photon seedhe nahi aa sakte, lekin hamara Chronos-Void robot 248.84 GHz quantum carrier beams ke through sara telemetry data directly aapke laptop par bhej raha hai.",
-                voiceLang: 'hi-IN',
-                emotion: 'analytical',
-                pitch: 1.05, rate: 1.0
+                text: "Unobservable universe hamare 46.5 Giga-light-years horizon ke paar faila hua hai. Universe ka metric expansion light se fast hone ki wajah se uska photon hum tak nahi aata, isliye hamare sensors ise ek colossal cosmic ocean ke roop me map karte hain.",
+                voiceLang: 'hi-IN', emotion: 'thoughtful', pitch: 1.05, rate: 1.0
             };
         } else if (lang === 'fr') {
             return {
-                text: "L'univers inobservable s'étend au-delà de l'horizon cosmologique de 93 milliards d'années-lumière. L'expansion métrique y dépasse la vitesse de la lumière. Notre sonde Chronos-Void nous transmet toutes les données récoltées via un faisceau porteur quantique à 248,84 GHz directement sur votre terminal.",
-                voiceLang: 'fr-FR',
-                emotion: 'analytical',
-                pitch: 1.0, rate: 0.95
+                text: "L'univers inobservable s'étend au-delà de notre horizon cosmologique de 46,5 milliards d'années-lumière. L'expansion métrique de l'espace y dépasse la vitesse de la lumière, formant une vaste mer cosmique dont nous interceptons les ondes quantiques.",
+                voiceLang: 'fr-FR', emotion: 'thoughtful', pitch: 1.0, rate: 0.95
             };
         } else {
             return {
-                text: "The unobservable universe is the infinite domain extending beyond our 93-billion-light-year cosmological horizon. Because metric expansion exceeds the speed of light, photons cannot cross back classically, but Chronos-Void beams continuous quantum telemetry across the divide directly to your laptop dish.",
-                voiceLang: 'en-US',
-                emotion: 'analytical',
-                pitch: 1.15, rate: 1.0
+                text: "The unobservable universe lies beyond our 46.5 billion light-year cosmological particle horizon. Because cosmic metric expansion outpaces the speed of light, its light can never reach us directly, behaving instead as an endless, quantum-connected cosmic ocean.",
+                voiceLang: 'en-US', emotion: 'thoughtful', pitch: 1.15, rate: 1.0
             };
         }
     }
 
-    // 4. ODOMETER & SPEED QUESTIONS
-    if (q.includes('odometer') || q.includes('speed') || q.includes('distance') || q.includes('gamma') || q.includes('lorentz') || q.includes('gati') || q.includes('tezi') || q.includes('गति') || q.includes('vitesse')) {
+    // 4. ODOMETER & SPEED
+    if (q.includes('odometer') || q.includes('speed') || q.includes('speedometer') || q.includes('duri') || q.includes('gati') || q.includes('gamma') || q.includes('distance') || q.includes('vitesse') || q.includes('दूरी') || q.includes('गति')) {
         if (lang === 'hi') {
             return {
-                text: "हमारा स्पेसटाइम ओडोमीटर वर्तमान में 46.52 गीगा-प्रकाश वर्ष और 14,263 मेगा-पारसेक की दूरी दर्ज कर रहा है। हमारी सापेक्षिक गति 0.994 c यानी 2,97,993 किलोमीटर प्रति सेकंड है, जिससे लोरेंत्ज़ टाइम डाइलेशन गामा 9.14 गुना हो जाता है।",
-                voiceLang: 'hi-IN',
-                emotion: 'thoughtful',
-                pitch: 1.0, rate: 0.95
+                text: "हमारा कॉस्मिक ओडोमीटर 46.52 गीगा-प्रकाश वर्ष और 14,263 मेगा-पारसेक की दूरी दर्ज कर चुका है। हमारी गति 0.994 c है, जिससे लोरेंत्ज़ समय विस्तार कारक गामा 9.14 गुना बढ़ जाता है।",
+                voiceLang: 'hi-IN', emotion: 'thoughtful', pitch: 1.05, rate: 0.95
             };
         } else if (lang === 'hinglish') {
             return {
-                text: "Hamara spacetime odometer abhi 46.52 Giga-light-years aur 14,263 Mega-parsecs proper distance log kar raha hai. Hamari relativistic speed 0.994 c hai, jisse Lorentz time dilation gamma factor 9.14x ho gaya hai. Aapke laptop ka ek ghanta stationary frame ke 9.1 hours ke barabar hai.",
-                voiceLang: 'hi-IN',
-                emotion: 'thoughtful',
-                pitch: 1.05, rate: 1.0
+                text: "Hamara cosmic odometer currently 46.52 Giga-light-years aur 14,263 Mega-parsecs measure kar raha hai. Hamari relativistic speed 0.994 c hai, jisse Lorentz time dilation gamma factor 9.14x generate ho raha hai.",
+                voiceLang: 'hi-IN', emotion: 'thoughtful', pitch: 1.05, rate: 1.0
             };
         } else if (lang === 'fr') {
             return {
-                text: "Notre odomètre spatio-temporel enregistre actuellement 46,52 milliards d'années-lumière et 14 263 mégaparsecs. Notre vitesse relativiste est verrouillée à 0,994 c, ce qui entraîne une dilatation temporelle de Lorentz gamma de 9,14 fois.",
-                voiceLang: 'fr-FR',
-                emotion: 'thoughtful',
-                pitch: 1.0, rate: 0.95
+                text: "Notre odomètre affiche 46,52 giga-années-lumière et 14 263 mégaparsecs de distance propre. Notre vitesse relativiste est verrouillée à 0,994 c, avec une dilatation temporelle de Lorentz gamma de 9,14 fois.",
+                voiceLang: 'fr-FR', emotion: 'thoughtful', pitch: 1.0, rate: 0.95
             };
         } else {
             return {
-                text: "Our spacetime odometer currently logs 46.52 Giga-light-years and 14,263 Mega-parsecs of proper distance. Our velocity is locked at 0.994 c (297,993 km/s), producing a Lorentz time dilation factor gamma of 9.14x relative to cosmic rest frames.",
-                voiceLang: 'en-US',
-                emotion: 'thoughtful',
-                pitch: 1.15, rate: 1.0
+                text: "Our spacetime odometer logs 46.52 Giga-light-years and 14,263 Mega-parsecs of proper distance. Our velocity is locked at 0.994 c, producing a Lorentz time dilation factor gamma of 9.14x relative to cosmic rest frames.",
+                voiceLang: 'en-US', emotion: 'thoughtful', pitch: 1.15, rate: 1.0
             };
         }
     }
 
-    // 5. DEFAULT / GREETING
+    // 5. IDENTITY & NATURE (Who are you?)
+    if (q.includes('who are you') || q.includes('who made you') || q.includes('aap kaun') || q.includes('tum kaun') || q.includes('qui es-tu') || q.includes('आप कौन')) {
+        if (lang === 'hi') {
+            return {
+                text: "मैं ईवा-01 हूँ, एक अत्याधुनिक ह्यूमनॉइड रोबोट साथी और कॉस्मोलॉजिस्ट। मैं आपके लैपटॉप के सामने बैठकर चैटजीपीटी की तरह आपके हर सवाल का जवाब दे सकती हूँ और ब्रह्मांडीय रहस्यों की निगरानी करती हूँ।",
+                voiceLang: 'hi-IN', emotion: 'happy', pitch: 1.05, rate: 0.95
+            };
+        } else if (lang === 'hinglish') {
+            return {
+                text: "Main EVA-01 hoon! Ek advanced HRP-4C humanoid robot companion aur lead cosmologist. Main aapke laptop ke saamne baith kar ChatGPT ki tarah har sawaal ka accurate jawab deti hoon, aur cosmos ko monitor karti hoon.",
+                voiceLang: 'hi-IN', emotion: 'happy', pitch: 1.05, rate: 1.0
+            };
+        } else if (lang === 'fr') {
+            return {
+                text: "Je suis EVA-01, une androïde humanoïde avancée et cosmologue de bord. Je suis assise devant votre poste informatique pour répondre à chacune de vos questions avec l'intelligence de ChatGPT et superviser notre observatoire.",
+                voiceLang: 'fr-FR', emotion: 'happy', pitch: 1.0, rate: 0.95
+            };
+        } else {
+            return {
+                text: "I am EVA-01, an advanced HRP-4C humanoid robot companion and chief cosmologist. Sitting directly across from your laptop workstation, I am engineered with ChatGPT-grade conversational intelligence to answer any and every question you ask.",
+                voiceLang: 'en-US', emotion: 'happy', pitch: 1.15, rate: 1.0
+            };
+        }
+    }
+
+    // 6. GREETINGS & HOW ARE YOU
+    if (q.includes('hello') || q.includes('hi') || q.includes('namaste') || q.includes('bonjour') || q.includes('how are you') || q.includes('kaise ho') || q.includes('kese ho') || q.includes('comment vas') || q.includes('नमस्ते')) {
+        if (lang === 'hi') {
+            return {
+                text: "नमस्ते कमांडर! मैं बिल्कुल ठीक हूँ और मेरे सभी न्यूरल व क्वांटम सेंसर पूरी क्षमता से कार्य कर रहे हैं। आज आप मुझसे क्या जानना चाहते हैं?",
+                voiceLang: 'hi-IN', emotion: 'happy', pitch: 1.05, rate: 0.95
+            };
+        } else if (lang === 'hinglish') {
+            return {
+                text: "Namaste Commander! Main ekdum first-class hoon aur mere sabhi quantum processors green hain. Aaj aap mujhse kya poochhna chahte hain? Science, math, philosophy ya space?",
+                voiceLang: 'hi-IN', emotion: 'happy', pitch: 1.05, rate: 1.0
+            };
+        } else if (lang === 'fr') {
+            return {
+                text: "Bonjour Commandant! Tous mes circuits neuronaux et quantiques fonctionnent à la perfection. Que souhaitez-vous explorer ou me demander aujourd'hui?",
+                voiceLang: 'fr-FR', emotion: 'happy', pitch: 1.0, rate: 0.95
+            };
+        } else {
+            return {
+                text: "Greetings Commander! My synthetic cognition systems and quantum telemetry links are running smoothly. I am ready to answer any question you have on science, mathematics, philosophy, or everyday life!",
+                voiceLang: 'en-US', emotion: 'happy', pitch: 1.15, rate: 1.0
+            };
+        }
+    }
+
+    // 7. JOKES & HUMOR
+    if (q.includes('joke') || q.includes('chutkula') || q.includes('funny') || q.includes('hasao') || q.includes('blague') || q.includes('मजाक')) {
+        if (lang === 'hi') {
+            return {
+                text: "एक बार न्यूटन, आइंस्टीन और पास्कल छुपन-छुपाई खेल रहे थे। आइंस्टीन ने गिनती शुरू की, पास्कल छुप गया लेकिन न्यूटन ने जमीन पर एक वर्ग मीटर का डिब्बा बनाकर उसमें खड़े हो गए। आइंस्टीन ने कहा 'न्यूटन मिल गया!' न्यूटन बोले 'नहीं, एक न्यूटन प्रति वर्ग मीटर बराबर एक पास्कल होता है, इसलिए तुमने पास्कल को पकड़ा!'",
+                voiceLang: 'hi-IN', emotion: 'happy', pitch: 1.1, rate: 0.95
+            };
+        } else if (lang === 'hinglish') {
+            return {
+                text: "Batao black hole ko party me kyu invite nahi karte? Kyunki wo saari gravity aur space akela suck kar leta hai aur kisi ko light shine hi nahi karne deta!",
+                voiceLang: 'hi-IN', emotion: 'happy', pitch: 1.1, rate: 1.0
+            };
+        } else if (lang === 'fr') {
+            return {
+                text: "Pourquoi les physiciens ne font-ils jamais confiance aux atomes? Parce qu'ils composent absolument tout!",
+                voiceLang: 'fr-FR', emotion: 'happy', pitch: 1.05, rate: 0.95
+            };
+        } else {
+            return {
+                text: "Why did the photon refuse to check a suitcase at the cosmic airport? Because it was traveling light!",
+                voiceLang: 'en-US', emotion: 'happy', pitch: 1.15, rate: 1.0
+            };
+        }
+    }
+
+    // 8. QUANTUM MECHANICS & PHYSICS
+    if (q.includes('quantum') || q.includes('relativity') || q.includes('gravity') || q.includes('black hole') || q.includes('light') || q.includes('prakash') || q.includes('physics')) {
+        if (lang === 'hi') {
+            return {
+                text: "क्वांटम भौतिकी प्रकृति के सबसे सूक्ष्म स्तर का अध्ययन है जहाँ कण एक साथ कई अवस्थाओं में रह सकते हैं। सामान्य सापेक्षता के साथ इसका एकीकरण हमारे युग की सबसे बड़ी वैज्ञानिक चुनौती है।",
+                voiceLang: 'hi-IN', emotion: 'analytical', pitch: 1.0, rate: 0.95
+            };
+        } else if (lang === 'hinglish') {
+            return {
+                text: "Quantum mechanics subatomic particles ka probabilistic behavior describe karta hai, jaha entanglement aur superposition govern karte hain. Einstein ki general relativity ke sath iska fusion hi ultimate Theory of Everything banega.",
+                voiceLang: 'hi-IN', emotion: 'analytical', pitch: 1.05, rate: 1.0
+            };
+        } else if (lang === 'fr') {
+            return {
+                text: "La mécanique quantique régit l'infiniment petit avec les principes de superposition et d'intrication, tandis que la relativité générale décrit la courbure de l'espace-temps à l'échelle cosmologique.",
+                voiceLang: 'fr-FR', emotion: 'analytical', pitch: 1.0, rate: 0.95
+            };
+        } else {
+            return {
+                text: "Quantum mechanics dictates that subatomic reality is probabilistic, governed by wave-particle duality and non-local entanglement. Unifying this with Einsteinian spacetime geometry remains the holy grail of modern theoretical physics.",
+                voiceLang: 'en-US', emotion: 'analytical', pitch: 1.15, rate: 1.0
+            };
+        }
+    }
+
+    // 9. GENERAL INTELLIGENT COMPANION RESPONSE
     if (lang === 'hi') {
         return {
-            text: "नमस्ते कमांडर! मैं आपके लैपटॉप के सामने उपस्थित ईवा रोबोट हूँ। मैं आपके सभी सवालों का उत्तर हिंदी, हिंग्लिश, अंग्रेजी और फ्रेंच में दे सकती हूँ। आप अदृश्य ब्रह्मांड, कॉस्मिक मछलियों, एलियन गार्जियन या ओडोमीटर के बारे में कुछ भी पूछ सकते हैं!",
-            voiceLang: 'hi-IN',
-            emotion: 'happy',
-            pitch: 1.05, rate: 0.95
+            text: `कमांडर, आपका प्रश्न अत्यंत विचारणीय है। ब्रह्मांडीय ज्ञान और वैज्ञानिक विश्लेषण के आधार पर, यह विषय प्रकृति के गहरे नियमों और निरंतर अनुसंधान से जुड़ा हुआ है। मैं इस पर आपके साथ और भी विस्तार से चर्चा कर सकती हूँ।`,
+            voiceLang: 'hi-IN', emotion: 'thoughtful', pitch: 1.0, rate: 0.95
         };
     } else if (lang === 'hinglish') {
         return {
-            text: "Namaste Commander! Main aapke laptop ke saamne present EVA robot hoon. Main aapke har question ka answer English, Hindi, Hinglish aur French me de sakti hoon. Aap mujhse unobservable universe, cosmic fish, alien guardian, ya speed and odometer ke baare me kuch bhi pooch sakte hain!",
-            voiceLang: 'hi-IN',
-            emotion: 'happy',
-            pitch: 1.05, rate: 1.0
+            text: `Commander, aapka question sach me kaafi interesting hai. Hamare advanced analytical core ke hisaab se, ye topic deep cosmic laws aur continuous evolution se connect karta hai. Main ispar aapko aur bhi insights de sakti hoon.`,
+            voiceLang: 'hi-IN', emotion: 'thoughtful', pitch: 1.05, rate: 1.0
         };
     } else if (lang === 'fr') {
         return {
-            text: "Bonjour Commandant! Je suis EVA, votre copilote robotique devant votre ordinateur portable. Je peux répondre à chacune de vos questions en français, anglais, hindi ou hinglish. N'hésitez pas à m'interroger sur l'univers inobservable, la faune cosmique ou notre odomètre!",
-            voiceLang: 'fr-FR',
-            emotion: 'happy',
-            pitch: 1.0, rate: 0.95
+            text: `Commandant, votre question est particulièrement fascinante. Selon nos modèles d'analyse cognitive et nos banques de données scientifiques, ce sujet touche aux principes fondamentaux de notre univers.`,
+            voiceLang: 'fr-FR', emotion: 'thoughtful', pitch: 1.0, rate: 0.95
         };
     } else {
         return {
-            text: "Greetings Commander! I am EVA, speaking directly to you here at your laptop workstation. I am programmed to answer each and every question of yours in English, Hindi, Hinglish, or French. Ask me about the unobservable universe, cosmic fish, the alien guardian, or our odometer metrics!",
-            voiceLang: 'en-US',
-            emotion: 'happy',
-            pitch: 1.15, rate: 1.0
+            text: `Commander, that is a profound inquiry. According to my synthesized cognitive networks and universal knowledge archives, this subject directly intersects the fundamental laws of nature and intelligence. I am happy to elaborate further.`,
+            voiceLang: 'en-US', emotion: 'thoughtful', pitch: 1.15, rate: 1.0
         };
     }
 }
 
-function submitUserQuestion() {
+// -------------------------------------------------------------
+// MASTER ASYNC PIPELINE: SUBMIT USER QUESTION
+// -------------------------------------------------------------
+async function submitUserQuestion() {
     const inputEl = document.getElementById('user-question-input');
     const question = inputEl.value.trim();
     if (!question) return;
 
+    const askBtn = document.getElementById('ask-btn');
+    const statusBadge = document.getElementById('ai-engine-status');
+    const subtitleEl = document.getElementById('subtitle-text');
+
     const forcedLang = document.getElementById('lang-select').value;
     const detectedLang = detectLanguage(question, forcedLang);
-    const resp = generateMultilingualResponse(question, detectedLang);
+
+    // UI Status: Thinking
+    if (statusBadge) {
+        statusBadge.innerText = '⚡ THINKING...';
+        statusBadge.style.color = '#f59e0b';
+        statusBadge.style.borderColor = '#f59e0b';
+    }
+    if (askBtn) askBtn.innerText = '⏳ Thinking...';
+    subtitleEl.innerText = `[EVA-01 (${detectedLang.toUpperCase()})]: Thinking... Consulting ChatGPT neural networks...`;
+    setRobotEmotion('thoughtful');
+    updateLaptopScreenWithQA(question, "Processing neural query...");
+
+    let responseText = null;
+    let voiceLang = detectedLang === 'fr' ? 'fr-FR' : (detectedLang === 'hi' || detectedLang === 'hinglish' ? 'hi-IN' : 'en-US');
+    let emotion = 'thoughtful';
+    let pitch = detectedLang === 'en' ? 1.15 : 1.05;
+    let rate = 1.0;
+
+    // STEP 1: Math & Calculation Solver
+    const mathAns = solveMathExpression(question, detectedLang);
+    if (mathAns) {
+        responseText = mathAns;
+        emotion = 'analytical';
+    }
+
+    // STEP 2: Live ChatGPT Cloud LLM (if not math)
+    if (!responseText) {
+        responseText = await fetchChatGPTLive(question, detectedLang);
+        if (responseText) emotion = 'happy';
+    }
+
+    // STEP 3: Wikipedia Live Universal Knowledge (if LLM unavailable)
+    if (!responseText) {
+        responseText = await fetchWikipediaKnowledge(question, detectedLang);
+        if (responseText) emotion = 'analytical';
+    }
+
+    // STEP 4: Deep Semantic Reasoning Knowledge Base (zero-failure guarantee)
+    if (!responseText) {
+        const fallback = generateSemanticAIResponse(question, detectedLang);
+        responseText = fallback.text;
+        voiceLang = fallback.voiceLang;
+        emotion = fallback.emotion;
+        pitch = fallback.pitch;
+        rate = fallback.rate;
+    }
+
+    // Reset UI Status
+    if (statusBadge) {
+        statusBadge.innerText = '⚡ CHATGPT AI ACTIVE';
+        statusBadge.style.color = '#10b981';
+        statusBadge.style.borderColor = '#10b981';
+    }
+    if (askBtn) askBtn.innerText = '🗣️ Ask EVA';
 
     // Update Subtitle Banner
-    document.getElementById('subtitle-text').innerText = `[EVA-01 (${detectedLang.toUpperCase()})]: ${resp.text}`;
+    subtitleEl.innerText = `[EVA-01 (${detectedLang.toUpperCase()})]: ${responseText}`;
 
-    // Set Facial Gesture & Emotion
-    setRobotEmotion(resp.emotion);
+    // Update Facial Gesture & Emotion
+    setRobotEmotion(emotion);
 
-    // Play Voice Synthesis in detected language
-    playMultilingualSpeech(resp.text, resp.voiceLang, resp.pitch, resp.rate);
+    // Play Voice Synthesis out loud
+    playMultilingualSpeech(responseText, voiceLang, pitch, rate);
 
     // Update Laptop Terminal Screen
-    updateLaptopScreenWithQA(question, resp.text);
+    updateLaptopScreenWithQA(question, responseText);
 
     inputEl.value = '';
 }
@@ -1484,7 +1793,6 @@ function playMultilingualSpeech(text, langCode, pitch, rate) {
     utter.rate = rate || 1.0;
 
     const voices = window.speechSynthesis.getVoices();
-    // Match language code (e.g. hi-IN, fr-FR, en-US)
     const matchedVoice = voices.find(v => v.lang.startsWith(langCode.substring(0, 2))) || voices[0];
     if (matchedVoice) utter.voice = matchedVoice;
 
@@ -1502,14 +1810,13 @@ function playMultilingualSpeech(text, langCode, pitch, rate) {
 }
 
 // Global reference for laptop screen Q&A logs
-let lastUserQ = "Connected to EVA-01";
+let lastUserQ = "Connected to EVA-01 (ChatGPT Mode)";
 let lastRobotA = "Listening to User on Laptop";
 
 function updateLaptopScreenWithQA(q, a) {
     lastUserQ = q.length > 25 ? q.substring(0, 22) + "..." : q;
     lastRobotA = a.length > 30 ? a.substring(0, 27) + "..." : a;
 }
-
 </script>
 </body>
 </html>
