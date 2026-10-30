@@ -8,6 +8,7 @@ import pandas as pd
 import plotly.graph_objects as go
 import plotly.express as px
 import streamlit.components.v1 as components
+from deep_cosmology_lab import render_deep_cosmology_and_epistemic_suite
 
 # ==============================================================================
 # ANTIGRAVITY RESEARCH SUITE: COMPREHENSIVE DUAL-QUESTION RESEARCH PLATFORM
@@ -156,6 +157,7 @@ with st.sidebar:
         "PRACTICAL WORKSPACE",
         [
             "🌌 Question 4: Unobservable Universe Robotics Simulation Suite (Robots Squad, Cosmic Sea & 40-Volume Treatises)",
+            "🔬 Dark Matter, Dark Energy & Epistemic Limits (LiDAR, Black Holes & Regression Studio)",
 
             "?? Question 3: Spacecraft Flight Deck & Satellite Mission Control",
             "?? Free Fire-Class 3D Sensor-Driven Game Simulation Studio",
@@ -255,7 +257,8 @@ if page == "🌌 Question 4: Unobservable Universe Robotics Simulation Suite (Ro
         "📚 Question 4 Treatises Archive (40 Volumes / 1,600 Pages)",
         "⚡ Complete C++ Source Code & Native Binary Engine",
         "🔬 360° LiDAR, CV Tracking & Sensor Controllers",
-        "🌌 Q-4 Quantum Gravity Mathematical & Empirical Proofs"
+        "🌌 Q-4 Quantum Gravity Mathematical & Empirical Proofs",
+        "🔬 Dark Matter, Dark Energy & Epistemic Limits (LiDAR, Black Holes & Regression Studio)"
     ])
 
     with q4_tabs[0]:
@@ -471,6 +474,12 @@ g++ -std=c++14 -O2 -Iinclude src/*.cpp -o cosmic_observatory.exe -lole32 -loleau
         eq1.metric("Correlation Coefficient r", "0.99982", "Over 10^7 Quantum Trials")
         eq2.metric("P-Value (Significance)", "< 1.2e-14", "Rules Out Disconnection")
         eq3.metric("Information Loss", "0.000%", "Unitary S-Matrix Preserved")
+
+    with q4_tabs[5]:
+        render_deep_cosmology_and_epistemic_suite()
+
+elif page == "🔬 Dark Matter, Dark Energy & Epistemic Limits (LiDAR, Black Holes & Regression Studio)":
+    render_deep_cosmology_and_epistemic_suite()
 
 elif page == "?? Question 3: Spacecraft Flight Deck & Satellite Mission Control":
     st.header("🚀 Spacecraft 3D Flight Deck & Sci-Fi Holo-Bridge (Images 1, 2, 3)")
