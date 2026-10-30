@@ -214,6 +214,15 @@
             <button class="ctrl-btn" onclick="pulseSatellite()">💫 Satellite Pulse</button>
             <button class="ctrl-btn" onclick="toggleRightView()">🔄 Toggle View (Sea/Orbits)</button>
         </div>
+        <!-- Human Facial Gestures & Emotions -->
+        <div style="display: flex; gap: 5px; margin-top: 6px; align-items: center; background: #0c101c; padding: 4px 8px; border-radius: 4px; border: 1px solid #1e293b;">
+            <span style="font-size: 10px; color: #00ffcc; font-weight: bold; margin-right: 4px;">FACIAL GESTURES:</span>
+            <button class="ctrl-btn" style="padding: 3px 7px; font-size: 10px;" onclick="setRobotEmotion('happy')">😊 Warm Smile</button>
+            <button class="ctrl-btn" style="padding: 3px 7px; font-size: 10px;" onclick="setRobotEmotion('thoughtful')">🤔 Contemplative Tilt</button>
+            <button class="ctrl-btn" style="padding: 3px 7px; font-size: 10px;" onclick="setRobotEmotion('surprised')">😮 Surprised Eyes</button>
+            <button class="ctrl-btn" style="padding: 3px 7px; font-size: 10px;" onclick="setRobotEmotion('analytical')">🧐 Analytical Focus</button>
+            <button class="ctrl-btn" style="padding: 3px 7px; font-size: 10px;" onclick="setRobotEmotion('neutral')">😐 Neutral Rest</button>
+        </div>
     </div>
 
     <!-- ==================== RIGHT HALF: SIMULATION & INSTRUMENTS ==================== -->
@@ -440,47 +449,122 @@ window.addEventListener('mousemove', (e) => {
     mouseY = (e.clientY / window.innerHeight) * 2 - 1;
 });
 
+let currentEmotion = 'neutral';
+let headPitch = 0, headYaw = 0, headRoll = 0;
+
+function setRobotEmotion(em) {
+    currentEmotion = em;
+    if (em === 'happy') {
+        headRoll = 0.06;
+        headPitch = 0.02;
+    } else if (em === 'thoughtful') {
+        headRoll = 0.09;
+        headPitch = -0.05;
+    } else if (em === 'surprised') {
+        headPitch = -0.08;
+        headRoll = 0.0;
+    } else if (em === 'analytical') {
+        headPitch = 0.06;
+        headRoll = -0.04;
+    } else {
+        headPitch = 0;
+        headRoll = 0;
+    }
+}
+
 function drawFace(ctx, w, h, isSpeakingNow, robotType) {
     ctx.clearRect(0, 0, w, h);
-    const cx = w * 0.5;
-    const cy = h * 0.52;
+    const cx = w * 0.5 + (robotType === 'eva' ? mouseX * 6 : 0);
+    const cy = h * 0.48 + (robotType === 'eva' ? mouseY * 4 : 0);
     const s = Math.min(w, h) / 220;
 
-    // Head base (Porcelain synthetic humanoid skin)
-    ctx.fillStyle = (robotType === 'chronos') ? '#2e2538' : (robotType === 'thalassa' ? '#1e3a3a' : (robotType === 'velox' ? '#2e281e' : '#f0e6dc'));
-    ctx.beginPath();
-    ctx.ellipse(cx, cy, 55 * s, 75 * s, 0, 0, Math.PI * 2);
-    ctx.fill();
+    ctx.save();
+    if (robotType === 'eva') {
+        ctx.translate(cx, cy);
+        ctx.rotate(headRoll);
+        ctx.translate(-cx, -cy);
+    }
 
-    // Neck & Hydraulics
-    ctx.fillStyle = '#1e293b';
-    ctx.fillRect(cx - 20 * s, cy + 60 * s, 40 * s, 45 * s);
-    ctx.strokeStyle = '#64748b';
-    ctx.lineWidth = 2 * s;
+    // 1. Torso & Sculpted Silver Breastplate (Matching HRP-4C Image)
+    const chestY = cy + 56 * s;
+    // Matte black under-suit
+    ctx.fillStyle = '#181a20';
+    ctx.fillRect(cx - 75 * s, chestY, 150 * s, 80 * s);
+
+    // Silver metallic neck collar
+    ctx.fillStyle = '#94a3b8';
+    ctx.fillRect(cx - 24 * s, cy + 38 * s, 48 * s, 26 * s);
+    ctx.strokeStyle = '#475569';
+    ctx.lineWidth = 1.5;
+    ctx.strokeRect(cx - 24 * s, cy + 38 * s, 48 * s, 26 * s);
+
+    // Silver shoulder pauldrons
+    ctx.fillStyle = '#e2e8f0';
+    ctx.strokeStyle = '#94a3b8';
     ctx.beginPath();
-    ctx.moveTo(cx - 10 * s, cy + 60 * s); ctx.lineTo(cx - 10 * s, cy + 95 * s);
-    ctx.moveTo(cx + 10 * s, cy + 60 * s); ctx.lineTo(cx + 10 * s, cy + 95 * s);
+    ctx.ellipse(cx - 70 * s, chestY + 12 * s, 22 * s, 34 * s, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx + 70 * s, chestY + 12 * s, 22 * s, 34 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
     ctx.stroke();
 
-    // Cybernetic Titanium Temporal Plates
-    ctx.fillStyle = '#94a3b8';
+    // Sculpted Silver Breastplate (Cuirass) with contoured aerodynamic curves
+    ctx.fillStyle = '#e2e8f0';
+    ctx.strokeStyle = '#94a3b8';
+    ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.ellipse(cx - 56 * s, cy, 8 * s, 20 * s, 0, 0, Math.PI * 2);
-    ctx.ellipse(cx + 56 * s, cy, 8 * s, 20 * s, 0, 0, Math.PI * 2);
+    ctx.moveTo(cx - 48 * s, chestY + 10 * s);
+    ctx.lineTo(cx - 30 * s, chestY + 4 * s);
+    ctx.lineTo(cx, chestY + 14 * s);
+    ctx.lineTo(cx + 30 * s, chestY + 4 * s);
+    ctx.lineTo(cx + 48 * s, chestY + 10 * s);
+    ctx.lineTo(cx + 42 * s, chestY + 54 * s);
+    ctx.lineTo(cx - 42 * s, chestY + 54 * s);
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
+
+    // Dome breastplate contours
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.45)';
+    ctx.beginPath();
+    ctx.ellipse(cx - 22 * s, chestY + 28 * s, 16 * s, 15 * s, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx + 22 * s, chestY + 28 * s, 16 * s, 15 * s, 0, 0, Math.PI * 2);
     ctx.fill();
 
-    // Glowing ear cores
-    ctx.fillStyle = (robotType === 'chronos') ? '#c084fc' : (robotType === 'thalassa' ? '#2dd4bf' : (robotType === 'velox' ? '#fbbf24' : '#00e5ff'));
+    // Logo badge on chest (AIST / Cybernetic branding as in image)
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(cx + 12 * s, chestY + 10 * s, 16 * s, 8 * s);
+    ctx.strokeStyle = '#00e5ff';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(cx + 12 * s, chestY + 10 * s, 16 * s, 8 * s);
+
+    // 2. Black Hair (Back Layer falling behind cheeks and neck)
+    ctx.fillStyle = '#161418';
     ctx.beginPath();
-    ctx.arc(cx - 56 * s, cy + 5 * s, 4 * s, 0, Math.PI * 2);
-    ctx.arc(cx + 56 * s, cy + 5 * s, 4 * s, 0, Math.PI * 2);
+    ctx.ellipse(cx, cy - 15 * s, 54 * s, 65 * s, 0, 0, Math.PI * 2);
+    ctx.fillRect(cx - 56 * s, cy - 20 * s, 112 * s, 70 * s);
     ctx.fill();
 
-    // Eyes
-    const eyeSpacing = 26 * s;
-    const eyeY = cy - 8 * s;
-    const eyeW = 20 * s;
-    const eyeH = 12 * s * (isBlinking ? (1 - blinkProgress) : 1);
+    // 3. Human Silicone Face Base
+    ctx.fillStyle = (robotType === 'chronos') ? '#2e2538' : (robotType === 'thalassa' ? '#1e3838' : (robotType === 'velox' ? '#2e281e' : '#f6ece2'));
+    ctx.beginPath();
+    ctx.ellipse(cx, cy - 2 * s, 42 * s, 56 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // Soft blush on cheeks
+    ctx.fillStyle = 'rgba(244, 114, 182, 0.22)';
+    ctx.beginPath();
+    ctx.ellipse(cx - 24 * s, cy + 8 * s, 12 * s, 8 * s, 0, 0, Math.PI * 2);
+    ctx.ellipse(cx + 24 * s, cy + 8 * s, 12 * s, 8 * s, 0, 0, Math.PI * 2);
+    ctx.fill();
+
+    // 4. Human Eyes (Almond shape, dark hazel/brown irises, blinking)
+    const eyeSpacing = 20 * s;
+    const eyeY = cy - 4 * s;
+    const eyeW = 18 * s;
+    let eyeOpenness = isBlinking ? (1 - blinkProgress) : 1.0;
+    if (currentEmotion === 'surprised') eyeOpenness *= 1.3;
+    if (currentEmotion === 'happy') eyeOpenness *= 0.88;
+    const eyeH = 11 * s * eyeOpenness;
 
     [-1, 1].forEach(side => {
         const ex = cx + side * eyeSpacing;
@@ -491,68 +575,123 @@ function drawFace(ctx, w, h, isSpeakingNow, robotType) {
         ctx.fill();
 
         // Gaze tracking
-        const gx = ex + mouseX * 4 * s;
-        const gy = eyeY + mouseY * 2 * s;
+        const gx = ex + mouseX * 3.5 * s;
+        const gy = eyeY + mouseY * 1.8 * s;
 
-        // Iris
-        ctx.fillStyle = (robotType === 'chronos') ? '#a855f7' : (robotType === 'thalassa' ? '#0d9488' : (robotType === 'velox' ? '#d97706' : '#00b4d8'));
+        // Iris (Deep brown/hazel as in photo)
+        ctx.fillStyle = (robotType === 'chronos') ? '#a855f7' : (robotType === 'thalassa' ? '#0d9488' : (robotType === 'velox' ? '#d97706' : '#3d281d'));
         ctx.beginPath();
-        ctx.arc(gx, gy, 6 * s, 0, Math.PI * 2);
+        ctx.arc(gx, gy, 5.2 * s, 0, Math.PI * 2);
         ctx.fill();
+
+        // Dark limbal ring
+        ctx.strokeStyle = '#1a110b';
+        ctx.lineWidth = 1;
+        ctx.stroke();
 
         // Pupil
         ctx.fillStyle = '#0f172a';
         ctx.beginPath();
-        ctx.arc(gx, gy, 3 * s, 0, Math.PI * 2);
+        ctx.arc(gx, gy, 2.6 * s, 0, Math.PI * 2);
         ctx.fill();
 
-        // Glint
+        // Specular Glint
         ctx.fillStyle = '#ffffff';
         ctx.beginPath();
-        ctx.arc(gx - 2 * s, gy - 2 * s, 1.5 * s, 0, Math.PI * 2);
+        ctx.arc(gx - 1.8 * s, gy - 1.8 * s, 1.4 * s, 0, Math.PI * 2);
         ctx.fill();
+
+        // Eyelash & contour
+        ctx.strokeStyle = '#181214';
+        ctx.lineWidth = 1.8 * s;
+        ctx.beginPath();
+        ctx.ellipse(ex, eyeY, eyeW * 0.52, Math.max(1, eyeH * 0.52), 0, Math.PI, Math.PI * 2);
+        ctx.stroke();
     });
 
-    // Eyebrows
-    ctx.strokeStyle = '#475569';
-    ctx.lineWidth = 2.5 * s;
+    // 5. Eyebrows (Arched, expressive)
+    let browOffset = 0;
+    if (currentEmotion === 'surprised') browOffset = -5 * s;
+    if (currentEmotion === 'analytical') browOffset = 3 * s;
+    if (currentEmotion === 'happy') browOffset = -2 * s;
+
+    ctx.strokeStyle = '#1c181a';
+    ctx.lineWidth = 2.2 * s;
+    ctx.lineCap = 'round';
     ctx.beginPath();
-    ctx.moveTo(cx - 36 * s, cy - 22 * s); ctx.lineTo(cx - 16 * s, cy - 22 * s);
-    ctx.moveTo(cx + 16 * s, cy - 22 * s); ctx.lineTo(cx + 36 * s, cy - 22 * s);
+    // Left eyebrow
+    ctx.moveTo(cx - 30 * s, cy - 16 * s + browOffset);
+    ctx.quadraticCurveTo(cx - 20 * s, cy - 20 * s + browOffset, cx - 8 * s, cy - 16 * s + browOffset);
+    // Right eyebrow
+    ctx.moveTo(cx + 8 * s, cy - 16 * s + browOffset);
+    ctx.quadraticCurveTo(cx + 20 * s, cy - 20 * s + browOffset, cx + 30 * s, cy - 16 * s + browOffset);
     ctx.stroke();
 
-    // Nose
-    ctx.strokeStyle = 'rgba(100, 116, 139, 0.4)';
-    ctx.lineWidth = 1.5 * s;
+    // 6. Nose
+    ctx.strokeStyle = 'rgba(160, 130, 120, 0.45)';
+    ctx.lineWidth = 1.4 * s;
     ctx.beginPath();
-    ctx.moveTo(cx, cy - 5 * s); ctx.lineTo(cx, cy + 12 * s);
+    ctx.moveTo(cx - 1 * s, cy - 2 * s); ctx.lineTo(cx - 1.5 * s, cy + 12 * s);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(cx, cy + 12 * s, 3.5 * s, 0.1 * Math.PI, 0.9 * Math.PI);
     ctx.stroke();
 
-    // Lips & Mouth Visemes
-    const mouthY = cy + 28 * s;
-    const openness = isSpeakingNow ? (Math.sin(Date.now() * 0.015) * 6 + 7) * s : 2 * s;
+    // 7. Lips with Cupid's Bow & Viseme Morphing
+    const mouthY = cy + 26 * s;
+    let smileLift = (currentEmotion === 'happy' ? 5 : 2) * s;
+    const openness = isSpeakingNow ? (Math.sin(Date.now() * 0.016) * 5 + 6) * s : 1.5 * s;
     const mouthW = (isSpeakingNow ? 18 : 22) * s;
 
     // Oral cavity
-    if (openness > 3 * s) {
-        ctx.fillStyle = '#450a0a';
+    if (openness > 2.5 * s) {
+        ctx.fillStyle = '#4a0e17';
         ctx.beginPath();
         ctx.ellipse(cx, mouthY, mouthW * 0.4, openness * 0.5, 0, 0, Math.PI * 2);
         ctx.fill();
+
+        // White teeth
+        ctx.fillStyle = '#f8fafc';
+        ctx.fillRect(cx - mouthW * 0.25, mouthY - openness * 0.4, mouthW * 0.5, openness * 0.35);
     }
 
-    // Lip line
-    ctx.strokeStyle = (robotType === 'chronos') ? '#c084fc' : (robotType === 'thalassa' ? '#2dd4bf' : (robotType === 'velox' ? '#fbbf24' : '#fb7185'));
-    ctx.lineWidth = 3 * s;
+    // Rose Lips
+    ctx.strokeStyle = '#db8084';
+    ctx.lineWidth = 2.8 * s;
     ctx.beginPath();
-    ctx.moveTo(cx - mouthW * 0.5, mouthY);
-    ctx.quadraticCurveTo(cx, mouthY + openness * 0.5, cx + mouthW * 0.5, mouthY);
+    ctx.moveTo(cx - mouthW * 0.5, mouthY - smileLift);
+    ctx.quadraticCurveTo(cx, mouthY + openness * 0.5, cx + mouthW * 0.5, mouthY - smileLift);
     ctx.stroke();
+
+    // 8. Jet-Black Bob Hair (Front Bangs / Fringe) - Matching HRP-4C exactly
+    ctx.fillStyle = '#161418';
+    ctx.beginPath();
+    // Straight horizontal fringe cut right above eyebrows
+    ctx.rect(cx - 36 * s, cy - 54 * s, 72 * s, 34 * s);
+    // Straight side strands framing cheeks
+    ctx.moveTo(cx - 40 * s, cy - 40 * s);
+    ctx.quadraticCurveTo(cx - 44 * s, cy + 10 * s, cx - 38 * s, cy + 42 * s);
+    ctx.lineTo(cx - 46 * s, cy + 42 * s);
+    ctx.quadraticCurveTo(cx - 52 * s, cy + 10 * s, cx - 46 * s, cy - 40 * s);
+    ctx.closePath();
+
+    ctx.moveTo(cx + 40 * s, cy - 40 * s);
+    ctx.quadraticCurveTo(cx + 44 * s, cy + 10 * s, cx + 38 * s, cy + 42 * s);
+    ctx.lineTo(cx + 46 * s, cy + 42 * s);
+    ctx.quadraticCurveTo(cx + 52 * s, cy + 10 * s, cx + 46 * s, cy - 40 * s);
+    ctx.closePath();
+    ctx.fill();
+
+    // Gloss sheen on bangs
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+    ctx.lineWidth = 2 * s;
+    ctx.beginPath();
+    ctx.arc(cx, cy - 40 * s, 28 * s, 1.2 * Math.PI, 1.8 * Math.PI);
+    ctx.stroke();
+
+    ctx.restore();
 }
 
-// ==============================================================================
-// 2. LAPTOP WORKSTATION RENDERING
-// ==============================================================================
 const laptopCanvas = document.getElementById('laptop-canvas');
 const lapCtx = laptopCanvas.getContext('2d');
 

@@ -1,4 +1,5 @@
 #include "FaceModel.hpp"
+#include <cmath>
 
 namespace CosmicRobotics {
 
@@ -15,43 +16,25 @@ FaceModel::FaceModel(RobotID robotId)
     , m_saccadeOffset(0.0f, 0.0f)
     , m_gazeTarget(0.0f, 0.0f)
 {
-    // Configure aesthetics based on robot identity and uploaded reference designs
-    switch (m_robotId) {
-        case ROBOT_CORNER:
-            // Porcelain synthetic skin with warm tones, rose lips, luminous cyan iris
-            m_skinBaseColor = Gdiplus::Color(255, 244, 236, 228);
-            m_skinHighlightColor = Gdiplus::Color(255, 255, 250, 245);
-            m_irisGlowColor = Gdiplus::Color(255, 0, 225, 255);       // Brilliant cyan
-            m_plateAccentColor = Gdiplus::Color(255, 225, 230, 240); // Pearl white titanium
-            m_lipColor = Gdiplus::Color(255, 215, 125, 130);         // Soft human rose
-            break;
+    // Modeled faithfully on the HRP-4C Humanoid Robot (user's reference image):
+    // Soft realistic silicone skin, jet-black bob hair, dark brown/hazel human eyes,
+    // natural rose lips, metallic silver sculpted breastplate, matte black shoulder under-suit
+    m_skinBaseColor = Gdiplus::Color(255, 245, 235, 226);       // Warm human silicone skin
+    m_skinHighlightColor = Gdiplus::Color(255, 255, 248, 242);  // Cheekbone & forehead highlight
+    m_irisColor = Gdiplus::Color(255, 52, 38, 30);              // Deep brown/hazel human iris
+    m_hairColor = Gdiplus::Color(255, 22, 20, 24);              // Jet-black hair
+    m_hairHighlightColor = Gdiplus::Color(255, 65, 62, 72);     // Subtle sheen highlight on hair
+    m_lipColor = Gdiplus::Color(255, 218, 128, 132);            // Natural soft rose lip tone
+    m_chassisSilver = Gdiplus::Color(255, 225, 230, 238);       // Metallic sculpted breastplate
+    m_chassisBlack = Gdiplus::Color(255, 24, 26, 32);           // Matte black joint under-suit
 
-        case ROBOT_UNOBSERVABLE:
-            // Obsidian & deep cosmic void styling with glowing violet/gold quantum optics
-            m_skinBaseColor = Gdiplus::Color(255, 45, 40, 55);
-            m_skinHighlightColor = Gdiplus::Color(255, 75, 70, 95);
-            m_irisGlowColor = Gdiplus::Color(255, 190, 80, 255);     // Deep cosmic purple
-            m_plateAccentColor = Gdiplus::Color(255, 30, 25, 40);    // Deep obsidian
-            m_lipColor = Gdiplus::Color(255, 110, 80, 130);
-            break;
-
-        case ROBOT_ODOMETER:
-            // Precision silver-cobalt surveyor styling with sapphire analytical optics
-            m_skinBaseColor = Gdiplus::Color(255, 220, 230, 242);
-            m_skinHighlightColor = Gdiplus::Color(255, 245, 250, 255);
-            m_irisGlowColor = Gdiplus::Color(255, 30, 144, 255);     // Sapphire blue
-            m_plateAccentColor = Gdiplus::Color(255, 180, 195, 215); // Metallic silver
-            m_lipColor = Gdiplus::Color(255, 175, 130, 140);
-            break;
-
-        case ROBOT_SPEED:
-            // High-velocity aerodynamic styling with fiery amber-gold luminous optics
-            m_skinBaseColor = Gdiplus::Color(255, 235, 235, 240);
-            m_skinHighlightColor = Gdiplus::Color(255, 255, 255, 255);
-            m_irisGlowColor = Gdiplus::Color(255, 255, 160, 20);     // Amber gold
-            m_plateAccentColor = Gdiplus::Color(255, 200, 50, 40);   // Crimson & gold trim
-            m_lipColor = Gdiplus::Color(255, 190, 110, 100);
-            break;
+    // Custom accents for other specialized robots in the squad
+    if (m_robotId == ROBOT_UNOBSERVABLE) {
+        m_irisColor = Gdiplus::Color(255, 75, 45, 95);          // Cosmic violet iris tint
+    } else if (m_robotId == ROBOT_ODOMETER) {
+        m_irisColor = Gdiplus::Color(255, 35, 65, 75);          // Sea teal iris tint
+    } else if (m_robotId == ROBOT_SPEED) {
+        m_irisColor = Gdiplus::Color(255, 75, 50, 25);          // Amber brown iris tint
     }
 
     m_targetParams = getEmotionTargetParams(EMOTION_NEUTRAL);
@@ -85,65 +68,73 @@ FaceParameters FaceModel::getEmotionTargetParams(Emotion emotion) const {
         case EMOTION_NEUTRAL:
             p.browInnerY = 0.0f;
             p.browOuterY = 0.0f;
-            p.browArch = 0.45f;
-            p.mouthSmile = 0.15f;
+            p.browArch = 0.5f;
+            p.mouthSmile = 0.18f; // Gentle relaxed resting smile
             p.eyeOpenness = 1.0f;
             p.pupilDilation = 1.0f;
+            p.headPitch = 0.0f;
+            p.headRoll = 0.0f;
             break;
 
         case EMOTION_SPEAKING:
-            p.browInnerY = 0.15f;
-            p.browOuterY = 0.05f;
-            p.browArch = 0.55f;
+            p.browInnerY = 0.22f; // Expressive eyebrow raise
+            p.browOuterY = 0.10f;
+            p.browArch = 0.6f;
             p.mouthSmile = 0.35f;
             p.eyeOpenness = 1.05f;
             p.pupilDilation = 1.1f;
+            p.headPitch = 0.04f;  // Subtle speech nodding gesture
             break;
 
         case EMOTION_HAPPY:
-            p.browInnerY = 0.25f;
-            p.browOuterY = 0.2f;
-            p.browArch = 0.65f;
-            p.mouthSmile = 0.75f;
-            p.eyeOpenness = 0.95f; // Slight squint of joy
+            p.browInnerY = 0.28f;
+            p.browOuterY = 0.22f;
+            p.browArch = 0.68f;
+            p.mouthSmile = 0.85f; // Warm human smile
+            p.eyeOpenness = 0.94f; // Joyful eye squint
             p.pupilDilation = 1.15f;
+            p.headRoll = 0.05f;   // Playful head tilt
             break;
 
         case EMOTION_THOUGHTFUL:
-            p.browInnerY = -0.2f;
+            p.browInnerY = -0.15f;
             p.browOuterY = 0.25f;
-            p.browArch = 0.6f;
-            p.mouthSmile = -0.05f;
-            p.headRoll = 0.08f;
-            p.eyeOpenness = 0.9f;
+            p.browArch = 0.65f;
+            p.mouthSmile = 0.02f;
+            p.eyeOpenness = 0.92f;
             p.pupilDilation = 0.95f;
+            p.headPitch = -0.05f;
+            p.headRoll = 0.08f;   // Contemplative head tilt
             break;
 
         case EMOTION_SURPRISED:
-            p.browInnerY = 0.65f;
-            p.browOuterY = 0.6f;
-            p.browArch = 0.85f;
-            p.mouthSmile = 0.1f;
-            p.eyeOpenness = 1.25f; // Wide open
+            p.browInnerY = 0.70f; // High raised eyebrows
+            p.browOuterY = 0.65f;
+            p.browArch = 0.88f;
+            p.mouthSmile = 0.12f;
+            p.eyeOpenness = 1.30f; // Wide open eyes
             p.pupilDilation = 1.35f;
+            p.headPitch = -0.08f;
             break;
 
         case EMOTION_ANALYTICAL:
-            p.browInnerY = -0.35f; // Furrowed brow
-            p.browOuterY = -0.1f;
-            p.browArch = 0.35f;
-            p.mouthSmile = -0.1f;
-            p.eyeOpenness = 0.92f;
+            p.browInnerY = -0.32f; // Focused furrowed brow
+            p.browOuterY = -0.08f;
+            p.browArch = 0.38f;
+            p.mouthSmile = -0.05f;
+            p.eyeOpenness = 0.90f;
             p.pupilDilation = 0.88f;
+            p.headPitch = 0.06f;
             break;
 
         case EMOTION_AWE:
-            p.browInnerY = 0.45f;
-            p.browOuterY = 0.35f;
-            p.browArch = 0.75f;
-            p.mouthSmile = 0.4f;
-            p.eyeOpenness = 1.2f;
-            p.pupilDilation = 1.3f;
+            p.browInnerY = 0.48f;
+            p.browOuterY = 0.38f;
+            p.browArch = 0.78f;
+            p.mouthSmile = 0.45f;
+            p.eyeOpenness = 1.22f;
+            p.pupilDilation = 1.25f;
+            p.headPitch = -0.06f;
             break;
     }
     return p;
@@ -156,23 +147,23 @@ void FaceModel::applyVisemeToParams(Viseme viseme, FaceParameters& params) const
             params.mouthWidth = 1.0f;
             params.lipSeparation = 0.0f;
             break;
-        case VISEME_AA: // "Ah", "Ha"
-            params.mouthOpenness = 0.65f;
+        case VISEME_AA: // "Ah", "Ha" - open natural jaw
+            params.mouthOpenness = 0.68f;
             params.mouthWidth = 1.05f;
-            params.lipSeparation = 0.5f;
+            params.lipSeparation = 0.55f;
             break;
-        case VISEME_EE: // "Ee", "See"
-            params.mouthOpenness = 0.35f;
-            params.mouthWidth = 1.35f;
-            params.lipSeparation = 0.25f;
+        case VISEME_EE: // "Ee", "See" - wide stretched lips
+            params.mouthOpenness = 0.32f;
+            params.mouthWidth = 1.40f;
+            params.lipSeparation = 0.28f;
             break;
-        case VISEME_OH: // "Oh", "You"
-            params.mouthOpenness = 0.55f;
+        case VISEME_OH: // "Oh", "You" - rounded circular lips
+            params.mouthOpenness = 0.58f;
             params.mouthWidth = 0.65f;
-            params.lipSeparation = 0.4f;
+            params.lipSeparation = 0.42f;
             break;
-        case VISEME_MM: // "Mmm", "B"
-            params.mouthOpenness = 0.05f;
+        case VISEME_MM: // "Mmm", "B", "P" - pressed lips
+            params.mouthOpenness = 0.04f;
             params.mouthWidth = 0.95f;
             params.lipSeparation = 0.0f;
             break;
@@ -185,10 +176,9 @@ void FaceModel::updateBlinking(float dt) {
         if (m_blinkTimer >= m_nextBlinkInterval) {
             triggerBlink();
             m_blinkTimer = 0.0f;
-            m_nextBlinkInterval = randFloat(2.5f, 5.0f);
+            m_nextBlinkInterval = randFloat(2.5f, 4.8f);
         }
     } else {
-        // Fast closing (60ms), realistic spring-back opening (140ms) -> total ~200ms
         const float blinkDuration = 0.20f;
         m_blinkProgress += dt / blinkDuration;
         if (m_blinkProgress >= 1.0f) {
@@ -201,44 +191,41 @@ void FaceModel::updateBlinking(float dt) {
 void FaceModel::updateMicroMovements(float dt) {
     m_timeElapsed += dt;
     
-    // Natural micro-saccades (subtle eye twitches that create genuine lifelike presence)
+    // Natural human micro-saccades (subtle eye twitches tracking user)
     m_saccadeTimer += dt;
-    if (m_saccadeTimer > randFloat(1.2f, 2.8f)) {
+    if (m_saccadeTimer > randFloat(1.2f, 2.6f)) {
         m_saccadeTimer = 0.0f;
-        m_saccadeOffset.x = randFloat(-0.04f, 0.04f);
-        m_saccadeOffset.y = randFloat(-0.03f, 0.03f);
+        m_saccadeOffset.x = randFloat(-0.035f, 0.035f);
+        m_saccadeOffset.y = randFloat(-0.025f, 0.025f);
     }
 
-    // Natural breathing cycle and subtle head micro-sway
-    float breath = std::sin(m_timeElapsed * 1.5f) * 0.015f;
-    float swayYaw = std::sin(m_timeElapsed * 0.8f) * 0.02f;
+    // Natural human breathing motion and gentle head gesture sway
+    float breath = std::sin(m_timeElapsed * 1.6f) * 0.020f;
+    float swayYaw = std::sin(m_timeElapsed * 0.9f) * 0.015f;
+    float nodGesture = std::sin(m_timeElapsed * 2.2f) * 0.012f;
     
-    m_currentParams.headPitch += breath;
+    m_currentParams.headPitch += breath + nodGesture;
     m_currentParams.headYaw += swayYaw;
+    m_currentParams.breathingCycle = breath;
 }
 
 void FaceModel::interpolateParameters(float dt) {
     FaceParameters goal = m_targetParams;
     applyVisemeToParams(m_currentViseme, goal);
 
-    // Dynamic gaze target combined with saccades
     goal.eyeGazeX = m_gazeTarget.x + m_saccadeOffset.x;
     goal.eyeGazeY = m_gazeTarget.y + m_saccadeOffset.y;
 
-    // Blink modifier
     float blinkFactor = 1.0f;
     if (m_isBlinking) {
-        if (m_blinkProgress < 0.4f) {
-            // Rapid closure
-            blinkFactor = 1.0f - (m_blinkProgress / 0.4f);
+        if (m_blinkProgress < 0.38f) {
+            blinkFactor = 1.0f - (m_blinkProgress / 0.38f);
         } else {
-            // Smooth rebound
-            blinkFactor = (m_blinkProgress - 0.4f) / 0.6f;
+            blinkFactor = (m_blinkProgress - 0.38f) / 0.62f;
         }
     }
     goal.eyeOpenness *= blinkFactor;
 
-    // Smooth exponential decay interpolation
     const float blendRate = 12.0f;
     float t = clampf(dt * blendRate, 0.0f, 1.0f);
 
@@ -253,6 +240,9 @@ void FaceModel::interpolateParameters(float dt) {
     m_currentParams.mouthWidth    = lerpf(m_currentParams.mouthWidth, goal.mouthWidth, t * 1.5f);
     m_currentParams.mouthSmile    = lerpf(m_currentParams.mouthSmile, goal.mouthSmile, t);
     m_currentParams.lipSeparation = lerpf(m_currentParams.lipSeparation, goal.lipSeparation, t * 1.8f);
+    m_currentParams.headPitch     = lerpf(m_currentParams.headPitch, goal.headPitch, t * 0.8f);
+    m_currentParams.headYaw       = lerpf(m_currentParams.headYaw, goal.headYaw, t * 0.8f);
+    m_currentParams.headRoll      = lerpf(m_currentParams.headRoll, goal.headRoll, t * 0.8f);
 }
 
 void FaceModel::update(float dt) {
@@ -264,141 +254,192 @@ void FaceModel::update(float dt) {
 void FaceModel::render(Gdiplus::Graphics& g, float centerX, float centerY, float scale) {
     g.SetSmoothingMode(Gdiplus::SmoothingModeAntiAlias);
 
-    // Subtle 3D head offset based on head yaw/pitch
     float hx = centerX + m_currentParams.headYaw * 20.0f * scale;
     float hy = centerY + m_currentParams.headPitch * 15.0f * scale;
 
+    // 1. Lower Cybernetic Torso & Sculpted Silver Breastplate (matching HRP-4C image)
+    drawChassisAndShoulders(g, hx, hy, scale);
+
+    // 2. Black Hair (Back Layer falling behind neck and cheeks)
+    drawHairBack(g, hx, hy, scale);
+
+    // 3. Human Silicone Face Base
     drawHeadBase(g, hx, hy, scale);
-    drawCyberneticPlates(g, hx, hy, scale);
+
+    // 4. Facial Features (Almond human eyes, delicate nose, lips with Cupid's bow)
     drawNose(g, hx, hy, scale);
     drawEyes(g, hx, hy, scale);
     drawEyebrows(g, hx, hy, scale);
     drawMouth(g, hx, hy, scale);
-    drawHUDSensors(g, hx, hy, scale);
+
+    // 5. Black Hair (Front Bangs/Fringe covering upper forehead exactly as in photo)
+    drawHairFrontBangs(g, hx, hy, scale);
+}
+
+void FaceModel::drawChassisAndShoulders(Gdiplus::Graphics& g, float cx, float cy, float s) {
+    // Exact reconstruction of the HRP-4C sculpted metallic silver cuirass and black suit
+    float chestY = cy + 62.0f * s;
+
+    // Matte black neck and shoulder under-suit
+    Gdiplus::SolidBrush blackSuitBrush(m_chassisBlack);
+    g.FillRectangle(&blackSuitBrush, cx - 72.0f * s, chestY - 10.0f * s, 144.0f * s, 85.0f * s);
+
+    // Metallic silver neck collar
+    Gdiplus::SolidBrush neckCollar(Gdiplus::Color(255, 140, 148, 160));
+    g.FillRectangle(&neckCollar, cx - 22.0f * s, cy + 40.0f * s, 44.0f * s, 26.0f * s);
+
+    Gdiplus::Pen collarSeam(Gdiplus::Color(255, 70, 75, 85), 1.5f * s);
+    g.DrawRectangle(&collarSeam, cx - 22.0f * s, cy + 40.0f * s, 44.0f * s, 26.0f * s);
+
+    // Silver Armored Shoulder Pauldrons (Left & Right)
+    Gdiplus::SolidBrush silverBrush(m_chassisSilver);
+    Gdiplus::Pen seamPen(Gdiplus::Color(255, 110, 120, 135), 1.4f * s);
+
+    // Left shoulder
+    g.FillEllipse(&silverBrush, cx - 82.0f * s, chestY - 2.0f * s, 34.0f * s, 48.0f * s);
+    g.DrawEllipse(&seamPen, cx - 82.0f * s, chestY - 2.0f * s, 34.0f * s, 48.0f * s);
+
+    // Right shoulder
+    g.FillEllipse(&silverBrush, cx + 48.0f * s, chestY - 2.0f * s, 34.0f * s, 48.0f * s);
+    g.DrawEllipse(&seamPen, cx + 48.0f * s, chestY - 2.0f * s, 34.0f * s, 48.0f * s);
+
+    // Aerodynamic Contoured Feminine Silver Breastplate (Cuirass)
+    Gdiplus::GraphicsPath chestPath;
+    Gdiplus::PointF chestPts[7] = {
+        Gdiplus::PointF(cx - 45.0f * s, chestY + 6.0f * s),
+        Gdiplus::PointF(cx - 30.0f * s, chestY + 2.0f * s),
+        Gdiplus::PointF(cx, chestY + 10.0f * s),
+        Gdiplus::PointF(cx + 30.0f * s, chestY + 2.0f * s),
+        Gdiplus::PointF(cx + 45.0f * s, chestY + 6.0f * s),
+        Gdiplus::PointF(cx + 38.0f * s, chestY + 55.0f * s),
+        Gdiplus::PointF(cx - 38.0f * s, chestY + 55.0f * s)
+    };
+    chestPath.AddPolygon(chestPts, 7);
+    g.FillPath(&silverBrush, &chestPath);
+    g.DrawPath(&seamPen, &chestPath);
+
+    // Breastplate twin sculpted aerodynamic dome contours
+    Gdiplus::SolidBrush domeHighlight(Gdiplus::Color(60, 255, 255, 255));
+    g.FillEllipse(&domeHighlight, cx - 36.0f * s, chestY + 12.0f * s, 32.0f * s, 30.0f * s);
+    g.FillEllipse(&domeHighlight, cx + 4.0f * s, chestY + 12.0f * s, 32.0f * s, 30.0f * s);
+
+    // Upper Clavicle Logo Decal (AIST / Cybernetic Emblem as on photo)
+    Gdiplus::SolidBrush decalBg(Gdiplus::Color(255, 20, 24, 30));
+    g.FillRectangle(&decalBg, cx + 12.0f * s, chestY + 10.0f * s, 18.0f * s, 8.0f * s);
+    
+    Gdiplus::Pen decalPen(Gdiplus::Color(255, 0, 200, 255), 0.8f * s);
+    g.DrawRectangle(&decalPen, cx + 12.0f * s, chestY + 10.0f * s, 18.0f * s, 8.0f * s);
+}
+
+void FaceModel::drawHairBack(Gdiplus::Graphics& g, float cx, float cy, float s) {
+    // Jet-black bob hairstyle falling straight down along cheeks and behind the neck
+    Gdiplus::SolidBrush hairBrush(m_hairColor);
+    Gdiplus::Pen hairEdgePen(Gdiplus::Color(255, 12, 10, 14), 1.2f * s);
+
+    // Full back hair silhouette extending down to chin / neck level
+    Gdiplus::GraphicsPath hairPath;
+    hairPath.AddEllipse(cx - 62.0f * s, cy - 75.0f * s, 124.0f * s, 130.0f * s);
+    hairPath.AddRectangle(Gdiplus::RectF(cx - 64.0f * s, cy - 10.0f * s, 128.0f * s, 68.0f * s));
+    
+    g.FillPath(&hairBrush, &hairPath);
+    g.DrawPath(&hairEdgePen, &hairPath);
+
+    // Hair highlights on straight side strands
+    Gdiplus::Pen sheenPen(Gdiplus::Color(60, 180, 180, 210), 2.0f * s);
+    g.DrawLine(&sheenPen, cx - 55.0f * s, cy - 30.0f * s, cx - 55.0f * s, cy + 45.0f * s);
+    g.DrawLine(&sheenPen, cx + 55.0f * s, cy - 30.0f * s, cx + 55.0f * s, cy + 45.0f * s);
 }
 
 void FaceModel::drawHeadBase(Gdiplus::Graphics& g, float cx, float cy, float s) {
-    // Elegant humanoid contoured head: cranial dome, jawline tapering to feminine/sleek chin
-    float headW = 120.0f * s;
-    float headH = 155.0f * s;
+    // Feminine oval silicone face
+    float faceW = 88.0f * s;
+    float faceH = 112.0f * s;
 
-    // Cybernetic neck
-    Gdiplus::SolidBrush neckBrush(Gdiplus::Color(255, 40, 44, 52));
-    g.FillRectangle(&neckBrush, cx - 24.0f * s, cy + 50.0f * s, 48.0f * s, 45.0f * s);
-    
-    // Neck hydraulics / vertebrae
-    Gdiplus::Pen neckPistons(Gdiplus::Color(255, 120, 130, 150), 2.0f * s);
-    g.DrawLine(&neckPistons, cx - 14.0f * s, cy + 52.0f * s, cx - 14.0f * s, cy + 90.0f * s);
-    g.DrawLine(&neckPistons, cx + 14.0f * s, cy + 52.0f * s, cx + 14.0f * s, cy + 90.0f * s);
-
-    // Cranium / Face Oval
-    Gdiplus::GraphicsPath headPath;
-    headPath.AddEllipse(cx - headW * 0.5f, cy - headH * 0.5f, headW, headH);
+    Gdiplus::GraphicsPath facePath;
+    facePath.AddEllipse(cx - faceW * 0.5f, cy - faceH * 0.5f, faceW, faceH);
 
     Gdiplus::SolidBrush skinBrush(m_skinBaseColor);
-    g.FillPath(&skinBrush, &headPath);
+    g.FillPath(&skinBrush, &facePath);
 
-    // Shading highlight on cheekbones and forehead
-    Gdiplus::SolidBrush highlightBrush(Gdiplus::Color(70, m_skinHighlightColor.GetR(), m_skinHighlightColor.GetG(), m_skinHighlightColor.GetB()));
-    g.FillEllipse(&highlightBrush, cx - headW * 0.32f, cy - headH * 0.38f, headW * 0.64f, headH * 0.45f);
+    // Soft blush on cheekbones (subtle peach/rose tint)
+    Gdiplus::SolidBrush blushBrush(Gdiplus::Color(35, 235, 120, 130));
+    g.FillEllipse(&blushBrush, cx - 38.0f * s, cy + 6.0f * s, 22.0f * s, 16.0f * s);
+    g.FillEllipse(&blushBrush, cx + 16.0f * s, cy + 6.0f * s, 22.0f * s, 16.0f * s);
 
-    // Subtle jaw contour
-    Gdiplus::Pen contourPen(Gdiplus::Color(80, 100, 105, 120), 1.5f * s);
-    g.DrawPath(&contourPen, &headPath);
-}
-
-void FaceModel::drawCyberneticPlates(Gdiplus::Graphics& g, float cx, float cy, float s) {
-    // Sleek titanium cranial plates, ear modules, and temple seams
-    Gdiplus::SolidBrush plateBrush(m_plateAccentColor);
-    Gdiplus::Pen seamPen(Gdiplus::Color(180, 70, 80, 100), 1.2f * s);
-
-    // Temporal ear modules
-    float earW = 14.0f * s;
-    float earH = 34.0f * s;
-    g.FillEllipse(&plateBrush, cx - 64.0f * s - earW, cy - 8.0f * s, earW, earH);
-    g.DrawEllipse(&seamPen, cx - 64.0f * s - earW, cy - 8.0f * s, earW, earH);
-    
-    g.FillEllipse(&plateBrush, cx + 64.0f * s, cy - 8.0f * s, earW, earH);
-    g.DrawEllipse(&seamPen, cx + 64.0f * s, cy - 8.0f * s, earW, earH);
-
-    // Glowing ear core
-    Gdiplus::SolidBrush earGlow(m_irisGlowColor);
-    g.FillEllipse(&earGlow, cx - 64.0f * s - earW * 0.7f, cy + 4.0f * s, 6.0f * s, 10.0f * s);
-    g.FillEllipse(&earGlow, cx + 64.0f * s + earW * 0.3f, cy + 4.0f * s, 6.0f * s, 10.0f * s);
-
-    // Forehead parietal plate seam
-    g.DrawArc(&seamPen, cx - 45.0f * s, cy - 65.0f * s, 90.0f * s, 40.0f * s, 20.0f, 140.0f);
+    // Gentle jaw contour
+    Gdiplus::Pen jawPen(Gdiplus::Color(45, 160, 130, 120), 1.2f * s);
+    g.DrawArc(&jawPen, cx - faceW * 0.48f, cy - faceH * 0.48f, faceW * 0.96f, faceH * 0.96f, 20.0f, 140.0f);
 }
 
 void FaceModel::drawEyes(Gdiplus::Graphics& g, float cx, float cy, float s) {
-    float eyeSpacing = 32.0f * s;
-    float eyeY = cy - 12.0f * s;
-    float eyeW = 28.0f * s;
-    float eyeH = 17.0f * s;
+    float eyeSpacing = 24.0f * s;
+    float eyeY = cy - 6.0f * s;
+    float eyeW = 24.0f * s;
+    float eyeH = 15.0f * s;
 
-    // Draw left and right eye
     drawEye(g, cx - eyeSpacing, eyeY, eyeW, eyeH, false);
     drawEye(g, cx + eyeSpacing, eyeY, eyeW, eyeH, true);
 }
 
 void FaceModel::drawEye(Gdiplus::Graphics& g, float ex, float ey, float ew, float eh, bool isRight) {
-    float s = ew / 28.0f;
-    float openness = clampf(m_currentParams.eyeOpenness, 0.05f, 1.3f);
+    float s = ew / 24.0f;
+    float openness = clampf(m_currentParams.eyeOpenness, 0.05f, 1.35f);
     float activeH = eh * openness;
 
-    // Sclera socket background
+    // Almond eye shape
     Gdiplus::GraphicsPath eyePath;
     eyePath.AddEllipse(ex - ew * 0.5f, ey - activeH * 0.5f, ew, activeH);
 
-    Gdiplus::SolidBrush scleraBrush(Gdiplus::Color(255, 245, 248, 252));
+    Gdiplus::SolidBrush scleraBrush(Gdiplus::Color(255, 250, 252, 255));
     g.FillPath(&scleraBrush, &eyePath);
 
     // Iris & Gaze positioning
-    float maxGazeOffset = 6.0f * s;
+    float maxGazeOffset = 5.0f * s;
     float irisCenterX = ex + m_currentParams.eyeGazeX * maxGazeOffset;
     float irisCenterY = ey + m_currentParams.eyeGazeY * maxGazeOffset * 0.6f;
-    float irisRadius = 7.5f * s;
+    float irisRadius = 6.2f * s;
 
-    // Cybernetic luminous Iris
-    Gdiplus::SolidBrush irisBrush(m_irisGlowColor);
+    // Human dark brown/hazel iris (matching HRP-4C robot photo)
+    Gdiplus::SolidBrush irisBrush(m_irisColor);
     g.FillEllipse(&irisBrush, irisCenterX - irisRadius, irisCenterY - irisRadius, irisRadius * 2.0f, irisRadius * 2.0f);
 
-    // Iris outer concentric reticle / detail ring
-    Gdiplus::Pen irisRing(Gdiplus::Color(180, 255, 255, 255), 1.0f * s);
-    g.DrawEllipse(&irisRing, irisCenterX - irisRadius * 0.8f, irisCenterY - irisRadius * 0.8f, irisRadius * 1.6f, irisRadius * 1.6f);
+    // Outer dark limbal ring
+    Gdiplus::Pen limbalRing(Gdiplus::Color(200, 20, 15, 12), 1.0f * s);
+    g.DrawEllipse(&limbalRing, irisCenterX - irisRadius, irisCenterY - irisRadius, irisRadius * 2.0f, irisRadius * 2.0f);
 
-    // Pupil with dynamic dilation
-    float pupilRadius = 3.8f * s * m_currentParams.pupilDilation;
-    Gdiplus::SolidBrush pupilBrush(Gdiplus::Color(255, 10, 15, 25));
+    // Black pupil with dynamic emotional dilation
+    float pupilRadius = 3.2f * s * m_currentParams.pupilDilation;
+    Gdiplus::SolidBrush pupilBrush(Gdiplus::Color(255, 12, 10, 15));
     g.FillEllipse(&pupilBrush, irisCenterX - pupilRadius, irisCenterY - pupilRadius, pupilRadius * 2.0f, pupilRadius * 2.0f);
 
-    // Specular corneal reflections for lifelike depth
+    // Specular corneal reflection (lively human eyes)
     Gdiplus::SolidBrush glintBrush(Gdiplus::Color(255, 255, 255, 255));
-    g.FillEllipse(&glintBrush, irisCenterX - 3.2f * s, irisCenterY - 3.5f * s, 3.2f * s, 3.2f * s);
-    g.FillEllipse(&glintBrush, irisCenterX + 1.5f * s, irisCenterY + 1.8f * s, 1.6f * s, 1.6f * s);
+    g.FillEllipse(&glintBrush, irisCenterX - 2.8f * s, irisCenterY - 2.8f * s, 2.8f * s, 2.8f * s);
+    g.FillEllipse(&glintBrush, irisCenterX + 1.2f * s, irisCenterY + 1.4f * s, 1.4f * s, 1.4f * s);
 
-    // Upper and lower eyelids / contour
-    Gdiplus::Pen lidPen(Gdiplus::Color(200, 60, 65, 80), 1.8f * s);
+    // Upper and lower eyelashes / eyelid line
+    Gdiplus::Pen lidPen(Gdiplus::Color(240, 32, 25, 28), 1.8f * s);
     g.DrawArc(&lidPen, ex - ew * 0.52f, ey - activeH * 0.52f, ew * 1.04f, activeH * 1.04f, 180.0f, 180.0f);
     g.DrawArc(&lidPen, ex - ew * 0.52f, ey - activeH * 0.52f, ew * 1.04f, activeH * 1.04f, 0.0f, 180.0f);
 }
 
 void FaceModel::drawEyebrows(Gdiplus::Graphics& g, float cx, float cy, float s) {
-    float browSpacing = 32.0f * s;
-    float baseBrowY = cy - 27.0f * s;
-    float browW = 26.0f * s;
+    float browSpacing = 24.0f * s;
+    float baseBrowY = cy - 20.0f * s;
+    float browW = 22.0f * s;
 
-    Gdiplus::Pen browPen(Gdiplus::Color(220, 65, 50, 45), 2.6f * s);
+    // Delicate dark black/brown human eyebrows
+    Gdiplus::Pen browPen(Gdiplus::Color(240, 28, 24, 26), 2.2f * s);
     browPen.SetStartCap(Gdiplus::LineCapRound);
     browPen.SetEndCap(Gdiplus::LineCapRound);
 
-    // Left Eyebrow (from observer's perspective)
-    float lInnerX = cx - 10.0f * s;
-    float lInnerY = baseBrowY - m_currentParams.browInnerY * 8.0f * s;
+    // Left Brow
+    float lInnerX = cx - 8.0f * s;
+    float lInnerY = baseBrowY - m_currentParams.browInnerY * 6.0f * s;
     float lOuterX = cx - browSpacing - browW * 0.5f;
-    float lOuterY = baseBrowY - m_currentParams.browOuterY * 6.0f * s + 3.0f * s;
+    float lOuterY = baseBrowY - m_currentParams.browOuterY * 5.0f * s + 2.5f * s;
     float lMidX = (lInnerX + lOuterX) * 0.5f;
-    float lMidY = baseBrowY - (m_currentParams.browInnerY * 0.5f + m_currentParams.browArch * 5.0f) * s;
+    float lMidY = baseBrowY - (m_currentParams.browInnerY * 0.4f + m_currentParams.browArch * 4.5f) * s;
 
     Gdiplus::PointF leftPts[3] = {
         Gdiplus::PointF(lOuterX, lOuterY),
@@ -407,13 +448,13 @@ void FaceModel::drawEyebrows(Gdiplus::Graphics& g, float cx, float cy, float s) 
     };
     g.DrawCurve(&browPen, leftPts, 3);
 
-    // Right Eyebrow
-    float rInnerX = cx + 10.0f * s;
-    float rInnerY = baseBrowY - m_currentParams.browInnerY * 8.0f * s;
+    // Right Brow
+    float rInnerX = cx + 8.0f * s;
+    float rInnerY = baseBrowY - m_currentParams.browInnerY * 6.0f * s;
     float rOuterX = cx + browSpacing + browW * 0.5f;
-    float rOuterY = baseBrowY - m_currentParams.browOuterY * 6.0f * s + 3.0f * s;
+    float rOuterY = baseBrowY - m_currentParams.browOuterY * 5.0f * s + 2.5f * s;
     float rMidX = (rInnerX + rOuterX) * 0.5f;
-    float rMidY = baseBrowY - (m_currentParams.browInnerY * 0.5f + m_currentParams.browArch * 5.0f) * s;
+    float rMidY = baseBrowY - (m_currentParams.browInnerY * 0.4f + m_currentParams.browArch * 4.5f) * s;
 
     Gdiplus::PointF rightPts[3] = {
         Gdiplus::PointF(rInnerX, rInnerY),
@@ -424,53 +465,52 @@ void FaceModel::drawEyebrows(Gdiplus::Graphics& g, float cx, float cy, float s) 
 }
 
 void FaceModel::drawNose(Gdiplus::Graphics& g, float cx, float cy, float s) {
-    // Subtle, elegant human nose bridge and tip
-    float noseY = cy + 5.0f * s;
-    
-    // Bridge shadow
-    Gdiplus::Pen bridgePen(Gdiplus::Color(45, 140, 120, 110), 1.5f * s);
-    g.DrawLine(&bridgePen, cx - 1.5f * s, cy - 8.0f * s, cx - 2.5f * s, noseY + 4.0f * s);
+    // Feminine refined nose
+    float noseY = cy + 10.0f * s;
 
-    // Soft tip curve & nostril accents
-    Gdiplus::Pen tipPen(Gdiplus::Color(90, 160, 130, 125), 1.8f * s);
-    g.DrawArc(&tipPen, cx - 5.5f * s, noseY + 2.0f * s, 11.0f * s, 6.0f * s, 10.0f, 160.0f);
+    Gdiplus::Pen bridgePen(Gdiplus::Color(50, 160, 130, 120), 1.2f * s);
+    g.DrawLine(&bridgePen, cx - 1.2f * s, cy - 2.0f * s, cx - 1.8f * s, noseY + 2.0f * s);
+
+    // Tip curve & soft nostril arcs
+    Gdiplus::Pen tipPen(Gdiplus::Color(110, 180, 140, 130), 1.5f * s);
+    g.DrawArc(&tipPen, cx - 4.5f * s, noseY + 1.0f * s, 9.0f * s, 4.5f * s, 10.0f, 160.0f);
 }
 
 void FaceModel::drawMouth(Gdiplus::Graphics& g, float cx, float cy, float s) {
     float mouthY = cy + 30.0f * s;
-    float baseW = 28.0f * s * m_currentParams.mouthWidth;
-    float openness = m_currentParams.mouthOpenness * 18.0f * s;
-    float smileOffset = m_currentParams.mouthSmile * 7.0f * s;
+    float baseW = 24.0f * s * m_currentParams.mouthWidth;
+    float openness = m_currentParams.mouthOpenness * 16.0f * s;
+    float smileOffset = m_currentParams.mouthSmile * 6.0f * s;
 
     float leftX = cx - baseW * 0.5f;
     float rightX = cx + baseW * 0.5f;
     float cornerY = mouthY - smileOffset;
 
     // Oral cavity & teeth when speaking
-    if (openness > 1.5f * s) {
+    if (openness > 1.2f * s) {
         Gdiplus::GraphicsPath oralCavity;
-        oralCavity.AddEllipse(cx - baseW * 0.42f, mouthY - openness * 0.4f, baseW * 0.84f, openness * 0.85f);
+        oralCavity.AddEllipse(cx - baseW * 0.40f, mouthY - openness * 0.4f, baseW * 0.80f, openness * 0.82f);
         
-        Gdiplus::SolidBrush cavityBrush(Gdiplus::Color(255, 60, 20, 25));
+        Gdiplus::SolidBrush cavityBrush(Gdiplus::Color(255, 65, 20, 28));
         g.FillPath(&cavityBrush, &oralCavity);
 
         // White teeth visible during speech
-        Gdiplus::SolidBrush teethBrush(Gdiplus::Color(255, 245, 245, 248));
-        g.FillRectangle(&teethBrush, cx - baseW * 0.28f, mouthY - openness * 0.35f, baseW * 0.56f, openness * 0.38f);
+        Gdiplus::SolidBrush teethBrush(Gdiplus::Color(255, 250, 250, 252));
+        g.FillRectangle(&teethBrush, cx - baseW * 0.25f, mouthY - openness * 0.35f, baseW * 0.50f, openness * 0.35f);
     }
 
     // Upper lip with Cupid's bow
     Gdiplus::GraphicsPath upperLip;
     Gdiplus::PointF upperPts[5] = {
         Gdiplus::PointF(leftX, cornerY),
-        Gdiplus::PointF(cx - baseW * 0.2f, mouthY - 3.5f * s - openness * 0.3f),
-        Gdiplus::PointF(cx, mouthY - 1.5f * s - openness * 0.3f),
-        Gdiplus::PointF(cx + baseW * 0.2f, mouthY - 3.5f * s - openness * 0.3f),
+        Gdiplus::PointF(cx - baseW * 0.18f, mouthY - 3.0f * s - openness * 0.28f),
+        Gdiplus::PointF(cx, mouthY - 1.2f * s - openness * 0.28f),
+        Gdiplus::PointF(cx + baseW * 0.18f, mouthY - 3.0f * s - openness * 0.28f),
         Gdiplus::PointF(rightX, cornerY)
     };
     upperLip.AddCurve(upperPts, 5);
 
-    Gdiplus::Pen lipPen(m_lipColor, 2.8f * s);
+    Gdiplus::Pen lipPen(m_lipColor, 2.5f * s);
     lipPen.SetStartCap(Gdiplus::LineCapRound);
     lipPen.SetEndCap(Gdiplus::LineCapRound);
     g.DrawPath(&lipPen, &upperLip);
@@ -479,31 +519,60 @@ void FaceModel::drawMouth(Gdiplus::Graphics& g, float cx, float cy, float s) {
     Gdiplus::GraphicsPath lowerLip;
     Gdiplus::PointF lowerPts[3] = {
         Gdiplus::PointF(leftX, cornerY),
-        Gdiplus::PointF(cx, mouthY + 5.0f * s + openness * 0.6f),
+        Gdiplus::PointF(cx, mouthY + 4.5f * s + openness * 0.55f),
         Gdiplus::PointF(rightX, cornerY)
     };
     lowerLip.AddCurve(lowerPts, 3);
     
-    Gdiplus::Pen lowerLipPen(m_lipColor, 3.2f * s);
+    Gdiplus::Pen lowerLipPen(m_lipColor, 2.8f * s);
     lowerLipPen.SetStartCap(Gdiplus::LineCapRound);
     lowerLipPen.SetEndCap(Gdiplus::LineCapRound);
     g.DrawPath(&lowerLipPen, &lowerLip);
 }
 
-void FaceModel::drawHUDSensors(Gdiplus::Graphics& g, float cx, float cy, float s) {
-    // Subtle technological telemetry overlaid near temple/cheek
-    Gdiplus::Pen hudPen(Gdiplus::Color(100, m_irisGlowColor.GetR(), m_irisGlowColor.GetG(), m_irisGlowColor.GetB()), 1.0f * s);
-    
-    // Tech corner brackets
-    float bx = cx + 46.0f * s;
-    float by = cy - 25.0f * s;
-    g.DrawLine(&hudPen, bx, by, bx + 10.0f * s, by);
-    g.DrawLine(&hudPen, bx + 10.0f * s, by, bx + 10.0f * s, by + 10.0f * s);
+void FaceModel::drawHairFrontBangs(Gdiplus::Graphics& g, float cx, float cy, float s) {
+    // Signature straight horizontal front bangs (fringe) of HRP-4C
+    // Neatly cut across the forehead right above the eyebrows
+    Gdiplus::SolidBrush hairBrush(m_hairColor);
+    Gdiplus::Pen edgePen(Gdiplus::Color(255, 12, 10, 14), 1.0f * s);
 
-    // Dynamic optical scanner pulse line
-    float scanY = cy - 15.0f * s + std::sin(m_timeElapsed * 3.0f) * 12.0f * s;
-    Gdiplus::Pen scanPen(Gdiplus::Color(60, m_irisGlowColor.GetR(), m_irisGlowColor.GetG(), m_irisGlowColor.GetB()), 1.0f * s);
-    g.DrawLine(&scanPen, cx - 40.0f * s, scanY, cx + 40.0f * s, scanY);
+    // Front bangs block
+    float bangW = 66.0f * s;
+    float bangTopY = cy - 65.0f * s;
+    float bangBottomY = cy - 25.0f * s; // Cut horizontally right above eyebrows
+
+    Gdiplus::GraphicsPath bangsPath;
+    bangsPath.AddRectangle(Gdiplus::RectF(cx - bangW * 0.5f, bangTopY, bangW, bangBottomY - bangTopY));
+    
+    // Add side strands curving inward
+    Gdiplus::PointF leftStrand[4] = {
+        Gdiplus::PointF(cx - bangW * 0.5f, bangTopY),
+        Gdiplus::PointF(cx - 52.0f * s, cy),
+        Gdiplus::PointF(cx - 48.0f * s, cy + 35.0f * s),
+        Gdiplus::PointF(cx - 42.0f * s, cy + 42.0f * s)
+    };
+    bangsPath.AddCurve(leftStrand, 4);
+
+    Gdiplus::PointF rightStrand[4] = {
+        Gdiplus::PointF(cx + bangW * 0.5f, bangTopY),
+        Gdiplus::PointF(cx + 52.0f * s, cy),
+        Gdiplus::PointF(cx + 48.0f * s, cy + 35.0f * s),
+        Gdiplus::PointF(cx + 42.0f * s, cy + 42.0f * s)
+    };
+    bangsPath.AddCurve(rightStrand, 4);
+
+    g.FillPath(&hairBrush, &bangsPath);
+
+    // Bang fringe edge individual strand feathering
+    Gdiplus::Pen strandPen(m_hairColor, 1.5f * s);
+    for (float bx = cx - bangW * 0.48f; bx <= cx + bangW * 0.48f; bx += 3.5f * s) {
+        float strandLen = randFloat(2.0f, 5.0f) * s;
+        g.DrawLine(&strandPen, bx, bangBottomY, bx, bangBottomY + strandLen);
+    }
+
+    // Horizontal gloss highlight on bangs
+    Gdiplus::Pen glossPen(Gdiplus::Color(50, 200, 205, 230), 2.2f * s);
+    g.DrawArc(&glossPen, cx - bangW * 0.40f, bangTopY + 12.0f * s, bangW * 0.80f, 15.0f * s, 10.0f, 160.0f);
 }
 
 } // namespace CosmicRobotics
