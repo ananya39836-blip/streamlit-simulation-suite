@@ -18,7 +18,7 @@ import streamlit.components.v1 as components
 # Robotics (6-DOF Hexapod, BLDC), AI/ML (PINN, Gauss-Jordan, Softmax), C++ Backends
 # ==============================================================================
 
-WORKSPACE = r"C:\Users\HP\.gemini\antigravity\scratch\reality_treatises"
+WORKSPACE = os.path.dirname(os.path.abspath(__file__))
 
 st.set_page_config(
     page_title="Antigravity Master Research Suite | Q-1 & Q-2",
