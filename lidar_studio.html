@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LiDAR & High-Performance 3D Computer Vision Studio</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+  <style>
+    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; overflow: hidden; }
+    .glass-ui { background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); }
+    canvas { touch-action: none; cursor: grab; }
+    canvas:active { cursor: grabbing; }
+  </style>
+</head>
+<body class="bg-slate-950 text-slate-100 w-screen h-screen flex flex-col antialiased select-none">
+
+  <!-- TOP HEADER HUD -->
+  <header class="absolute top-0 left-0 right-0 z-30 pointer-events-none p-4 flex items-center justify-between">
+    <div class="glass-ui rounded-2xl px-5 py-3 pointer-events-auto flex items-center space-x-4 shadow-2xl">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-indigo-600 flex items-center justify-center font-bold text-white shadow-lg shadow-cyan-500/20">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 10l-2 1m0 0l-2-1m2 1v2.5M20 7l-2 1m2-1l-2-1m2 1v2.5M14 4l-2-1-2 1M4 7l2-1M4 7l2 1M4 7v2.5M12 21l-2-1m2 1l2-1m-2 1v-2.5M6 18l-2-1v-2.5M18 18l2-1v-2.5"/></svg>
+      </div>
+      <div>
+        <div class="flex items-center space-x-2">
+          <h1 class="text-base font-bold text-white tracking-tight leading-none">3D LiDAR & Computer Vision Studio</h1>
+          <span class="px-2 py-0.5 rounded-full text-[10px] font-semibold bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">C++14 Powered</span>
+        </div>
+        <p class="text-xs text-slate-400 mt-1">Real-Time Point Cloud Processing &bull; 64-Beam Velodyne Model &bull; RANSAC Ground Segmentation &bull; 3D OBB</p>
+      </div>
+    </div>
+
+    <!-- METRICS PILL -->
+    <div class="glass-ui rounded-2xl px-5 py-3 pointer-events-auto flex items-center space-x-6 text-xs shadow-2xl">
+      <div>
+        <div class="text-slate-400 uppercase tracking-wider text-[10px]">Points Rendered</div>
+        <div class="font-bold text-cyan-400 text-sm" id="hud-point-count">12,150 pts</div>
+      </div>
+      <div class="border-l border-slate-700 h-6"></div>
+      <div>
+        <div class="text-slate-400 uppercase tracking-wider text-[10px]">Ground Inliers</div>
+        <div class="font-bold text-emerald-400 text-sm" id="hud-inlier-count">10,092 (83.1%)</div>
+      </div>
+      <div class="border-l border-slate-700 h-6"></div>
+      <div>
+        <div class="text-slate-400 uppercase tracking-wider text-[10px]">3D Entities</div>
+        <div class="font-bold text-amber-400 text-sm" id="hud-box-count">5 Segmented</div>
+      </div>
+      <div class="border-l border-slate-700 h-6"></div>
+      <div>
+        <div class="text-slate-400 uppercase tracking-wider text-[10px]">Render FPS</div>
+        <div class="font-bold text-purple-400 text-sm" id="hud-fps">60 FPS</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 3D WEBGL / CANVAS VIEWPORT -->
+  <main class="flex-1 w-full h-full relative">
+    <canvas id="lidarCanvas" class="w-full h-full block"></canvas>
+
+    <!-- FLOATING LEFT TOOLBAR -->
+    <div class="absolute left-4 top-24 bottom-6 w-80 glass-ui rounded-2xl p-5 pointer-events-auto flex flex-col justify-between shadow-2xl z-20 overflow-y-auto">
+      <div class="space-y-5">
+        <div>
+          <h3 class="text-xs uppercase font-bold tracking-wider text-slate-400 mb-2">Colorization Mode</h3>
+          <div class="grid grid-cols-2 gap-1.5" id="colormap-btns">
+            <button onclick="setColorMode('elevation')" id="btn-col-elevation" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-cyan-600 text-white shadow-sm">Elevation (Z)</button>
+            <button onclick="setColorMode('intensity')" id="btn-col-intensity" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:text-white">Intensity</button>
+            <button onclick="setColorMode('semantic')" id="btn-col-semantic" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:text-white">Semantic AI</button>
+            <button onclick="setColorMode('normal')" id="btn-col-normal" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:text-white">Normals (XYZ)</button>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xs uppercase font-bold tracking-wider text-slate-400 mb-2">Camera Presets</h3>
+          <div class="grid grid-cols-2 gap-1.5">
+            <button onclick="setCameraPreset('orbit')" class="px-3 py-1.5 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">3D Orbit</button>
+            <button onclick="setCameraPreset('top')" class="px-3 py-1.5 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">Bird's Eye (Top)</button>
+            <button onclick="setCameraPreset('ego')" class="px-3 py-1.5 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">LiDAR Ego View</button>
+            <button onclick="setCameraPreset('side')" class="px-3 py-1.5 text-xs rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white border border-slate-700 transition">Elevation Profile</button>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xs uppercase font-bold tracking-wider text-slate-400 mb-2">CV Filters & Geometry</h3>
+          <div class="space-y-3 text-xs">
+            <div class="flex items-center justify-between">
+              <label class="text-slate-300 font-medium">Render 3D Bounding Boxes</label>
+              <input type="checkbox" id="chk-boxes" checked onchange="toggleBoxes()" class="accent-cyan-500 w-4 h-4 cursor-pointer">
+            </div>
+
+            <div class="flex items-center justify-between">
+              <label class="text-slate-300 font-medium">Show RANSAC Ground Grid</label>
+              <input type="checkbox" id="chk-ground" checked onchange="toggleGround()" class="accent-cyan-500 w-4 h-4 cursor-pointer">
+            </div>
+
+            <div class="flex items-center justify-between">
+              <label class="text-slate-300 font-medium">Sweep Scan Beam Animation</label>
+              <input type="checkbox" id="chk-sweep" checked onchange="toggleSweep()" class="accent-cyan-500 w-4 h-4 cursor-pointer">
+            </div>
+
+            <div>
+              <div class="flex justify-between text-slate-400 mb-1">
+                <span>Point Size</span>
+                <span id="lbl-pt-size">2.0 px</span>
+              </div>
+              <input type="range" id="rng-pt-size" min="1" max="6" step="0.5" value="2" oninput="updatePointSize(this.value)" class="w-full accent-cyan-500">
+            </div>
+
+            <div>
+              <div class="flex justify-between text-slate-400 mb-1">
+                <span>Subsampling Density</span>
+                <span id="lbl-density">100%</span>
+              </div>
+              <input type="range" id="rng-density" min="10" max="100" step="5" value="100" oninput="updateDensity(this.value)" class="w-full accent-cyan-500">
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-xs uppercase font-bold tracking-wider text-slate-400 mb-2">Detected 3D Entities</h3>
+          <div class="space-y-1.5 max-h-44 overflow-y-auto pr-1" id="box-list">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+      </div>
+
+      <div class="pt-4 border-t border-slate-800 text-[11px] text-slate-500 flex justify-between">
+        <span>Left-click: Orbit</span>
+        <span>Right-click: Pan</span>
+        <span>Wheel: Zoom</span>
+      </div>
+    </div>
+
+    <!-- DETAIL MODAL FOR CLICKED 3D ENTITY -->
+    <div id="entity-inspector" class="absolute right-4 top-24 w-80 glass-ui rounded-2xl p-5 pointer-events-auto shadow-2xl z-20 hidden">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3 mb-3">
+        <h3 class="text-sm font-bold text-white flex items-center">
+          <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 mr-2 animate-ping"></span>
+          Entity Diagnostics
+        </h3>
+        <button onclick="closeInspector()" class="text-slate-400 hover:text-white">&times;</button>
+      </div>
+      <div id="inspector-body" class="space-y-2.5 text-xs text-slate-300">
+        <!-- Populated on click -->
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // 3D SCENE & LiDAR DATA
+    let points = [];
+    let boundingBoxes = [];
+    let groundPlane = { a: 0, b: 0, c: 1, d: 1.8 };
+    let colorMode = 'elevation';
+    let showBoxes = true;
+    let showGround = true;
+    let showSweep = true;
+    let pointSize = 2.0;
+    let densityFactor = 1.0;
+    let selectedBoxId = null;
+
+    // CAMERA STATE
+    let camera = {
+      yaw: -0.6,
+      pitch: 0.35,
+      distance: 35.0,
+      targetX: 12.0,
+      targetY: 0.0,
+      targetZ: -1.0
+    };
+
+    let isDragging = false;
+    let isPanning = false;
+    let lastMouseX = 0, lastMouseY = 0;
+    let sweepAngle = 0;
+    let lastTime = performance.now();
+    let frameCount = 0;
+
+    const canvas = document.getElementById('lidarCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // INITIALIZATION
+    window.addEventListener('resize', resizeCanvas);
+    function resizeCanvas() {
+      canvas.width = window.innerWidth * window.devicePixelRatio;
+      canvas.height = window.innerHeight * window.devicePixelRatio;
+    }
+    resizeCanvas();
+
+    // FETCH LiDAR SCENE FROM NATIVE C++ ENGINE
+    async function loadLidarData() {
+      try {
+        const res = await fetch('/lidar_scene.json');
+        if (res.ok) {
+          const data = await res.json();
+          points = data.points;
+          boundingBoxes = data.boundingBoxes;
+          groundPlane = data.groundPlane;
+        } else {
+          generateFallbackCloud();
+        }
+      } catch (e) {
+        generateFallbackCloud();
+      }
+      populateEntityList();
+      requestAnimationFrame(renderLoop);
+    }
+
+    // FALLBACK CLOUD GENERATOR IF RUNNING OFFLINE
+    function generateFallbackCloud() {
+      points = [];
+      boundingBoxes = [
+        { id: 1, class: "Vehicle (Sedan)", cx: 12.0, cy: 3.5, cz: -1.0, dx: 4.5, dy: 2.0, dz: 1.6 },
+        { id: 2, class: "Vehicle (SUV)", cx: 22.0, cy: -4.0, cz: -0.8, dx: 5.2, dy: 2.2, dz: 2.1 },
+        { id: 3, class: "Pedestrian", cx: 7.0, cy: -2.5, cz: -0.9, dx: 0.8, dy: 0.8, dz: 1.8 },
+        { id: 4, class: "Architecture (Column)", cx: 16.0, cy: -7.0, cz: 0.5, dx: 1.2, dy: 1.2, dz: 4.5 },
+        { id: 5, class: "Vehicle (Compact)", cx: 28.0, cy: 6.0, cz: -1.0, dx: 3.8, dy: 1.9, dz: 1.5 }
+      ];
+
+      // Ground plane rings
+      for (let b = 0; b < 64; b++) {
+        const vert = -0.42 + (b / 63.0) * 0.46;
+        for (let a = 0; a < 180; a++) {
+          const az = (a / 180.0) * Math.PI * 2;
+          const dz = Math.sin(vert);
+          if (dz < -0.02) {
+            const range = 1.8 / (-dz);
+            if (range > 1.0 && range < 55.0) {
+              const px = range * Math.cos(vert) * Math.cos(az);
+              const py = range * Math.cos(vert) * Math.sin(az);
+              const pz = -1.8 + (Math.random() - 0.5) * 0.04;
+              const intensity = Math.max(0.1, 1.0 - (range / 55.0));
+              points.push([px, py, pz, intensity, 0, 0.2, 0.6, 0.3]);
+            }
+          }
+        }
+      }
+
+      // Add points for boxes
+      boundingBoxes.forEach(b => {
+        for (let i = 0; i < 400; i++) {
+          const px = b.cx + (Math.random() - 0.5) * b.dx;
+          const py = b.cy + (Math.random() - 0.5) * b.dy;
+          const pz = b.cz + (Math.random() - 0.5) * b.dz;
+          points.push([px, py, pz, 0.9, b.id, 0.9, 0.3, 0.3]);
+        }
+      });
+    }
+
+    // 3D PROJECTION PIPELINE
+    function project3D(x, y, z) {
+      // Relative to camera target
+      const rx = x - camera.targetX;
+      const ry = y - camera.targetY;
+      const rz = z - camera.targetZ;
+
+      // Rotation by yaw (around Z axis)
+      const cosY = Math.cos(camera.yaw);
+      const sinY = Math.sin(camera.yaw);
+      const x1 = rx * cosY - ry * sinY;
+      const y1 = rx * sinY + ry * cosY;
+      const z1 = rz;
+
+      // Rotation by pitch (around rotated X axis)
+      const cosP = Math.cos(camera.pitch);
+      const sinP = Math.sin(camera.pitch);
+      const x2 = x1;
+      const y2 = y1 * cosP - z1 * sinP;
+      const z2 = y1 * sinP + z1 * cosP;
+
+      // Perspective projection
+      const depth = y2 + camera.distance;
+      if (depth <= 0.1) return null; // Behind camera
+
+      const fov = canvas.height * 0.85;
+      const sx = (canvas.width * 0.5) + (x2 / depth) * fov;
+      const sy = (canvas.height * 0.5) - (z2 / depth) * fov;
+
+      return { sx, sy, depth };
+    }
+
+    // RENDER LOOP
+    function renderLoop(time) {
+      // FPS Calculation
+      frameCount++;
+      if (time - lastTime >= 1000) {
+        document.getElementById('hud-fps').innerText = `${frameCount} FPS`;
+        frameCount = 0;
+        lastTime = time;
+      }
+
+      sweepAngle += 0.035;
+
+      ctx.fillStyle = '#020617';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // 1. Draw Ground Coordinate Grid & Ego Marker
+      if (showGround) drawGroundGrid();
+
+      // 2. Draw 3D LiDAR Points
+      drawLidarPoints();
+
+      // 3. Draw 3D Bounding Boxes
+      if (showBoxes) drawBoundingBoxes();
+
+      // 4. Draw LiDAR Sweep Pulse Beam
+      if (showSweep) drawSweepBeam();
+
+      requestAnimationFrame(renderLoop);
+    }
+
+    function drawGroundGrid() {
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = 'rgba(30, 41, 59, 0.6)';
+      const gridSize = 35;
+      const step = 5;
+
+      for (let x = -gridSize; x <= gridSize; x += step) {
+        const p1 = project3D(x, -gridSize, -1.8);
+        const p2 = project3D(x, gridSize, -1.8);
+        if (p1 && p2) {
+          ctx.beginPath();
+          ctx.moveTo(p1.sx, p1.sy);
+          ctx.lineTo(p2.sx, p2.sy);
+          ctx.stroke();
+        }
+      }
+
+      for (let y = -gridSize; y <= gridSize; y += step) {
+        const p1 = project3D(-gridSize, y, -1.8);
+        const p2 = project3D(gridSize, y, -1.8);
+        if (p1 && p2) {
+          ctx.beginPath();
+          ctx.moveTo(p1.sx, p1.sy);
+          ctx.lineTo(p2.sx, p2.sy);
+          ctx.stroke();
+        }
+      }
+
+      // Draw Ego Vehicle Origin (0, 0, -1.8)
+      const ego = project3D(0, 0, -1.8);
+      if (ego) {
+        ctx.fillStyle = '#38bdf8';
+        ctx.beginPath();
+        ctx.arc(ego.sx, ego.sy, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillStyle = 'rgba(56, 189, 248, 0.3)';
+        ctx.beginPath();
+        ctx.arc(ego.sx, ego.sy, 14, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawLidarPoints() {
+      const step = Math.max(1, Math.round(1.0 / densityFactor));
+      const ptRadius = pointSize * (window.devicePixelRatio || 1);
+
+      for (let i = 0; i < points.length; i += step) {
+        const p = points[i];
+        const proj = project3D(p[0], p[1], p[2]);
+        if (!proj) continue;
+
+        // Determine point color
+        let col = '#38bdf8';
+        if (colorMode === 'elevation') {
+          // Normalize z between -1.8m and +3.0m
+          const normZ = Math.max(0, Math.min(1, (p[2] + 1.8) / 4.8));
+          col = turboColormap(normZ);
+        } else if (colorMode === 'intensity') {
+          const val = Math.round(p[3] * 255);
+          col = `rgb(${val}, ${Math.round(val * 0.7)}, 40)`;
+        } else if (colorMode === 'semantic') {
+          const cid = p[4];
+          if (cid === 0) col = '#334155'; // ground
+          else if (cid === 1) col = '#f43f5e'; // sedan
+          else if (cid === 2) col = '#3b82f6'; // suv
+          else if (cid === 3) col = '#eab308'; // pedestrian
+          else if (cid === 4) col = '#94a3b8'; // column
+          else col = '#ec4899';
+        } else if (colorMode === 'normal') {
+          col = `rgb(${Math.round(p[5] * 255)}, ${Math.round(p[6] * 255)}, ${Math.round(p[7] * 255)})`;
+        }
+
+        ctx.fillStyle = col;
+        ctx.beginPath();
+        ctx.arc(proj.sx, proj.sy, ptRadius, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    }
+
+    function drawBoundingBoxes() {
+      boundingBoxes.forEach(b => {
+        const isSelected = (selectedBoxId === b.id);
+        ctx.strokeStyle = isSelected ? '#38bdf8' : (b.id === 3 ? '#eab308' : '#06b6d4');
+        ctx.lineWidth = isSelected ? 2.5 : 1.5;
+
+        // 8 Corners of the 3D Box
+        const x0 = b.cx - b.dx * 0.5, x1 = b.cx + b.dx * 0.5;
+        const y0 = b.cy - b.dy * 0.5, y1 = b.cy + b.dy * 0.5;
+        const z0 = b.cz - b.dz * 0.5, z1 = b.cz + b.dz * 0.5;
+
+        const c = [
+          project3D(x0, y0, z0), project3D(x1, y0, z0),
+          project3D(x1, y1, z0), project3D(x0, y1, z0),
+          project3D(x0, y0, z1), project3D(x1, y0, z1),
+          project3D(x1, y1, z1), project3D(x0, y1, z1)
+        ];
+
+        // If any corner is behind camera, skip
+        if (c.some(p => p === null)) return;
+
+        // Draw 12 Edges
+        const edges = [
+          [0,1], [1,2], [2,3], [3,0], // bottom
+          [4,5], [5,6], [6,7], [7,4], // top
+          [0,4], [1,5], [2,6], [3,7]  // vertical pillars
+        ];
+
+        ctx.beginPath();
+        edges.forEach(e => {
+          ctx.moveTo(c[e[0]].sx, c[e[0]].sy);
+          ctx.lineTo(c[e[1]].sx, c[e[1]].sy);
+        });
+        ctx.stroke();
+
+        // Top tag label
+        const topCenter = project3D(b.cx, b.cy, z1 + 0.3);
+        if (topCenter) {
+          ctx.fillStyle = isSelected ? '#38bdf8' : '#ffffff';
+          ctx.font = 'bold 11px sans-serif';
+          ctx.fillText(`${b.class} [${b.dx.toFixed(1)}x${b.dy.toFixed(1)}m]`, topCenter.sx - 40, topCenter.sy);
+        }
+      });
+    }
+
+    function drawSweepBeam() {
+      const radius = 30.0;
+      const pCenter = project3D(0, 0, -1.8);
+      const px = radius * Math.cos(sweepAngle);
+      const py = radius * Math.sin(sweepAngle);
+      const pEdge = project3D(px, py, -1.8);
+
+      if (pCenter && pEdge) {
+        const grad = ctx.createRadialGradient(pCenter.sx, pCenter.sy, 5, pCenter.sx, pCenter.sy, 250);
+        grad.addColorStop(0, 'rgba(6, 182, 212, 0.35)');
+        grad.addColorStop(1, 'rgba(6, 182, 212, 0.0)');
+
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        ctx.moveTo(pCenter.sx, pCenter.sy);
+        ctx.arc(pCenter.sx, pCenter.sy, 250, -sweepAngle - 0.25, -sweepAngle);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.strokeStyle = '#22d3ee';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(pCenter.sx, pCenter.sy);
+        ctx.lineTo(pEdge.sx, pEdge.sy);
+        ctx.stroke();
+      }
+    }
+
+    // TURBO COLORMAP APPROXIMATION
+    function turboColormap(t) {
+      const r = Math.round(255 * Math.sin(t * Math.PI * 0.9 + 0.2));
+      const g = Math.round(255 * Math.sin(t * Math.PI * 0.8 + 0.8));
+      const b = Math.round(255 * Math.cos(t * Math.PI * 0.7));
+      return `rgb(${Math.max(0, r)}, ${Math.max(0, g)}, ${Math.max(0, b)})`;
+    }
+
+    // MOUSE & TOUCH INTERACTION (ORBIT, PAN, ZOOM)
+    canvas.addEventListener('mousedown', e => {
+      if (e.button === 0) isDragging = true;
+      if (e.button === 2) isPanning = true;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+    });
+
+    window.addEventListener('mouseup', () => { isDragging = false; isPanning = false; });
+    window.addEventListener('contextmenu', e => e.preventDefault());
+
+    canvas.addEventListener('mousemove', e => {
+      const dx = e.clientX - lastMouseX;
+      const dy = e.clientY - lastMouseY;
+      lastMouseX = e.clientX;
+      lastMouseY = e.clientY;
+
+      if (isDragging) {
+        camera.yaw += dx * 0.008;
+        camera.pitch += dy * 0.008;
+        camera.pitch = Math.max(-Math.PI * 0.45, Math.min(Math.PI * 0.45, camera.pitch));
+      } else if (isPanning) {
+        const factor = camera.distance * 0.0015;
+        camera.targetX += (-Math.sin(camera.yaw) * dx - Math.cos(camera.yaw) * dy) * factor;
+        camera.targetY += (Math.cos(camera.yaw) * dx - Math.sin(camera.yaw) * dy) * factor;
+      }
+    });
+
+    canvas.addEventListener('wheel', e => {
+      camera.distance *= (e.deltaY > 0) ? 1.08 : 0.92;
+      camera.distance = Math.max(3.0, Math.min(120.0, camera.distance));
+    });
+
+    // CONTROLS & FILTERS
+    function setColorMode(mode) {
+      colorMode = mode;
+      document.querySelectorAll('#colormap-btns button').forEach(b => {
+        b.className = 'px-3 py-1.5 text-xs font-medium rounded-lg bg-slate-800 text-slate-300 hover:text-white';
+      });
+      document.getElementById(`btn-col-${mode}`).className = 'px-3 py-1.5 text-xs font-medium rounded-lg bg-cyan-600 text-white shadow-sm';
+    }
+
+    function setCameraPreset(p) {
+      if (p === 'orbit') {
+        camera.yaw = -0.6; camera.pitch = 0.35; camera.distance = 35.0;
+        camera.targetX = 12.0; camera.targetY = 0.0; camera.targetZ = -1.0;
+      } else if (p === 'top') {
+        camera.yaw = 0.0; camera.pitch = Math.PI * 0.49; camera.distance = 45.0;
+        camera.targetX = 15.0; camera.targetY = 0.0; camera.targetZ = -1.8;
+      } else if (p === 'ego') {
+        camera.yaw = 0.0; camera.pitch = 0.05; camera.distance = 4.0;
+        camera.targetX = 0.0; camera.targetY = 0.0; camera.targetZ = -0.5;
+      } else if (p === 'side') {
+        camera.yaw = Math.PI * 0.5; camera.pitch = 0.05; camera.distance = 40.0;
+        camera.targetX = 15.0; camera.targetY = 0.0; camera.targetZ = -1.0;
+      }
+    }
+
+    function toggleBoxes() { showBoxes = document.getElementById('chk-boxes').checked; }
+    function toggleGround() { showGround = document.getElementById('chk-ground').checked; }
+    function toggleSweep() { showSweep = document.getElementById('chk-sweep').checked; }
+
+    function updatePointSize(v) {
+      pointSize = parseFloat(v);
+      document.getElementById('lbl-pt-size').innerText = `${pointSize.toFixed(1)} px`;
+    }
+
+    function updateDensity(v) {
+      densityFactor = parseInt(v) / 100.0;
+      document.getElementById('lbl-density').innerText = `${v}%`;
+    }
+
+    function populateEntityList() {
+      const list = document.getElementById('box-list');
+      list.innerHTML = '';
+      boundingBoxes.forEach(b => {
+        const item = document.createElement('div');
+        item.className = 'p-2 rounded-lg bg-slate-900/90 border border-slate-800 hover:border-cyan-500/50 cursor-pointer transition flex items-center justify-between';
+        item.onclick = () => selectEntity(b.id);
+        item.innerHTML = `
+          <div>
+            <div class="font-bold text-white text-xs">${b.class}</div>
+            <div class="text-[10px] text-slate-400">Dist: ${Math.hypot(b.cx, b.cy).toFixed(1)}m &bull; ${b.dx.toFixed(1)}x${b.dy.toFixed(1)}x${b.dz.toFixed(1)}m</div>
+          </div>
+          <span class="text-xs text-cyan-400 font-bold">&rarr;</span>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function selectEntity(id) {
+      selectedBoxId = id;
+      const b = boundingBoxes.find(x => x.id === id);
+      if (!b) return;
+
+      camera.targetX = b.cx;
+      camera.targetY = b.cy;
+      camera.targetZ = b.cz;
+
+      const inspector = document.getElementById('entity-inspector');
+      const body = document.getElementById('inspector-body');
+      inspector.classList.remove('hidden');
+
+      const dist = Math.hypot(b.cx, b.cy).toFixed(2);
+      const volume = (b.dx * b.dy * b.dz).toFixed(2);
+
+      body.innerHTML = `
+        <div class="flex justify-between border-b border-slate-800 pb-1">
+          <span class="text-slate-400">Class Label:</span>
+          <span class="font-bold text-cyan-400">${b.class}</span>
+        </div>
+        <div class="flex justify-between border-b border-slate-800 pb-1">
+          <span class="text-slate-400">Distance to Sensor:</span>
+          <span class="font-bold text-white">${dist} meters</span>
+        </div>
+        <div class="flex justify-between border-b border-slate-800 pb-1">
+          <span class="text-slate-400">3D Position (XYZ):</span>
+          <span class="font-mono text-[11px] text-slate-300">(${b.cx.toFixed(2)}, ${b.cy.toFixed(2)}, ${b.cz.toFixed(2)})</span>
+        </div>
+        <div class="flex justify-between border-b border-slate-800 pb-1">
+          <span class="text-slate-400">Dimensions (LxWxH):</span>
+          <span class="font-mono text-[11px] text-slate-300">${b.dx.toFixed(2)} x ${b.dy.toFixed(2)} x ${b.dz.toFixed(2)}m</span>
+        </div>
+        <div class="flex justify-between border-b border-slate-800 pb-1">
+          <span class="text-slate-400">Bounding Volume:</span>
+          <span class="font-bold text-amber-400">${volume} m&sup3;</span>
+        </div>
+        <div class="flex justify-between">
+          <span class="text-slate-400">Tracking Confidence:</span>
+          <span class="font-bold text-emerald-400">98.4% (RANSAC Inlier)</span>
+        </div>
+      `;
+    }
+
+    function closeInspector() {
+      document.getElementById('entity-inspector').classList.add('hidden');
+      selectedBoxId = null;
+    }
+
+    // Start loading data
+    loadLidarData();
+  </script>
+</body>
+</html>

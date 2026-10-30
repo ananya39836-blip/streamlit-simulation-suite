@@ -1,0 +1,1549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Scientific Mission Control Center & Spacecraft 3D Holo-Bridge Studio</title>
+<!-- Local Three.js with CDN Fallback -->
+<script src="three.min.js"></script>
+<script>
+  if (typeof THREE === 'undefined') {
+    document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\/script>');
+  }
+</script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+  body, html { width: 100%; height: 100%; overflow: hidden; background: #01040a; font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; color: #fff; }
+  #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; cursor: crosshair; }
+  #cv-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 15; }
+
+  /* TOP PERSPECTIVE NAVIGATION STRIP (Inspect Each of the 3 Environments) */
+  .top-nav-bar {
+    position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+    background: rgba(4, 12, 24, 0.94); border: 1.5px solid rgba(0, 229, 255, 0.7);
+    border-radius: 28px; padding: 6px 18px; display: flex; gap: 12px; align-items: center;
+    backdrop-filter: blur(14px); box-shadow: 0 4px 35px rgba(0, 180, 255, 0.45); z-index: 30;
+  }
+  .nav-btn {
+    background: rgba(8, 24, 45, 0.9); border: 1px solid rgba(0, 229, 255, 0.4);
+    border-radius: 16px; padding: 6px 16px; font-size: 11px; font-weight: 800; color: #88ccee;
+    cursor: pointer; transition: all 0.2s ease; display: flex; align-items: center; gap: 6px;
+    pointer-events: auto;
+  }
+  .nav-btn:hover { background: rgba(0, 229, 255, 0.25); color: #fff; transform: translateY(-1px); }
+  .nav-btn.active {
+    background: linear-gradient(135deg, #0284c7, #0369a1); border-color: #38bdf8;
+    color: #fff; box-shadow: 0 0 14px rgba(56, 189, 248, 0.6);
+  }
+
+  /* PLANETARY WARP SECTOR SELECTOR */
+  .warp-select-strip {
+    position: absolute; top: 62px; left: 50%; transform: translateX(-50%);
+    display: flex; gap: 8px; z-index: 25; pointer-events: auto;
+  }
+  .warp-chip {
+    background: rgba(10, 24, 42, 0.92); border: 1.2px solid rgba(0, 229, 255, 0.4);
+    border-radius: 14px; padding: 4px 12px; font-size: 10.5px; font-weight: bold; color: #88ccee;
+    cursor: pointer; backdrop-filter: blur(8px); transition: all 0.15s ease;
+  }
+  .warp-chip:hover { border-color: #00ffaa; color: #00ffaa; }
+  .warp-chip.active { border-color: #00ffaa; color: #00ffaa; box-shadow: 0 0 12px rgba(0,255,170,0.5); background: rgba(0, 255, 170, 0.15); }
+
+  /* ENVIRONMENT 2 & 3: MISSION CONTROL VIDEO WALL MODAL (NASA / TsUP / ESA) */
+  #mcc-wall-overlay {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(2, 6, 14, 0.96); z-index: 20; display: none;
+    flex-direction: column; padding: 65px 24px 20px 24px; overflow-y: auto;
+    backdrop-filter: blur(12px); pointer-events: auto;
+  }
+  .mcc-grid {
+    display: grid; grid-template-columns: 2fr 1fr; grid-template-rows: auto auto;
+    gap: 16px; width: 100%; max-width: 1440px; margin: 0 auto;
+  }
+  .mcc-panel {
+    background: rgba(6, 16, 32, 0.95); border: 1.5px solid rgba(0, 229, 255, 0.4);
+    border-radius: 12px; padding: 14px 18px; box-shadow: 0 8px 30px rgba(0,0,0,0.8);
+    display: flex; flex-direction: column;
+  }
+  .mcc-panel-title {
+    font-size: 12px; font-weight: 800; color: #00e5ff; letter-spacing: 1px;
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.25); padding-bottom: 6px; font-family: monospace;
+  }
+  .ground-track-wrap { position: relative; width: 100%; height: 260px; background: #020a14; border-radius: 8px; overflow: hidden; border: 1px solid rgba(0, 229, 255, 0.2); }
+  #ground-track-canvas { width: 100%; height: 100%; }
+
+  /* SATELLITE RECON CAMERA (Picture-in-Picture) */
+  #satellite-cam-card {
+    position: absolute; top: 15px; left: 20px; width: 280px; height: 185px;
+    background: rgba(3, 10, 20, 0.94); border: 1.5px solid rgba(0, 229, 255, 0.65);
+    border-radius: 10px; overflow: hidden; box-shadow: 0 8px 30px rgba(0,0,0,0.85);
+    z-index: 25; display: flex; flex-direction: column; pointer-events: auto;
+  }
+  .cam-header {
+    background: rgba(10, 25, 45, 0.95); padding: 5px 10px; font-size: 10px; font-weight: 800;
+    color: #00e5ff; display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid rgba(0, 229, 255, 0.3); font-family: monospace;
+  }
+  .cam-viewport-wrap { position: relative; width: 100%; flex: 1; background: #000; }
+  #sat-canvas { width: 100%; height: 100%; display: block; }
+  .cam-hud-grid {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none; border: 1px solid rgba(0, 255, 170, 0.2);
+    display: flex; flex-direction: column; justify-content: space-between; padding: 6px;
+    font-family: monospace; font-size: 9px; color: #00ffaa;
+  }
+  .cam-cross { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 24px; height: 24px; border: 1px dashed rgba(0, 255, 170, 0.6); border-radius: 50%; }
+
+  /* SPECTROMETER INSTRUMENT PANEL */
+  #spectrometer-card {
+    position: absolute; top: 210px; left: 20px; width: 280px; height: 155px;
+    background: rgba(3, 10, 20, 0.94); border: 1.5px solid rgba(0, 229, 255, 0.55);
+    border-radius: 10px; padding: 8px 12px; box-shadow: 0 8px 30px rgba(0,0,0,0.85);
+    z-index: 25; display: flex; flex-direction: column; pointer-events: auto;
+  }
+  .spec-title { font-size: 10.5px; font-weight: 800; color: #00e5ff; font-family: monospace; display: flex; justify-content: space-between; margin-bottom: 4px; }
+  #spectrum-canvas { width: 100%; height: 75px; background: rgba(5, 12, 22, 0.95); border: 1px solid rgba(0, 229, 255, 0.25); border-radius: 4px; }
+  .spec-readout { font-family: monospace; font-size: 9px; color: #88ccee; margin-top: 5px; display: flex; justify-content: space-between; }
+
+  /* 3D SPACETIME ODOMETER */
+  #odometer-card {
+    position: absolute; top: 375px; left: 20px; width: 280px;
+    background: rgba(3, 10, 20, 0.94); border: 1.5px solid rgba(0, 229, 255, 0.55);
+    border-radius: 10px; padding: 10px 14px; z-index: 25; font-size: 10px; font-family: monospace;
+    pointer-events: auto;
+  }
+  .odo-row { display: flex; justify-content: space-between; margin-bottom: 3.5px; }
+  .odo-val { color: #00ffaa; font-weight: bold; }
+
+  /* 3D RADAR & SIGNALS */
+  .radar-box {
+    position: absolute; top: 15px; right: 20px; width: 150px; height: 150px;
+    border-radius: 50%; background: rgba(2, 8, 18, 0.94);
+    border: 2px solid rgba(0, 229, 255, 0.65); box-shadow: 0 0 25px rgba(0, 180, 255, 0.35);
+    overflow: hidden; z-index: 25; pointer-events: auto;
+  }
+  #radar-canvas { width: 100%; height: 100%; }
+
+  #signal-card {
+    position: absolute; top: 175px; right: 20px; width: 260px; height: 185px;
+    background: rgba(3, 10, 20, 0.94); border: 1.5px solid rgba(0, 229, 255, 0.55);
+    border-radius: 10px; padding: 10px 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.85);
+    z-index: 25; font-family: monospace; font-size: 10px; pointer-events: auto;
+  }
+  #scope-canvas { width: 100%; height: 55px; background: rgba(5, 12, 22, 0.95); border: 1px solid rgba(0, 255, 170, 0.3); border-radius: 4px; margin: 6px 0; }
+
+  /* FREE FIRE STYLE SPACECRAFT HUD (Bottom Left) */
+  .ship-status-panel {
+    position: absolute; bottom: 20px; left: 20px; width: 320px;
+    background: rgba(3, 10, 20, 0.95); border: 1.5px solid rgba(0, 229, 255, 0.55);
+    border-radius: 12px; padding: 12px 18px; backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.85); z-index: 25; pointer-events: auto;
+  }
+  .stat-row { display: flex; justify-content: space-between; font-size: 11px; font-weight: 800; margin-bottom: 2px; }
+  .bar-bg { width: 100%; height: 8px; background: rgba(255,255,255,0.12); border-radius: 4px; overflow: hidden; margin-bottom: 6px; }
+  .hull-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #ff3366, #ff8800); }
+  .shield-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #00d4ff, #0066ff); }
+  .thrust-fill { width: 100%; height: 100%; background: linear-gradient(90deg, #00ffaa, #00aa66); }
+
+  /* WEAPONS STRIP (Free Fire 3-Tier Weapon Arsenal) */
+  .weapon-selector-strip {
+    display: flex; gap: 6px; margin-top: 6px; margin-bottom: 6px;
+  }
+  .wpn-chip {
+    flex: 1; background: rgba(10, 25, 45, 0.85); border: 1px solid rgba(0, 229, 255, 0.3);
+    border-radius: 6px; padding: 5px; text-align: center; cursor: pointer; font-size: 9.5px;
+    font-weight: 800; color: #88ccee; font-family: monospace; transition: all 0.15s;
+  }
+  .wpn-chip.active { background: linear-gradient(135deg, #ff0055, #990033); border-color: #ff3366; color: #fff; box-shadow: 0 0 10px rgba(255, 0, 85, 0.5); }
+
+  /* Quick Action Buttons */
+  .action-strip { display: flex; gap: 6px; margin-top: 6px; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 6px; }
+  .act-btn { flex: 1; background: rgba(10, 25, 45, 0.85); border: 1px solid rgba(0, 229, 255, 0.4); border-radius: 6px; padding: 6px; text-align: center; cursor: pointer; pointer-events: auto; font-family: monospace; font-size: 9px; font-weight: bold; color: #00ffcc; transition: background 0.15s, transform 0.1s; }
+  .act-btn:hover { background: rgba(0, 229, 255, 0.25); transform: translateY(-2px); }
+
+  /* ON-SCREEN FREE FIRE STYLE TOUCH & CLICK BUTTONS */
+  #on-screen-controls {
+    position: absolute; bottom: 25px; right: 25px; display: flex; flex-direction: column; gap: 10px;
+    align-items: flex-end; z-index: 30; pointer-events: auto;
+  }
+  .fire-btn {
+    width: 78px; height: 78px; border-radius: 50%;
+    background: radial-gradient(circle, #ff2255, #990022);
+    border: 3px solid #ff4477; box-shadow: 0 0 25px rgba(255, 34, 85, 0.7);
+    color: #fff; font-size: 14px; font-weight: 900; letter-spacing: 1px;
+    display: flex; justify-content: center; align-items: center; cursor: pointer;
+    transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .fire-btn:active { transform: scale(0.92); box-shadow: 0 0 35px #ff2255; }
+  .sub-action-row { display: flex; gap: 8px; }
+  .round-btn {
+    width: 52px; height: 52px; border-radius: 50%;
+    background: rgba(8, 24, 45, 0.9); border: 2px solid #00e5ff;
+    color: #00e5ff; font-size: 10px; font-weight: bold;
+    display: flex; justify-content: center; align-items: center; cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.6);
+  }
+  .round-btn:hover { background: rgba(0, 229, 255, 0.3); }
+
+  /* Reticle */
+  #flight-crosshair {
+    position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+    width: 50px; height: 50px; pointer-events: none; z-index: 20;
+  }
+  .ret-circle { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 1.5px dashed rgba(0, 229, 255, 0.75); border-radius: 50%; }
+  .ret-dot { position: absolute; top: 22px; left: 22px; width: 6px; height: 6px; background: #00ffaa; border-radius: 50%; }
+
+  /* Control Keys Bar */
+  .control-bar {
+    position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: rgba(3, 10, 20, 0.88); border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 20px; padding: 6px 20px; display: flex; gap: 14px; font-size: 11px; color: #c0d8f0;
+    pointer-events: none; z-index: 25;
+  }
+  .key-tag { background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; padding: 1px 6px; color: #fff; font-weight: 800; }
+
+  /* Start Blocker (Guaranteed 1-Click Failsafe Dismissal) */
+  #blocker {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(1, 4, 10, 0.88); display: flex; flex-direction: column;
+    justify-content: center; align-items: center; z-index: 100; backdrop-filter: blur(8px);
+    cursor: pointer;
+  }
+  .modal-box {
+    background: rgba(6, 16, 32, 0.98); border: 2px solid #00e5ff;
+    border-radius: 16px; padding: 36px 48px; text-align: center;
+    max-width: 720px; box-shadow: 0 0 60px rgba(0, 229, 255, 0.45);
+    cursor: default;
+  }
+  .modal-title { font-size: 26px; font-weight: 900; color: #00e5ff; letter-spacing: 2px; margin-bottom: 12px; }
+  .modal-desc { font-size: 13px; color: #c0d8f0; line-height: 1.6; margin-bottom: 24px; }
+  .modal-btn {
+    background: linear-gradient(135deg, #00e5ff, #0066ff); border: none;
+    border-radius: 8px; color: #fff; font-size: 15px; font-weight: 800;
+    padding: 14px 42px; cursor: pointer; letter-spacing: 1px;
+    box-shadow: 0 4px 20px rgba(0, 229, 255, 0.5); transition: transform 0.15s;
+  }
+  .modal-btn:hover { transform: scale(1.06); }
+</style>
+</head>
+<body>
+
+<div id="canvas-container"></div>
+<canvas id="cv-overlay"></canvas>
+
+<!-- Top Perspective Navigation Bar (Inspect each of the user-provided images) -->
+<div class="top-nav-bar">
+  <div class="nav-btn active" id="btn-view-flight" onclick="switchPerspective('FLIGHT')">
+    🚀 3D Space Flight Deck
+  </div>
+  <div class="nav-btn" id="btn-view-bridge" onclick="switchPerspective('BRIDGE')">
+    🛸 Sci-Fi Holo-Bridge (Image 1)
+  </div>
+  <div class="nav-btn" id="btn-view-mcc" onclick="switchPerspective('MCC')">
+    🛰️ Mission Control Video Wall (Images 2 & 3)
+  </div>
+  <div style="width: 1px; height: 18px; background: rgba(255,255,255,0.2);"></div>
+  <div style="font-size: 11px; font-family: monospace; color: #00ffaa;">
+    ⏱️ <span id="top-timer">00:00:00</span>
+  </div>
+</div>
+
+<!-- Planetary Warp Selector (Earth -> Moon -> Asteroids -> Mars -> Deep Space) -->
+<div class="warp-select-strip" id="warp-strip">
+  <div class="warp-chip active" id="chip-earth" onclick="warpToSector('EARTH')">🌍 Earth Departure</div>
+  <div class="warp-chip" id="chip-moon" onclick="warpToSector('MOON')">🌕 Lunar Slingshot</div>
+  <div class="warp-chip" id="chip-asteroids" onclick="warpToSector('ASTEROIDS')">☄️ Asteroid Belt</div>
+  <div class="warp-chip" id="chip-mars" onclick="warpToSector('MARS')">🪐 Mars Citadel</div>
+  <div class="warp-chip" id="chip-deep" onclick="warpToSector('DEEP')">🌌 Interstellar Gate</div>
+</div>
+
+<!-- ENVIRONMENT 2 & 3: FULL MISSION CONTROL VIDEO WALL MODAL -->
+<div id="mcc-wall-overlay">
+  <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; max-width:1440px; margin-left:auto; margin-right:auto; width:100%;">
+    <div>
+      <h2 style="font-size:20px; font-weight:900; color:#00e5ff; letter-spacing:1px;">🛰️ GLOBAL AEROSPACE MISSION CONTROL CENTER (MCC)</h2>
+      <p style="font-size:11px; color:#94a3b8; font-family:monospace;">International Flight Operations • DSN Madrid / Goldstone / Canberra • TsUP / NASA MCC Standards</p>
+    </div>
+    <div class="nav-btn" onclick="switchPerspective('FLIGHT')" style="background:rgba(255,34,85,0.3); border-color:#ff3366; color:#ff6688;">
+      ✕ Return to Flight Deck
+    </div>
+  </div>
+
+  <div class="mcc-grid">
+    <!-- Panel 1: Live 2D Mercator Ground Track Map (BBC Images 2 & 3) -->
+    <div class="mcc-panel">
+      <div class="mcc-panel-title">
+        <span>🌍 GLOBAL ORBITAL GROUND TRACK & DEEP SPACE NETWORK (DSN)</span>
+        <span style="color:#00ffaa;">SINE-WAVE TRAJECTORY: ACTIVE</span>
+      </div>
+      <div class="ground-track-wrap">
+        <canvas id="ground-track-canvas" width="800" height="260"></canvas>
+      </div>
+      <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:10px; font-family:monospace; color:#88ccee;">
+        <span>📡 Goldstone (35.4°N, 116.8°W) [LINK OK]</span>
+        <span>📡 Madrid (40.4°N, 4.2°W) [LINK OK]</span>
+        <span>📡 Canberra (35.4°S, 148.9°E) [LINK OK]</span>
+      </div>
+    </div>
+
+    <!-- Panel 2: Space Situational Awareness (SSA) Swarm (Image 3) -->
+    <div class="mcc-panel">
+      <div class="mcc-panel-title">
+        <span>🌐 3D SPACE SITUATIONAL AWARENESS (SSA)</span>
+        <span style="color:#ffaa00;">1,420 TRACKED OBJECTS</span>
+      </div>
+      <div style="font-size:10px; font-family:monospace; color:#cbd5e1; line-height:1.6;">
+        <div class="odo-row"><span>LEO Constellation (200-2000 km):</span><span class="odo-val">842 Active Satellites</span></div>
+        <div class="odo-row"><span>MEO Navigation (Galileo/GPS):</span><span class="odo-val">64 Active Satellites</span></div>
+        <div class="odo-row"><span>GEO Telecom Ring (35,786 km):</span><span class="odo-val">412 Active Satellites</span></div>
+        <div class="odo-row"><span>Orbital Debris Risk Index:</span><span style="color:#10b981; font-weight:bold;">0.0004% (NOMINAL)</span></div>
+        <div class="odo-row"><span>Conjunction Warning:</span><span style="color:#10b981; font-weight:bold;">NO COLLISION HAZARD</span></div>
+        <div class="odo-row"><span>Solar Storm Radiation Flux:</span><span class="odo-val">1,361 W/m²</span></div>
+      </div>
+    </div>
+
+    <!-- Panel 3: Keplerian Orbital Mechanics & State Vectors (BBC Image 2) -->
+    <div class="mcc-panel">
+      <div class="mcc-panel-title">
+        <span>📐 KEPLERIAN ORBITAL STATE VECTORS (LVLH FRAME)</span>
+        <span style="color:#00ffaa;">PROPAGATION: RK4</span>
+      </div>
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; font-size:10.5px; font-family:monospace;">
+        <div>
+          <div class="odo-row"><span>Semi-Major Axis (a):</span><span class="odo-val">6,878.14 km</span></div>
+          <div class="odo-row"><span>Eccentricity (e):</span><span class="odo-val">0.00124 (Near Circular)</span></div>
+          <div class="odo-row"><span>Inclination (i):</span><span class="odo-val">51.642° (ISS Orbit)</span></div>
+          <div class="odo-row"><span>Right Ascension (RAAN):</span><span class="odo-val">124.52°</span></div>
+        </div>
+        <div>
+          <div class="odo-row"><span>Argument of Perigee:</span><span class="odo-val">78.21°</span></div>
+          <div class="odo-row"><span>True Anomaly (&nu;):</span><span class="odo-val" id="mcc-nu">214.8°</span></div>
+          <div class="odo-row"><span>Orbital Period (T):</span><span class="odo-val">92.68 min</span></div>
+          <div class="odo-row"><span>Orbital Velocity (v):</span><span class="odo-val" id="mcc-vel">7.67 km/s</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 4: Subsystem Engineering Telemetry (FLIGHT / FIDO / CAPCOM) -->
+    <div class="mcc-panel">
+      <div class="mcc-panel-title">
+        <span>⚡ SPACECRAFT TELEMETRY & STM32H7 ISR MATRIX</span>
+        <span style="color:#00ffaa;">1 kHz SYSTICK OK</span>
+      </div>
+      <div style="font-size:10px; font-family:monospace; color:#cbd5e1; line-height:1.6;">
+        <div class="odo-row"><span>Main Engine (LOX/Methane) Isp:</span><span class="odo-val">380 s</span></div>
+        <div class="odo-row"><span>RCS Propellant Remaining:</span><span class="odo-val">88.4%</span></div>
+        <div class="odo-row"><span>Cryogenic Tank Pressure:</span><span class="odo-val">4.20 MPa</span></div>
+        <div class="odo-row"><span>Power Bus Voltage:</span><span class="odo-val">120.4 VDC</span></div>
+        <div class="odo-row"><span>Cabin Oxygen Partial Pressure:</span><span class="odo-val">21.2 kPa</span></div>
+        <div class="odo-row"><span>Internal Temperature:</span><span class="odo-val">21.5 °C (NOMINAL)</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SATELLITE RECON CAMERA (Picture-in-Picture) -->
+<div id="satellite-cam-card">
+  <div class="cam-header">
+    <span>🛰️ RECON SAT-09 ORBITAL FEED</span>
+    <span id="sat-mode-tag" style="color:#00ffaa;">OPTICAL RGB</span>
+  </div>
+  <div class="cam-viewport-wrap">
+    <canvas id="sat-canvas"></canvas>
+    <div class="cam-hud-grid">
+      <div>ALT: 420.5 km | INC: 51.6°</div>
+      <div class="cam-cross"></div>
+      <div style="display:flex; justify-content:space-between;">
+        <span>FOV: 45°</span>
+        <span id="sat-target-tag">TRACKING: SPACECRAFT-01</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SPECTROMETER INSTRUMENT PANEL -->
+<div id="spectrometer-card">
+  <div class="spec-title">
+    <span>🔬 OPTICAL EMISSION SPECTROMETER</span>
+    <span style="color:#ffaa00;">380 - 780 nm</span>
+  </div>
+  <canvas id="spectrum-canvas" width="256" height="75"></canvas>
+  <div class="spec-readout">
+    <span>H&alpha;: 656.3 nm</span>
+    <span>O₂: 760.0 nm (Earth)</span>
+    <span>CH₄: 619.0 nm</span>
+  </div>
+</div>
+
+<!-- 3D SPACETIME ODOMETER -->
+<div id="odometer-card">
+  <div style="color:#00e5ff; font-weight:800; border-bottom:1px solid rgba(0,229,255,0.3); padding-bottom:3px; margin-bottom:5px;">
+    ⏱️ 3D EARTH-TO-SPACE ODOMETER
+  </div>
+  <div class="odo-row"><span>Earth Departure Dist:</span><span class="odo-val" id="odo-dist">0.000 km</span></div>
+  <div class="odo-row"><span>Coordinate Time (t):</span><span class="odo-val" id="odo-t">00:00:00.0</span></div>
+  <div class="odo-row"><span>Proper Time (&tau;):</span><span class="odo-val" id="odo-tau">00:00:00.0</span></div>
+  <div class="odo-row"><span>Cumulative &Delta;v:</span><span class="odo-val" id="odo-deltav">0.00 km/s</span></div>
+  <div class="odo-row"><span>Lorentz Factor (&gamma;):</span><span class="odo-val" id="odo-gamma">1.0000</span></div>
+</div>
+
+<!-- 3D SPHERICAL RADAR -->
+<div class="radar-box">
+  <canvas id="radar-canvas" width="150" height="150"></canvas>
+</div>
+
+<!-- SATELLITE RF SIGNALS & OSCILLOSCOPE -->
+<div id="signal-card">
+  <div style="color:#00e5ff; font-weight:800; border-bottom:1px solid rgba(0,229,255,0.3); padding-bottom:3px;">
+    📶 DEEP SPACE NETWORK (DSN UPLINK)
+  </div>
+  <canvas id="scope-canvas" width="232" height="55"></canvas>
+  <div class="odo-row"><span>Downlink Bitrate:</span><span class="odo-val" id="rf-rate">250.0 Mbps</span></div>
+  <div class="odo-row"><span>Carrier SNR:</span><span class="odo-val" id="rf-snr">+28.4 dB</span></div>
+  <div class="odo-row"><span>Signal Latency:</span><span class="odo-val" id="rf-ping">14.2 ms</span></div>
+  <div class="odo-row"><span>Dish Az/El:</span><span class="odo-val" id="rf-azel">142.5° / 48.2°</span></div>
+</div>
+
+<!-- SPACECRAFT STATUS & QUICK CONTROLS -->
+<div class="ship-status-panel">
+  <div class="stat-row"><span style="color:#ff3366;">HULL INTEGRITY</span><span id="hull-pct">100%</span></div>
+  <div class="bar-bg"><div class="hull-fill" id="hull-bar"></div></div>
+
+  <div class="stat-row"><span style="color:#00d4ff;">PLASMA DEFLECTOR</span><span id="shield-pct">100%</span></div>
+  <div class="bar-bg"><div class="shield-fill" id="shield-bar"></div></div>
+
+  <div class="stat-row"><span style="color:#00ffaa;">THRUSTER CAPACITOR</span><span id="thrust-pct">100%</span></div>
+  <div class="bar-bg"><div class="thrust-fill" id="thrust-bar"></div></div>
+
+  <!-- FREE FIRE 3-TIER WEAPON SELECTOR -->
+  <div class="weapon-selector-strip">
+    <div class="wpn-chip active" id="wpn-1" onclick="selectWeapon(1)">1: DUAL LASERS</div>
+    <div class="wpn-chip" id="wpn-2" onclick="selectWeapon(2)">2: SCATTER PLAS</div>
+    <div class="wpn-chip" id="wpn-3" onclick="selectWeapon(3)">3: GAUSS RAIL</div>
+  </div>
+
+  <div class="action-strip">
+    <div class="act-btn" onclick="deploySpaceGlooShield()">GLOO SHIELD [G]</div>
+    <div class="act-btn" onclick="toggleFlightAssist()">FLT ASSIST [X]</div>
+    <div class="act-btn" onclick="cycleSatCamera()">CYCLE SAT [C]</div>
+  </div>
+</div>
+
+<!-- ON-SCREEN FREE FIRE STYLE INTERACTIVE CONTROLS -->
+<div id="on-screen-controls">
+  <div class="fire-btn" id="btn-fire" onmousedown="startFiring()" onmouseup="stopFiring()" ontouchstart="startFiring()" ontouchend="stopFiring()">
+    FIRE
+  </div>
+  <div class="sub-action-row">
+    <div class="round-btn" onclick="triggerBoost()">BOOST</div>
+    <div class="round-btn" onclick="deploySpaceGlooShield()">SHIELD</div>
+    <div class="round-btn" onclick="toggleLiDAR()">LIDAR</div>
+  </div>
+</div>
+
+<!-- Flight Crosshair -->
+<div id="flight-crosshair">
+  <div class="ret-circle"></div>
+  <div class="ret-dot"></div>
+</div>
+
+<!-- Keybinds Bar -->
+<div class="control-bar">
+  <span><span class="key-tag">W S</span> Thrust / Reverse</span>
+  <span><span class="key-tag">A D</span> Strafe</span>
+  <span><span class="key-tag">Q E</span> Roll</span>
+  <span><span class="key-tag">SPACE C</span> Heave</span>
+  <span><span class="key-tag">SHIFT</span> Boost</span>
+  <span><span class="key-tag">1 2 3</span> Weapons</span>
+  <span><span class="key-tag">G</span> Gloo Shield</span>
+  <span><span class="key-tag">V</span> Change Cam</span>
+  <span><span class="key-tag">L</span> LiDAR</span>
+  <span><span class="key-tag">L-CLICK</span> Fire</span>
+</div>
+
+<!-- Modal Start Blocker (Guaranteed 1-Click Failsafe Dismissal) -->
+<div id="blocker" onclick="dismissBlocker()">
+  <div class="modal-box" onclick="event.stopPropagation()">
+    <div class="modal-title">EARTH-TO-SPACE 3D MISSION</div>
+    <div class="modal-desc">
+      A complete, playable scientific space mission studio matching real-world aerospace flight controls and sci-fi bridge environments:
+      <br><br>
+      • <b>Sci-Fi Command Bridge (Image 1):</b> Raised 3D circular holographic tactical table, panoramic flight screens, ergonomic bridge stations.<br>
+      • <b>Mission Control Video Wall (Images 2 & 3):</b> Real-time 2D Mercator ground tracks, 3D satellite constellation swarm, Keplerian state vectors.<br>
+      • <b>Free Fire Space Flight Deck:</b> 6-DOF controls, deployable Quantum Gloo Shields, 3-tier weapon arsenal, hostile drone AI with damage numbers, and deep space supply airdrops!
+    </div>
+    <button class="modal-btn" id="start-btn" onclick="dismissBlocker()">ENGAGE MISSION & LAUNCH FLIGHT DECK</button>
+  </div>
+</div>
+
+<script>
+// ============================================================================
+// MODAL DISMISSAL & FAILSAFE CONTROL ENTRY
+// ============================================================================
+const blocker = document.getElementById('blocker');
+function dismissBlocker() {
+  blocker.style.display = 'none';
+  window.focus();
+  try {
+    document.body.requestPointerLock();
+  } catch(err) {
+    console.log("Pointer lock not permitted; mouse drag fallback active.");
+  }
+}
+
+let pointerLocked = false;
+document.addEventListener('pointerlockchange', () => {
+  pointerLocked = (document.pointerLockElement === document.body);
+});
+
+let isDragging = false;
+let previousMousePosition = { x: 0, y: 0 };
+
+window.addEventListener('mousedown', (e) => {
+  if (e.target.closest('#on-screen-controls') || e.target.closest('.action-strip') ||
+      e.target.closest('.warp-select-strip') || e.target.closest('.top-nav-bar') ||
+      e.target.closest('.weapon-selector-strip') || e.target.closest('#mcc-wall-overlay')) return;
+  isDragging = true;
+  previousMousePosition = { x: e.clientX, y: e.clientY };
+  if (!pointerLocked && blocker.style.display === 'none') {
+    window.focus();
+  }
+});
+
+window.addEventListener('mouseup', () => { isDragging = false; });
+
+window.addEventListener('mousemove', (e) => {
+  if (pointerLocked) {
+    const sens = 0.0018;
+    if (activePerspective === 'FLIGHT') {
+      shipState.angVel.y -= e.movementX * sens;
+      shipState.angVel.x -= e.movementY * sens;
+    } else if (activePerspective === 'BRIDGE') {
+      bridgeCamYaw -= e.movementX * sens * 1.5;
+      bridgeCamPitch -= e.movementY * sens * 1.5;
+      bridgeCamPitch = Math.max(-0.6, Math.min(0.6, bridgeCamPitch));
+    }
+  } else if (isDragging) {
+    const deltaX = e.clientX - previousMousePosition.x;
+    const deltaY = e.clientY - previousMousePosition.y;
+    const sens = 0.0022;
+    if (activePerspective === 'FLIGHT') {
+      shipState.angVel.y -= deltaX * sens;
+      shipState.angVel.x -= deltaY * sens;
+    } else if (activePerspective === 'BRIDGE') {
+      bridgeCamYaw -= deltaX * sens * 1.5;
+      bridgeCamPitch -= deltaY * sens * 1.5;
+      bridgeCamPitch = Math.max(-0.6, Math.min(0.6, bridgeCamPitch));
+    }
+    previousMousePosition = { x: e.clientX, y: e.clientY };
+  }
+});
+
+// ============================================================================
+// THREE.JS PRIMARY ENGINE & MULTI-PERSPECTIVE ENVIRONMENTS
+// ============================================================================
+
+const container = document.getElementById('canvas-container');
+const sceneFlight = new THREE.Scene();
+sceneFlight.background = new THREE.Color(0x01040a);
+
+const sceneBridge = new THREE.Scene();
+sceneBridge.background = new THREE.Color(0x030814);
+
+// Primary Camera
+const camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 10000);
+
+// Bridge Camera (Image 1 perspective)
+let bridgeCamYaw = 0;
+let bridgeCamPitch = 0;
+const bridgeCamera = new THREE.PerspectiveCamera(65, window.innerWidth / window.innerHeight, 0.1, 500);
+bridgeCamera.position.set(0, 14, 28);
+bridgeCamera.lookAt(0, 4, 0);
+
+// Satellite Recon Camera (PiP)
+const satCamera = new THREE.PerspectiveCamera(50, 280 / 155, 1, 12000);
+satCamera.position.set(0, 450, 0);
+satCamera.lookAt(0, 0, 0);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+container.appendChild(renderer.domElement);
+
+const satCanvas = document.getElementById('sat-canvas');
+const satRenderer = new THREE.WebGLRenderer({ canvas: satCanvas, antialias: true });
+satRenderer.setSize(280, 155);
+
+// CV 2D Overlay
+const cvCanvas = document.getElementById('cv-overlay');
+const cvCtx = cvCanvas.getContext('2d');
+function resizeCV() {
+  cvCanvas.width = window.innerWidth;
+  cvCanvas.height = window.innerHeight;
+}
+resizeCV();
+window.addEventListener('resize', resizeCV);
+
+// Flight Lighting
+const ambientLight = new THREE.AmbientLight(0x1a2638, 1.4);
+sceneFlight.add(ambientLight);
+
+const sunLight = new THREE.DirectionalLight(0xffeedd, 2.5);
+sunLight.position.set(300, 450, 350);
+sceneFlight.add(sunLight);
+
+// Bridge Lighting (Image 1)
+const bridgeAmbient = new THREE.AmbientLight(0x0b192c, 1.8);
+sceneBridge.add(bridgeAmbient);
+
+const bridgeCeilingLight = new THREE.PointLight(0x00e5ff, 3.5, 60);
+bridgeCeilingLight.position.set(0, 20, 0);
+sceneBridge.add(bridgeCeilingLight);
+
+const bridgeHoloLight = new THREE.PointLight(0x00ffaa, 2.8, 30);
+bridgeHoloLight.position.set(0, 5, 0);
+sceneBridge.add(bridgeHoloLight);
+
+// ============================================================================
+// ENVIRONMENT 1: SCI-FI SPACECRAFT BRIDGE & 3D HOLO-DECK (IMAGE 1)
+// ============================================================================
+
+const bridgeGroup = new THREE.Group();
+sceneBridge.add(bridgeGroup);
+
+// Bridge Floor & Curved Bulkheads
+const floorGeo = new THREE.CylinderGeometry(32, 34, 1.5, 32);
+const floorMat = new THREE.MeshStandardMaterial({ color: 0x0a101d, roughness: 0.3, metalness: 0.8 });
+const bridgeFloor = new THREE.Mesh(floorGeo, floorMat);
+bridgeFloor.position.y = -0.75;
+bridgeGroup.add(bridgeFloor);
+
+// Overhead Circular Ring Lighting (Image 1)
+const ringGeo = new THREE.TorusGeometry(18, 0.8, 16, 48);
+const ringMat = new THREE.MeshStandardMaterial({ color: 0x00e5ff, emissive: 0x0099cc, emissiveIntensity: 1.0 });
+const ceilingRing = new THREE.Mesh(ringGeo, ringMat);
+ceilingRing.rotation.x = Math.PI / 2;
+ceilingRing.position.y = 22;
+bridgeGroup.add(ceilingRing);
+
+// Central Raised Circular Holographic Tactical Pit (Exact Image 1)
+const holoBaseGeo = new THREE.CylinderGeometry(10, 11, 2.8, 32);
+const holoBaseMat = new THREE.MeshStandardMaterial({ color: 0x0f1b2b, roughness: 0.2, metalness: 0.9 });
+const holoBase = new THREE.Mesh(holoBaseGeo, holoBaseMat);
+holoBase.position.y = 1.4;
+bridgeGroup.add(holoBase);
+
+// Hologram Emitter Ring
+const emitterRing = new THREE.Mesh(
+  new THREE.RingGeometry(8.5, 9.8, 32),
+  new THREE.MeshBasicMaterial({ color: 0x00ffcc, side: THREE.DoubleSide })
+);
+emitterRing.rotation.x = -Math.PI / 2;
+emitterRing.position.y = 2.85;
+bridgeGroup.add(emitterRing);
+
+// 3D FLOATING HOLOGRAPHIC TACTICAL PROJECTION (Center of Table)
+const hologramGroup = new THREE.Group();
+hologramGroup.position.set(0, 4.2, 0);
+bridgeGroup.add(hologramGroup);
+
+// Holo-Sun / Solar Center
+const holoSun = new THREE.Mesh(
+  new THREE.SphereGeometry(1.6, 16, 12),
+  new THREE.MeshBasicMaterial({ color: 0xffdd44, wireframe: true })
+);
+hologramGroup.add(holoSun);
+
+// Holo Earth Orbit Ring
+const holoEarthOrbit = new THREE.Mesh(
+  new THREE.RingGeometry(5.2, 5.3, 48),
+  new THREE.MeshBasicMaterial({ color: 0x00e5ff, side: THREE.DoubleSide })
+);
+holoEarthOrbit.rotation.x = Math.PI / 2;
+hologramGroup.add(holoEarthOrbit);
+
+// Holo Earth
+const holoEarth = new THREE.Mesh(
+  new THREE.SphereGeometry(0.85, 12, 10),
+  new THREE.MeshBasicMaterial({ color: 0x38bdf8, wireframe: true })
+);
+holoEarth.position.set(5.2, 0, 0);
+hologramGroup.add(holoEarth);
+
+// Holo Mars Orbit Ring
+const holoMarsOrbit = new THREE.Mesh(
+  new THREE.RingGeometry(9.0, 9.1, 48),
+  new THREE.MeshBasicMaterial({ color: 0xff5533, side: THREE.DoubleSide })
+);
+holoMarsOrbit.rotation.x = Math.PI / 2;
+hologramGroup.add(holoMarsOrbit);
+
+// Holo Mars
+const holoMars = new THREE.Mesh(
+  new THREE.SphereGeometry(0.65, 12, 10),
+  new THREE.MeshBasicMaterial({ color: 0xff6644, wireframe: true })
+);
+holoMars.position.set(-9.0, 0, 0);
+hologramGroup.add(holoMars);
+
+// Holo Trajectory Hyperbola Transfer Beam
+const holoBeamGeo = new THREE.BufferGeometry();
+const holoBeamPoints = [];
+for (let t = 0; t <= 1.0; t += 0.02) {
+  const ang = t * Math.PI;
+  const r = 5.2 + t * 3.8;
+  holoBeamPoints.push(r * Math.cos(ang), Math.sin(t * Math.PI) * 1.5, r * Math.sin(ang));
+}
+holoBeamGeo.setAttribute('position', new THREE.Float32BufferAttribute(holoBeamPoints, 3));
+const holoBeam = new THREE.Line(holoBeamGeo, new THREE.LineBasicMaterial({ color: 0x00ffaa, linewidth: 2 }));
+hologramGroup.add(holoBeam);
+
+// Hologram Scan Grid Rings (Image 1)
+const holoGridRing = new THREE.Mesh(
+  new THREE.RingGeometry(1.5, 10.5, 32, 4),
+  new THREE.MeshBasicMaterial({ color: 0x00e5ff, wireframe: true, transparent: true, opacity: 0.35, side: THREE.DoubleSide })
+);
+holoGridRing.rotation.x = Math.PI / 2;
+holoGridRing.position.y = 0.1;
+hologramGroup.add(holoGridRing);
+
+// Curved Bulkhead Flight Displays (Image 1 screens in background)
+const consoleScreens = [];
+for (let i = 0; i < 5; i++) {
+  const theta = -Math.PI * 0.4 + (i / 4) * Math.PI * 0.8;
+  const scrGeo = new THREE.PlaneGeometry(8, 4.5);
+  const scrMat = new THREE.MeshBasicMaterial({ color: 0x001a33, side: THREE.DoubleSide });
+  const scrMesh = new THREE.Mesh(scrGeo, scrMat);
+  scrMesh.position.set(24 * Math.sin(theta), 9, -24 * Math.cos(theta));
+  scrMesh.rotation.y = theta + Math.PI;
+  bridgeGroup.add(scrMesh);
+  consoleScreens.push(scrMesh);
+}
+
+// Ergonomic Bridge Commander Chairs (Image 1)
+[-6, 6].forEach(x => {
+  const chairGroup = new THREE.Group();
+  chairGroup.position.set(x, 0, 16);
+  chairGroup.rotation.y = Math.PI;
+  const seatMesh = new THREE.Mesh(new THREE.BoxGeometry(2.5, 0.4, 2.5), new THREE.MeshStandardMaterial({ color: 0x1e293b }));
+  seatMesh.position.y = 2.0;
+  chairGroup.add(seatMesh);
+  const backMesh = new THREE.Mesh(new THREE.BoxGeometry(2.5, 3.5, 0.4), new THREE.MeshStandardMaterial({ color: 0x334155 }));
+  backMesh.position.set(0, 3.8, 1.1);
+  chairGroup.add(backMesh);
+  bridgeGroup.add(chairGroup);
+});
+
+// ============================================================================
+// ENVIRONMENT 3: CELESTIAL SPACE FLIGHT & COMBAT ARENA
+// ============================================================================
+
+// Starfield
+const starCount = 6000;
+const starGeo = new THREE.BufferGeometry();
+const starPos = new Float32Array(starCount * 3);
+for (let i = 0; i < starCount; i++) {
+  const r = 2500 + Math.random() * 3500;
+  const theta = Math.random() * Math.PI * 2;
+  const phi = Math.acos((Math.random() * 2) - 1);
+  starPos[i*3] = r * Math.sin(phi) * Math.cos(theta);
+  starPos[i*3+1] = r * Math.sin(phi) * Math.sin(theta);
+  starPos[i*3+2] = r * Math.cos(phi);
+}
+starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+sceneFlight.add(new THREE.Points(starGeo, new THREE.PointsMaterial({ size: 2.2, color: 0xffffff, transparent: true, opacity: 0.95 })));
+
+// High-Detail Earth (Departure)
+const earthGroup = new THREE.Group();
+earthGroup.position.set(0, -220, -180);
+sceneFlight.add(earthGroup);
+
+const earthGeo = new THREE.SphereGeometry(180, 64, 48);
+const earthMat = new THREE.MeshStandardMaterial({ color: 0x1d4ed8, roughness: 0.4, metalness: 0.1, emissive: 0x051535, emissiveIntensity: 0.4 });
+const earthMesh = new THREE.Mesh(earthGeo, earthMat);
+earthGroup.add(earthMesh);
+
+const atmosGeo = new THREE.SphereGeometry(186, 48, 32);
+const atmosMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.22, side: THREE.BackSide });
+earthGroup.add(new THREE.Mesh(atmosGeo, atmosMat));
+
+// The Moon
+const moonGroup = new THREE.Group();
+moonGroup.position.set(380, 120, -500);
+sceneFlight.add(moonGroup);
+moonGroup.add(new THREE.Mesh(new THREE.SphereGeometry(45, 32, 24), new THREE.MeshStandardMaterial({ color: 0x94a3b8, roughness: 0.9, metalness: 0.1 })));
+
+// Mars Citadel
+const marsGroup = new THREE.Group();
+marsGroup.position.set(-250, 180, -1800);
+sceneFlight.add(marsGroup);
+marsGroup.add(new THREE.Mesh(new THREE.SphereGeometry(120, 48, 32), new THREE.MeshStandardMaterial({ color: 0xc2410c, roughness: 0.8, metalness: 0.2, emissive: 0x431407, emissiveIntensity: 0.35 })));
+
+// Interstellar Warp Gate (Deep Space Destination)
+const warpGateGroup = new THREE.Group();
+warpGateGroup.position.set(100, 50, -3200);
+sceneFlight.add(warpGateGroup);
+const gateRingMesh = new THREE.Mesh(new THREE.TorusGeometry(80, 6, 24, 64), new THREE.MeshStandardMaterial({ color: 0x00e5ff, emissive: 0x0099cc, emissiveIntensity: 0.8 }));
+warpGateGroup.add(gateRingMesh);
+const portalVortex = new THREE.Mesh(new THREE.CircleGeometry(75, 32), new THREE.MeshBasicMaterial({ color: 0x7928ca, transparent: true, opacity: 0.65, side: THREE.DoubleSide }));
+warpGateGroup.add(portalVortex);
+
+// 3D Asteroid Belt
+const asteroids = [];
+const astMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.9, metalness: 0.2 });
+for (let i = 0; i < 85; i++) {
+  const rad = 5 + Math.random() * 16;
+  const geo = new THREE.DodecahedronGeometry(rad, 1);
+  const p = geo.attributes.position;
+  for (let j = 0; j < p.count; j++) {
+    p.setXYZ(j, p.getX(j)*(0.85+Math.random()*0.3), p.getY(j)*(0.85+Math.random()*0.3), p.getZ(j)*(0.85+Math.random()*0.3));
+  }
+  geo.computeVertexNormals();
+  const mesh = new THREE.Mesh(geo, astMat);
+  mesh.position.set((Math.random()-0.5)*900, (Math.random()-0.5)*450, -300 - Math.random()*1500);
+  mesh.rotation.set(Math.random()*Math.PI, Math.random()*Math.PI, Math.random()*Math.PI);
+  mesh.rotSpeed = new THREE.Vector3((Math.random()-0.5)*0.012, (Math.random()-0.5)*0.012, (Math.random()-0.5)*0.012);
+  mesh.radius = rad;
+  sceneFlight.add(mesh);
+  asteroids.push(mesh);
+}
+
+// Free Fire Shrinking Safe Zone Cylinder
+const safeZoneGeo = new THREE.CylinderGeometry(150, 150, 450, 48, 1, true);
+const safeZoneMat = new THREE.MeshBasicMaterial({ color: 0x00e5ff, transparent: true, opacity: 0.18, side: THREE.DoubleSide, wireframe: true });
+const spaceSafeZone = new THREE.Mesh(safeZoneGeo, safeZoneMat);
+spaceSafeZone.position.set(0, 0, -600);
+sceneFlight.add(spaceSafeZone);
+let safeZoneRadius = 150;
+
+// Deep Space Supply Airdrop Crate (Free Fire Mechanic)
+const airdropGroup = new THREE.Group();
+airdropGroup.position.set(40, 20, -450);
+sceneFlight.add(airdropGroup);
+
+const crateMesh = new THREE.Mesh(new THREE.BoxGeometry(6, 6, 6), new THREE.MeshStandardMaterial({ color: 0xff0044, metalness: 0.8, roughness: 0.2 }));
+airdropGroup.add(crateMesh);
+
+// Vertical Neon Beacon Beam
+const beamMesh = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.5, 0.5, 400, 16),
+  new THREE.MeshBasicMaterial({ color: 0xff0055, transparent: true, opacity: 0.45 })
+);
+beamMesh.position.y = 200;
+airdropGroup.add(beamMesh);
+
+// 128-Beam Spherical LiDAR
+const lidarCount = 2048;
+const lidarGeo = new THREE.BufferGeometry();
+const lidarPos = new Float32Array(lidarCount * 3);
+const lidarCol = new Float32Array(lidarCount * 3);
+for (let i = 0; i < lidarCount; i++) {
+  lidarPos[i*3] = 0; lidarPos[i*3+1] = 0; lidarPos[i*3+2] = 0;
+  lidarCol[i*3] = 0.0; lidarCol[i*3+1] = 0.9; lidarCol[i*3+2] = 1.0;
+}
+lidarGeo.setAttribute('position', new THREE.BufferAttribute(lidarPos, 3));
+lidarGeo.setAttribute('color', new THREE.BufferAttribute(lidarCol, 3));
+
+const spaceLiDAR = new THREE.Points(
+  lidarGeo,
+  new THREE.PointsMaterial({ size: 0.85, vertexColors: true, transparent: true, opacity: 0.85, blending: THREE.AdditiveBlending })
+);
+sceneFlight.add(spaceLiDAR);
+let lidarVisible = true;
+function toggleLiDAR() {
+  lidarVisible = !lidarVisible;
+  spaceLiDAR.visible = lidarVisible;
+}
+
+// 6-DOF Spacecraft Model
+const ship = new THREE.Group();
+ship.position.set(0, 40, 80);
+sceneFlight.add(ship);
+
+const bodyMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.3, metalness: 0.85 });
+const accentMat = new THREE.MeshStandardMaterial({ color: 0x00e5ff, roughness: 0.2, metalness: 0.9, emissive: 0x006688, emissiveIntensity: 0.4 });
+const canopyMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.1, metalness: 0.9, transparent: true, opacity: 0.75 });
+
+const hullMesh = new THREE.Mesh(new THREE.ConeGeometry(2.2, 8.5, 8), bodyMat);
+hullMesh.rotation.x = -Math.PI / 2;
+ship.add(hullMesh);
+
+const canopy = new THREE.Mesh(new THREE.SphereGeometry(1.1, 16, 12), canopyMat);
+canopy.scale.set(0.7, 0.7, 2.0);
+canopy.position.set(0, 0.65, 0.5);
+ship.add(canopy);
+
+const wingShape = new THREE.Shape();
+wingShape.moveTo(0, 0); wingShape.lineTo(6.5, -3.5); wingShape.lineTo(5.5, -4.5); wingShape.lineTo(0, -2.5); wingShape.closePath();
+const wingGeo = new THREE.ExtrudeGeometry(wingShape, { depth: 0.25, bevelEnabled: true, bevelThickness: 0.08 });
+wingGeo.center();
+const wings = new THREE.Mesh(wingGeo, accentMat);
+wings.rotation.x = Math.PI / 2;
+wings.position.set(0, -0.1, -1.2);
+ship.add(wings);
+
+// Thruster Plumes
+const plumeL = new THREE.Mesh(new THREE.ConeGeometry(0.4, 2.5, 12), new THREE.MeshBasicMaterial({ color: 0x00ffff, transparent: true, opacity: 0.85 }));
+plumeL.rotation.x = -Math.PI / 2;
+plumeL.position.set(-1.2, 0, -5.5);
+ship.add(plumeL);
+
+const plumeR = plumeL.clone();
+plumeR.position.x = 1.2;
+ship.add(plumeR);
+
+// Kinematic State
+const shipState = {
+  pos: ship.position,
+  vel: new THREE.Vector3(),
+  angVel: new THREE.Vector3(),
+  thrustPower: 45.0,
+  boostMult: 2.5,
+  flightAssist: true,
+  linearDamping: 0.985,
+  angularDamping: 0.94,
+  hull: 100,
+  shield: 100,
+  energy: 100,
+  currentWeapon: 1, // 1: Lasers, 2: Scatter, 3: Railgun
+  glooCharges: 3,
+  totalDistanceKm: 0,
+  properTimeSec: 0,
+  coordTimeSec: 0,
+  deltaVKmS: 0,
+  gammaLorentz: 1.0000
+};
+
+// ============================================================================
+// PERSPECTIVE SWITCHING (FLIGHT, BRIDGE - IMAGE 1, MCC - IMAGES 2 & 3)
+// ============================================================================
+
+let activePerspective = 'FLIGHT';
+
+function switchPerspective(mode) {
+  activePerspective = mode;
+  document.querySelectorAll('.top-nav-bar .nav-btn').forEach(b => b.classList.remove('active'));
+  const mccOverlay = document.getElementById('mcc-wall-overlay');
+
+  if (mode === 'FLIGHT') {
+    document.getElementById('btn-view-flight').classList.add('active');
+    mccOverlay.style.display = 'none';
+    document.getElementById('warp-strip').style.display = 'flex';
+    document.getElementById('flight-crosshair').style.display = 'block';
+  } else if (mode === 'BRIDGE') {
+    document.getElementById('btn-view-bridge').classList.add('active');
+    mccOverlay.style.display = 'none';
+    document.getElementById('warp-strip').style.display = 'flex';
+    document.getElementById('flight-crosshair').style.display = 'none';
+  } else if (mode === 'MCC') {
+    document.getElementById('btn-view-mcc').classList.add('active');
+    mccOverlay.style.display = 'flex';
+    document.getElementById('flight-crosshair').style.display = 'none';
+    drawMCCGroundTrack();
+  }
+}
+
+// ============================================================================
+// PLANETARY WARP SECTOR TRANSITS
+// ============================================================================
+
+function warpToSector(sector) {
+  document.querySelectorAll('.warp-chip').forEach(c => c.classList.remove('active'));
+  if (sector === 'EARTH') {
+    document.getElementById('chip-earth').classList.add('active');
+    ship.position.set(0, 40, 80);
+    shipState.vel.set(0, 0, -5);
+  } else if (sector === 'MOON') {
+    document.getElementById('chip-moon').classList.add('active');
+    ship.position.set(380, 160, -420);
+    shipState.vel.set(-10, 0, -15);
+  } else if (sector === 'ASTEROIDS') {
+    document.getElementById('chip-asteroids').classList.add('active');
+    ship.position.set(0, 0, -750);
+    shipState.vel.set(0, 0, -25);
+  } else if (sector === 'MARS') {
+    document.getElementById('chip-mars').classList.add('active');
+    ship.position.set(-250, 190, -1550);
+    shipState.vel.set(0, 0, -10);
+  } else if (sector === 'DEEP') {
+    document.getElementById('chip-deep').classList.add('active');
+    ship.position.set(100, 50, -3050);
+    shipState.vel.set(0, 0, -15);
+  }
+}
+
+// ============================================================================
+// FREE FIRE GLOO SHIELD & WEAPON ARSENAL
+// ============================================================================
+
+const spaceGlooShields = [];
+function deploySpaceGlooShield() {
+  if (shipState.glooCharges <= 0) return;
+  shipState.glooCharges--;
+
+  const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(ship.quaternion);
+  const shieldPos = ship.position.clone().addScaledVector(forward, 18);
+
+  const hexGeo = new THREE.CircleGeometry(12, 6);
+  const hexMat = new THREE.MeshStandardMaterial({
+    color: 0x00e5ff, transparent: true, opacity: 0.8, roughness: 0.1, metalness: 0.9,
+    side: THREE.DoubleSide, emissive: 0x0088cc, emissiveIntensity: 0.7
+  });
+  const shieldMesh = new THREE.Mesh(hexGeo, hexMat);
+  shieldMesh.position.copy(shieldPos);
+  shieldMesh.quaternion.copy(ship.quaternion);
+  shieldMesh.hp = 500;
+  sceneFlight.add(shieldMesh);
+  spaceGlooShields.push(shieldMesh);
+}
+
+function selectWeapon(wId) {
+  shipState.currentWeapon = wId;
+  document.querySelectorAll('.wpn-chip').forEach(c => c.classList.remove('active'));
+  document.getElementById(`wpn-${wId}`).classList.add('active');
+}
+
+function toggleFlightAssist() {
+  shipState.flightAssist = !shipState.flightAssist;
+}
+
+let satCamMode = 0;
+const satModes = ["OPTICAL RGB", "INFRARED (THERMAL)", "SYNTHETIC APERTURE RADAR"];
+function cycleSatCamera() {
+  satCamMode = (satCamMode + 1) % 3;
+  document.getElementById('sat-mode-tag').textContent = satModes[satCamMode];
+  document.getElementById('sat-mode-tag').style.color = satCamMode === 1 ? '#ff3366' : (satCamMode === 2 ? '#ffd700' : '#00ffaa');
+}
+
+// ============================================================================
+// HOSTILE DRONES & COMBAT AI
+// ============================================================================
+
+const hostiles = [];
+function createDrone(x, y, z, name) {
+  const g = new THREE.Group();
+  g.position.set(x, y, z);
+  const m = new THREE.Mesh(new THREE.OctahedronGeometry(2.5, 0), new THREE.MeshStandardMaterial({ color: 0x991b1b, metalness: 0.8, roughness: 0.3 }));
+  g.add(m);
+  sceneFlight.add(g);
+  const d = { group: g, name, hp: 120, maxHp: 120, alive: true, vel: new THREE.Vector3(), shootCooldown: 0 };
+  hostiles.push(d);
+  return d;
+}
+createDrone(-90, 40, -180, "Pirate-Interceptor-01");
+createDrone(90, -30, -520, "Pirate-Interceptor-02");
+createDrone(-60, -60, -920, "Cosmic-Drone-03");
+createDrone(-200, 160, -1650, "Mars-Defense-Drone-04");
+
+// Floating Damage Numbers (Free Fire Style)
+const damagePopups = [];
+function spawnDamageText(text, pos, isHeadshot) {
+  damagePopups.push({ text, pos: pos.clone(), life: 1.2, isHeadshot });
+}
+
+// Computer Vision 2D Overlay
+let cvTracking = true;
+function renderSpaceCV() {
+  cvCtx.clearRect(0, 0, cvCanvas.width, cvCanvas.height);
+  if (!cvTracking || activePerspective !== 'FLIGHT') return;
+
+  const w = cvCanvas.width;
+  const h = cvCanvas.height;
+
+  // Aim Assist Nearest Target Indicator
+  let nearestHostile = null;
+  let nearestScreenDist = 9999;
+
+  hostiles.filter(d => d.alive).forEach(drone => {
+    const sp = drone.group.position.clone().project(camera);
+    if (sp.z > 1.0) return;
+    const sx = (sp.x * 0.5 + 0.5) * w;
+    const sy = (-(sp.y * 0.5) + 0.5) * h;
+    const dist = camera.position.distanceTo(drone.group.position);
+    const boxSize = Math.max(30, (300 / dist) * 12);
+
+    const screenDist = Math.hypot(sx - w/2, sy - h/2);
+    if (screenDist < nearestScreenDist) {
+      nearestScreenDist = screenDist;
+      nearestHostile = { sx, sy, drone };
+    }
+
+    // Free Fire Bounding Box
+    cvCtx.strokeStyle = 'rgba(255, 34, 68, 0.9)';
+    cvCtx.lineWidth = 1.8;
+    cvCtx.strokeRect(sx - boxSize/2, sy - boxSize/2, boxSize, boxSize);
+
+    // HP Bar
+    const hpPct = Math.max(0, drone.hp / drone.maxHp);
+    cvCtx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+    cvCtx.fillRect(sx - boxSize/2, sy - boxSize/2 - 8, boxSize, 4);
+    cvCtx.fillStyle = '#ff2255';
+    cvCtx.fillRect(sx - boxSize/2, sy - boxSize/2 - 8, boxSize * hpPct, 4);
+
+    cvCtx.fillStyle = 'rgba(4, 12, 24, 0.85)';
+    cvCtx.fillRect(sx - boxSize/2, sy - boxSize/2 - 24, boxSize + 48, 14);
+    cvCtx.fillStyle = '#00ffaa';
+    cvCtx.font = 'bold 9px monospace';
+    cvCtx.fillText(`${drone.name} [${dist.toFixed(0)}m]`, sx - boxSize/2 + 3, sy - boxSize/2 - 13);
+  });
+
+  // Aim Assist Snap Box (Free Fire Magnetic Reticle)
+  if (nearestHostile && nearestScreenDist < 120) {
+    cvCtx.strokeStyle = 'rgba(0, 255, 170, 0.8)';
+    cvCtx.lineWidth = 2.0;
+    cvCtx.beginPath();
+    cvCtx.arc(nearestHostile.sx, nearestHostile.sy, 22, 0, Math.PI * 2);
+    cvCtx.stroke();
+  }
+
+  // Floating Damage Numbers
+  for (let i = damagePopups.length - 1; i >= 0; i--) {
+    const dp = damagePopups[i];
+    dp.life -= 0.016;
+    dp.pos.y += 0.25;
+    const sp = dp.pos.clone().project(camera);
+    if (sp.z <= 1.0) {
+      const sx = (sp.x * 0.5 + 0.5) * w;
+      const sy = (-(sp.y * 0.5) + 0.5) * h;
+      cvCtx.fillStyle = dp.isHeadshot ? '#ff0033' : '#ffaa00';
+      cvCtx.font = dp.isHeadshot ? '900 16px sans-serif' : 'bold 13px sans-serif';
+      cvCtx.fillText(dp.text, sx, sy);
+    }
+    if (dp.life <= 0) damagePopups.splice(i, 1);
+  }
+}
+
+// ============================================================================
+// ENVIRONMENT 2: 2D MERCATOR GROUND TRACK MAP (BBC IMAGES 2 & 3)
+// ============================================================================
+
+const gtCanvas = document.getElementById('ground-track-canvas');
+const gtCtx = gtCanvas.getContext('2d');
+
+function drawMCCGroundTrack() {
+  const w = gtCanvas.width;
+  const h = gtCanvas.height;
+  gtCtx.fillStyle = '#040d1a';
+  gtCtx.fillRect(0, 0, w, h);
+
+  // Lat / Lon Grid Lines
+  gtCtx.strokeStyle = 'rgba(0, 229, 255, 0.15)';
+  gtCtx.lineWidth = 1;
+  for (let x = 0; x <= w; x += 80) {
+    gtCtx.beginPath(); gtCtx.moveTo(x, 0); gtCtx.lineTo(x, h); gtCtx.stroke();
+  }
+  for (let y = 0; y <= h; y += 45) {
+    gtCtx.beginPath(); gtCtx.moveTo(0, y); gtCtx.lineTo(w, y); gtCtx.stroke();
+  }
+
+  // Day / Night Solar Terminator Shadow
+  const sunX = (Date.now() * 0.00003) % w;
+  gtCtx.fillStyle = 'rgba(0, 10, 30, 0.45)';
+  gtCtx.beginPath();
+  gtCtx.moveTo(0, 0);
+  for (let x = 0; x <= w; x += 10) {
+    const y = h/2 + Math.sin((x - sunX) * 0.01) * (h * 0.38);
+    gtCtx.lineTo(x, y);
+  }
+  gtCtx.lineTo(w, h);
+  gtCtx.lineTo(0, h);
+  gtCtx.closePath();
+  gtCtx.fill();
+
+  // Continental Outlines (Stylized Vector)
+  gtCtx.strokeStyle = 'rgba(56, 189, 248, 0.5)';
+  gtCtx.lineWidth = 1.2;
+  // Eurasia / Africa
+  gtCtx.strokeRect(w * 0.45, h * 0.2, w * 0.35, h * 0.5);
+  // Americas
+  gtCtx.strokeRect(w * 0.15, h * 0.18, w * 0.22, h * 0.65);
+  // Australia
+  gtCtx.strokeRect(w * 0.75, h * 0.65, w * 0.12, h * 0.2);
+
+  // Orbital Ground Track Sine Wave (Spacecraft Path)
+  const tSec = Date.now() * 0.001;
+  gtCtx.strokeStyle = '#00ffaa';
+  gtCtx.lineWidth = 2.2;
+  gtCtx.beginPath();
+  let shipX = 0, shipY = 0;
+  for (let x = 0; x <= w; x += 4) {
+    const y = h/2 + Math.sin(x * 0.015 - tSec * 0.4) * (h * 0.4);
+    if (x === 0) gtCtx.moveTo(x, y); else gtCtx.lineTo(x, y);
+    if (Math.abs(x - w * 0.55) < 3) { shipX = x; shipY = y; }
+  }
+  gtCtx.stroke();
+
+  // Spacecraft Current Position Marker
+  gtCtx.fillStyle = '#ff2255';
+  gtCtx.beginPath();
+  gtCtx.arc(shipX, shipY, 5, 0, Math.PI * 2);
+  gtCtx.fill();
+  gtCtx.fillStyle = '#00ffcc';
+  gtCtx.font = 'bold 10px monospace';
+  gtCtx.fillText("SPACECRAFT-01", shipX + 8, shipY - 4);
+
+  // Ground Stations (Goldstone, Madrid, Canberra)
+  const stations = [
+    { name: "Goldstone", x: w * 0.22, y: h * 0.38 },
+    { name: "Madrid", x: w * 0.48, y: h * 0.32 },
+    { name: "Canberra", x: w * 0.82, y: h * 0.72 }
+  ];
+  stations.forEach(st => {
+    gtCtx.fillStyle = '#38bdf8';
+    gtCtx.fillRect(st.x - 3, st.y - 3, 6, 6);
+    gtCtx.strokeStyle = 'rgba(56, 189, 248, 0.4)';
+    gtCtx.beginPath(); gtCtx.arc(st.x, st.y, 16, 0, Math.PI * 2); gtCtx.stroke();
+    gtCtx.font = '9px monospace';
+    gtCtx.fillText(st.name, st.x + 8, st.y + 3);
+  });
+}
+
+// ============================================================================
+// INSTRUMENTS: SPECTROMETER, RF OSCILLOSCOPE, 3D RADAR
+// ============================================================================
+
+const specCanvas = document.getElementById('spectrum-canvas');
+const specCtx = specCanvas.getContext('2d');
+
+function updateSpectrometer(timeSec) {
+  const w = specCanvas.width;
+  const h = specCanvas.height;
+  specCtx.clearRect(0, 0, w, h);
+
+  specCtx.strokeStyle = 'rgba(0, 229, 255, 0.15)';
+  specCtx.lineWidth = 1;
+  for (let x = 0; x < w; x += 32) {
+    specCtx.beginPath(); specCtx.moveTo(x, 0); specCtx.lineTo(x, h); specCtx.stroke();
+  }
+
+  specCtx.beginPath();
+  for (let x = 0; x < w; x++) {
+    const lambda = 380 + (x / w) * 400;
+    let intensity = Math.sin(x * 0.035) * 10 + 35;
+    intensity += Math.exp(-Math.pow(lambda - 656.3, 2) / 8.0) * 32; // H-Alpha
+    intensity += Math.exp(-Math.pow(lambda - 760.0, 2) / 6.0) * 26; // Earth O2
+    intensity += Math.exp(-Math.pow(lambda - 619.0, 2) / 5.0) * 22; // Methane
+    intensity += (Math.sin(x * 0.5 + timeSec * 10) * 2.0);
+
+    const y = h - intensity;
+    if (x === 0) specCtx.moveTo(x, y); else specCtx.lineTo(x, y);
+  }
+
+  const grad = specCtx.createLinearGradient(0, 0, w, 0);
+  grad.addColorStop(0.0, '#7b2cbf');
+  grad.addColorStop(0.2, '#00b4d8');
+  grad.addColorStop(0.5, '#55a630');
+  grad.addColorStop(0.7, '#ffaa00');
+  grad.addColorStop(1.0, '#d90429');
+  specCtx.strokeStyle = grad;
+  specCtx.lineWidth = 2.0;
+  specCtx.stroke();
+}
+
+const scopeCanvas = document.getElementById('scope-canvas');
+const scopeCtx = scopeCanvas.getContext('2d');
+
+function updateRFOscilloscope(timeSec) {
+  const w = scopeCanvas.width;
+  const h = scopeCanvas.height;
+  scopeCtx.clearRect(0, 0, w, h);
+
+  scopeCtx.strokeStyle = 'rgba(0, 255, 170, 0.2)';
+  scopeCtx.beginPath(); scopeCtx.moveTo(0, h/2); scopeCtx.lineTo(w, h/2); scopeCtx.stroke();
+
+  scopeCtx.beginPath();
+  for (let x = 0; x < w; x++) {
+    const f1 = 0.08;
+    const f2 = 0.24;
+    const y = h/2 + Math.sin(x * f1 + timeSec * 8) * 16 * Math.cos(x * f2 + timeSec * 4) + (Math.random()-0.5)*2.5;
+    if (x === 0) scopeCtx.moveTo(x, y); else scopeCtx.lineTo(x, y);
+  }
+  scopeCtx.strokeStyle = '#00ffaa';
+  scopeCtx.lineWidth = 1.8;
+  scopeCtx.stroke();
+}
+
+const radarCanvas = document.getElementById('radar-canvas');
+const radarCtx = radarCanvas.getContext('2d');
+
+function updateRadar() {
+  const w = 150, h = 150, cx = 75, cy = 75;
+  radarCtx.clearRect(0, 0, w, h);
+
+  radarCtx.strokeStyle = 'rgba(0, 229, 255, 0.3)';
+  radarCtx.lineWidth = 1;
+  radarCtx.beginPath(); radarCtx.arc(cx, cy, 32, 0, Math.PI * 2); radarCtx.arc(cx, cy, 64, 0, Math.PI * 2); radarCtx.stroke();
+
+  const sweep = (performance.now() * 0.0025) % (Math.PI * 2);
+  radarCtx.strokeStyle = 'rgba(0, 255, 170, 0.55)';
+  radarCtx.beginPath(); radarCtx.moveTo(cx, cy); radarCtx.lineTo(cx + Math.cos(sweep)*70, cy + Math.sin(sweep)*70); radarCtx.stroke();
+
+  radarCtx.fillStyle = '#00e5ff';
+  radarCtx.fillRect(cx - 3, cy - 3, 6, 6);
+
+  hostiles.filter(d => d.alive).forEach(d => {
+    const rel = d.group.position.clone().sub(ship.position);
+    const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(ship.quaternion);
+    const right = new THREE.Vector3(1, 0, 0).applyQuaternion(ship.quaternion);
+    const rx = cx + rel.dot(right) * 0.22;
+    const ry = cy - rel.dot(forward) * 0.22;
+    if (Math.hypot(rx - cx, ry - cy) < 70) {
+      radarCtx.fillStyle = '#ff2255';
+      radarCtx.beginPath(); radarCtx.arc(rx, ry, 3.5, 0, Math.PI * 2); radarCtx.fill();
+    }
+  });
+}
+
+// ============================================================================
+// WEAPON FIRING & BALLISTICS
+// ============================================================================
+
+const keys = {};
+window.addEventListener('keydown', e => {
+  keys[e.code] = true;
+  if (e.code === 'Digit1') selectWeapon(1);
+  if (e.code === 'Digit2') selectWeapon(2);
+  if (e.code === 'Digit3') selectWeapon(3);
+  if (e.code === 'KeyG') deploySpaceGlooShield();
+  if (e.code === 'KeyX') toggleFlightAssist();
+  if (e.code === 'KeyC') cycleSatCamera();
+  if (e.code === 'KeyV') switchPerspective(activePerspective === 'FLIGHT' ? 'BRIDGE' : (activePerspective === 'BRIDGE' ? 'MCC' : 'FLIGHT'));
+  if (e.code === 'KeyL') toggleLiDAR();
+});
+window.addEventListener('keyup', e => { keys[e.code] = false; });
+
+let isShooting = false;
+function startFiring() { isShooting = true; }
+function stopFiring() { isShooting = false; }
+function triggerBoost() {
+  shipState.vel.addScaledVector(new THREE.Vector3(0, 0, -1).applyQuaternion(ship.quaternion), 65.0);
+}
+
+window.addEventListener('mousedown', e => {
+  if (e.button === 0 && blocker.style.display === 'none') {
+    if (!e.target.closest('#on-screen-controls') && !e.target.closest('.action-strip') &&
+        !e.target.closest('.warp-select-strip') && !e.target.closest('.top-nav-bar') &&
+        !e.target.closest('.weapon-selector-strip') && !e.target.closest('#mcc-wall-overlay')) {
+      isShooting = true;
+    }
+  }
+});
+window.addEventListener('mouseup', e => { if (e.button === 0) isShooting = false; });
+
+const laserProjectiles = [];
+function fireWeapons() {
+  const fwd = new THREE.Vector3(0, 0, -1).applyQuaternion(ship.quaternion);
+
+  if (shipState.currentWeapon === 1) {
+    // 1: Dual Pulse Lasers
+    [-4.2, 4.2].forEach(xOffset => {
+      const pMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 5.0, 6), new THREE.MeshBasicMaterial({ color: 0x00ffff }));
+      pMesh.rotation.x = Math.PI / 2;
+      pMesh.position.copy(ship.position).add(new THREE.Vector3(xOffset, 0, 0.5).applyQuaternion(ship.quaternion));
+      pMesh.quaternion.copy(ship.quaternion);
+      sceneFlight.add(pMesh);
+      laserProjectiles.push({ mesh: pMesh, vel: fwd.clone().multiplyScalar(300.0), damage: 35, life: 2.2 });
+    });
+  } else if (shipState.currentWeapon === 2) {
+    // 2: Plasma Scatter Cannon (Free Fire Shotgun)
+    for (let i = 0; i < 7; i++) {
+      const spread = new THREE.Vector3((Math.random()-0.5)*0.14, (Math.random()-0.5)*0.14, 0).applyQuaternion(ship.quaternion);
+      const sMesh = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8, 8), new THREE.MeshBasicMaterial({ color: 0xff8800 }));
+      sMesh.position.copy(ship.position);
+      sceneFlight.add(sMesh);
+      laserProjectiles.push({ mesh: sMesh, vel: fwd.clone().add(spread).multiplyScalar(220.0), damage: 25, life: 1.2 });
+    }
+  } else if (shipState.currentWeapon === 3) {
+    // 3: Gauss Kinetic Railgun (Sniper Beam)
+    const rMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.25, 0.25, 18.0, 8), new THREE.MeshBasicMaterial({ color: 0xff0055 }));
+    rMesh.rotation.x = Math.PI / 2;
+    rMesh.position.copy(ship.position).add(new THREE.Vector3(0, -0.2, 1.0).applyQuaternion(ship.quaternion));
+    rMesh.quaternion.copy(ship.quaternion);
+    sceneFlight.add(rMesh);
+    laserProjectiles.push({ mesh: rMesh, vel: fwd.clone().multiplyScalar(550.0), damage: 150, life: 2.5 });
+  }
+}
+
+// ============================================================================
+// MAIN ANIMATION LOOP (60 FPS)
+// ============================================================================
+
+let lastTime = performance.now();
+let shootCooldown = 0;
+
+function formatClock(seconds) {
+  const m = Math.floor(seconds / 60);
+  const s = Math.floor(seconds % 60);
+  const ms = Math.floor((seconds % 1) * 10);
+  return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}.${ms}`;
+}
+
+function animate(now) {
+  requestAnimationFrame(animate);
+  const dt = Math.min((now - lastTime) / 1000, 0.1);
+  lastTime = now;
+
+  document.getElementById('top-timer').textContent = formatClock(shipState.coordTimeSec);
+
+  // Rotate Bridge Hologram (Image 1)
+  hologramGroup.rotation.y += 0.015;
+  holoGridRing.rotation.z += 0.008;
+
+  // Earth, Moon, Mars Rotations
+  earthGroup.rotation.y += 0.0006;
+  moonGroup.rotation.y += 0.0012;
+  marsGroup.rotation.y += 0.0008;
+  gateRingMesh.rotation.z += 0.01;
+
+  // Asteroid rotations
+  asteroids.forEach(a => { a.rotation.x += a.rotSpeed.x; a.rotation.y += a.rotSpeed.y; });
+
+  // Safe Zone contraction
+  if (safeZoneRadius > 35) {
+    safeZoneRadius -= 0.25 * dt;
+    spaceSafeZone.scale.set(safeZoneRadius / 150, 1, safeZoneRadius / 150);
+  }
+
+  // Thruster Inputs (WASD + Space + C + QE)
+  const thrustDir = new THREE.Vector3();
+  if (keys['KeyW']) thrustDir.z -= 1;
+  if (keys['KeyS']) thrustDir.z += 1;
+  if (keys['KeyA']) thrustDir.x -= 1;
+  if (keys['KeyD']) thrustDir.x += 1;
+  if (keys['Space']) thrustDir.y += 1;
+  if (keys['KeyC']) thrustDir.y -= 1;
+
+  if (keys['KeyQ']) shipState.angVel.z += 1.8 * dt;
+  if (keys['KeyE']) shipState.angVel.z -= 1.8 * dt;
+
+  const isBoost = keys['ShiftLeft'] || keys['ShiftRight'];
+  let currentThrust = shipState.thrustPower * (isBoost ? shipState.boostMult : 1.0);
+
+  if (thrustDir.lengthSq() > 0) {
+    thrustDir.normalize().applyQuaternion(ship.quaternion);
+    shipState.vel.addScaledVector(thrustDir, currentThrust * dt);
+    shipState.deltaVKmS += (currentThrust * dt) * 0.001;
+  }
+
+  // Inertial Damping
+  if (shipState.flightAssist) {
+    shipState.vel.multiplyScalar(Math.pow(shipState.linearDamping, dt * 60));
+    shipState.angVel.multiplyScalar(Math.pow(shipState.angularDamping, dt * 60));
+  }
+
+  // Quaternions & Velocity Integration
+  const qDelta = new THREE.Quaternion().setFromEuler(new THREE.Euler(shipState.angVel.x * dt, shipState.angVel.y * dt, shipState.angVel.z * dt, 'YXZ'));
+  ship.quaternion.multiply(qDelta);
+  ship.position.addScaledVector(shipState.vel, dt);
+
+  // Odometer & Relativistic Metrics
+  const distFromEarthCenter = ship.position.distanceTo(earthGroup.position);
+  shipState.totalDistanceKm = Math.max(0, distFromEarthCenter - 180) * 100;
+  shipState.coordTimeSec += dt;
+
+  const speedKmS = shipState.vel.length() * 0.05;
+  const beta = Math.min(0.999, speedKmS / 300.0);
+  shipState.gammaLorentz = 1.0 / Math.sqrt(1.0 - beta * beta);
+  shipState.properTimeSec += dt / shipState.gammaLorentz;
+
+  document.getElementById('odo-dist').textContent = `${shipState.totalDistanceKm.toFixed(1)} km`;
+  document.getElementById('odo-t').textContent = formatClock(shipState.coordTimeSec);
+  document.getElementById('odo-tau').textContent = formatClock(shipState.properTimeSec);
+  document.getElementById('odo-deltav').textContent = `${shipState.deltaVKmS.toFixed(2)} km/s`;
+  document.getElementById('odo-gamma').textContent = shipState.gammaLorentz.toFixed(4);
+
+  // Chase Camera (Flight mode)
+  const camOffset = new THREE.Vector3(0, 3.2, 11.5).applyQuaternion(ship.quaternion);
+  camera.position.copy(ship.position).add(camOffset);
+  camera.quaternion.copy(ship.quaternion);
+
+  // Bridge Camera Look Direction (Bridge mode - Image 1)
+  bridgeCamera.position.set(0, 14, 28);
+  bridgeCamera.rotation.set(bridgeCamPitch, bridgeCamYaw, 0, 'YXZ');
+
+  // Satellite Camera Tracking (Orbital Recon PiP)
+  satCamera.position.set(ship.position.x, ship.position.y + 420, ship.position.z + 60);
+  satCamera.lookAt(ship.position);
+
+  // Weapon Firing
+  shootCooldown -= dt;
+  if (isShooting && shootCooldown <= 0) {
+    fireWeapons();
+    shootCooldown = shipState.currentWeapon === 1 ? 0.12 : (shipState.currentWeapon === 2 ? 0.35 : 0.65);
+  }
+
+  // Laser Projectile Updates
+  for (let i = laserProjectiles.length - 1; i >= 0; i--) {
+    const lp = laserProjectiles[i];
+    lp.life -= dt;
+    lp.mesh.position.addScaledVector(lp.vel, dt);
+    let hit = false;
+    hostiles.filter(d => d.alive).forEach(d => {
+      if (lp.mesh.position.distanceTo(d.group.position) < 4.5) {
+        d.hp -= lp.damage;
+        hit = true;
+        const isHeadshot = (lp.damage >= 100);
+        spawnDamageText(`-${lp.damage}`, d.group.position, isHeadshot);
+        if (d.hp <= 0) {
+          d.alive = false;
+          sceneFlight.remove(d.group);
+          spawnDamageText("DESTROYED!", d.group.position, true);
+        }
+      }
+    });
+    if (hit || lp.life <= 0) {
+      sceneFlight.remove(lp.mesh);
+      laserProjectiles.splice(i, 1);
+    }
+  }
+
+  // Spherical LiDAR
+  if (lidarVisible) {
+    const lPos = lidarGeo.attributes.position.array;
+    for (let i = 0; i < lidarCount; i++) {
+      const u = (i / lidarCount);
+      const theta = u * Math.PI * 16 + (now * 0.0008);
+      const phi = ((i % 128) / 128) * Math.PI - (Math.PI/2);
+      const r = 25.0 + Math.sin(theta * 4 + i) * 60.0;
+      lPos[i*3+0] = ship.position.x + r * Math.cos(phi) * Math.cos(theta);
+      lPos[i*3+1] = ship.position.y + r * Math.sin(phi);
+      lPos[i*3+2] = ship.position.z + r * Math.cos(phi) * Math.sin(theta);
+    }
+    lidarGeo.attributes.position.needsUpdate = true;
+  }
+
+  // Render Based on Active Perspective
+  if (activePerspective === 'FLIGHT') {
+    renderer.render(sceneFlight, camera);
+  } else if (activePerspective === 'BRIDGE') {
+    renderer.render(sceneBridge, bridgeCamera);
+  }
+
+  // Satellite PiP Viewport Render
+  satRenderer.render(sceneFlight, satCamera);
+
+  // Instruments
+  updateSpectrometer(now * 0.001);
+  updateRFOscilloscope(now * 0.001);
+  updateRadar();
+  renderSpaceCV();
+
+  if (activePerspective === 'MCC') {
+    drawMCCGroundTrack();
+  }
+}
+
+requestAnimationFrame(animate);
+
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth / window.innerHeight;
+  camera.updateProjectionMatrix();
+  bridgeCamera.aspect = window.innerWidth / window.innerHeight;
+  bridgeCamera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  resizeCV();
+});
+</script>
+</body>
+</html>

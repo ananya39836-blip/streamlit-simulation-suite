@@ -1,0 +1,2002 @@
+﻿[
+    {
+        "id":  1,
+        "volume":  "Volume 001",
+        "title":  "Spacetime Emergence",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3017,
+        "file":  "Volume_001_Spacetime_Emergence.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  2,
+        "volume":  "Volume 002",
+        "title":  "Causal Dynamical Triangulations",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3034,
+        "file":  "Volume_002_Causal_Dynamical_Triangulations.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  3,
+        "volume":  "Volume 003",
+        "title":  "Loop Quantum Gravity",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3051,
+        "file":  "Volume_003_Loop_Quantum_Gravity.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  4,
+        "volume":  "Volume 004",
+        "title":  "Holographic Error Correction",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3068,
+        "file":  "Volume_004_Holographic_Error_Correction.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  5,
+        "volume":  "Volume 005",
+        "title":  "Spin Foam Models",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3085,
+        "file":  "Volume_005_Spin_Foam_Models.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  6,
+        "volume":  "Volume 006",
+        "title":  "Asymptotic Safety",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3102,
+        "file":  "Volume_006_Asymptotic_Safety.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  7,
+        "volume":  "Volume 007",
+        "title":  "Non Commutative Geometry",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3119,
+        "file":  "Volume_007_Non_Commutative_Geometry.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  8,
+        "volume":  "Volume 008",
+        "title":  "Group Field Theory",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3136,
+        "file":  "Volume_008_Group_Field_Theory.docx",
+        "size_kb":  8.5
+    },
+    {
+        "id":  9,
+        "volume":  "Volume 009",
+        "title":  "Causal Fermion Systems",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3153,
+        "file":  "Volume_009_Causal_Fermion_Systems.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  10,
+        "volume":  "Volume 010",
+        "title":  "Penrose Twistor Theory",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3170,
+        "file":  "Volume_010_Penrose_Twistor_Theory.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  11,
+        "volume":  "Volume 011",
+        "title":  "Regge Calculus",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3187,
+        "file":  "Volume_011_Regge_Calculus.docx",
+        "size_kb":  8.5
+    },
+    {
+        "id":  12,
+        "volume":  "Volume 012",
+        "title":  "Entanglement Entropy Ryu Takayanagi",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3204,
+        "file":  "Volume_012_Entanglement_Entropy_Ryu_Takayanagi.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  13,
+        "volume":  "Volume 013",
+        "title":  "Quantum Graphity",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3221,
+        "file":  "Volume_013_Quantum_Graphity.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  14,
+        "volume":  "Volume 014",
+        "title":  "Wheeler DeWitt Cosmology",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3238,
+        "file":  "Volume_014_Wheeler_DeWitt_Cosmology.docx",
+        "size_kb":  8.5
+    },
+    {
+        "id":  15,
+        "volume":  "Volume 015",
+        "title":  "Loop Quantum Cosmology",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3255,
+        "file":  "Volume_015_Loop_Quantum_Cosmology.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  16,
+        "volume":  "Volume 016",
+        "title":  "Discrete Differential Forms",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3272,
+        "file":  "Volume_016_Discrete_Differential_Forms.docx",
+        "size_kb":  8.5
+    },
+    {
+        "id":  17,
+        "volume":  "Volume 017",
+        "title":  "Black Hole Fuzzballs",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3289,
+        "file":  "Volume_017_Black_Hole_Fuzzballs.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  18,
+        "volume":  "Volume 018",
+        "title":  "Trans Planckian Censorship",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3306,
+        "file":  "Volume_018_Trans_Planckian_Censorship.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  19,
+        "volume":  "Volume 019",
+        "title":  "Analogue Emergent Gravity",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3323,
+        "file":  "Volume_019_Analogue_Emergent_Gravity.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  20,
+        "volume":  "Volume 020",
+        "title":  "Discrete Lorentz Invariance",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3340,
+        "file":  "Volume_020_Discrete_Lorentz_Invariance.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  21,
+        "volume":  "Volume 021",
+        "title":  "Bohmian Mechanics",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3357,
+        "file":  "Volume_021_Bohmian_Mechanics.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  22,
+        "volume":  "Volume 022",
+        "title":  "Many Worlds Everettian Mechanics",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3374,
+        "file":  "Volume_022_Many_Worlds_Everettian_Mechanics.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  23,
+        "volume":  "Volume 023",
+        "title":  "Environment Induced Superselection",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3391,
+        "file":  "Volume_023_Environment_Induced_Superselection.docx",
+        "size_kb":  8.5
+    },
+    {
+        "id":  24,
+        "volume":  "Volume 024",
+        "title":  "Spontaneous Collapse Models",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3408,
+        "file":  "Volume_024_Spontaneous_Collapse_Models.docx",
+        "size_kb":  8.7
+    },
+    {
+        "id":  25,
+        "volume":  "Volume 025",
+        "title":  "Quantum Bayesianism QBism",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3425,
+        "file":  "Volume_025_Quantum_Bayesianism_QBism.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  26,
+        "volume":  "Volume 026",
+        "title":  "Relational Quantum Mechanics",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3442,
+        "file":  "Volume_026_Relational_Quantum_Mechanics.docx",
+        "size_kb":  8.5
+    },
+    {
+        "id":  27,
+        "volume":  "Volume 027",
+        "title":  "Kochen Specker Contextuality",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3459,
+        "file":  "Volume_027_Kochen_Specker_Contextuality.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  28,
+        "volume":  "Volume 028",
+        "title":  "Bell Non Locality Theorems",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3476,
+        "file":  "Volume_028_Bell_Non_Locality_Theorems.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  29,
+        "volume":  "Volume 029",
+        "title":  "PBR Theorem Psi Ontology",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3493,
+        "file":  "Volume_029_PBR_Theorem_Psi_Ontology.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  30,
+        "volume":  "Volume 030",
+        "title":  "Categorical Quantum Mechanics",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3010,
+        "file":  "Volume_030_Categorical_Quantum_Mechanics.docx",
+        "size_kb":  8.5
+    },
+    {
+        "id":  31,
+        "volume":  "Volume 031",
+        "title":  "ZX Calculus Diagrammatic Logic",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3027,
+        "file":  "Volume_031_ZX_Calculus_Diagrammatic_Logic.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  32,
+        "volume":  "Volume 032",
+        "title":  "Topos Quantum Theory",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3044,
+        "file":  "Volume_032_Topos_Quantum_Theory.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  33,
+        "volume":  "Volume 033",
+        "title":  "Wigners Friend Paradox",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3061,
+        "file":  "Volume_033_Wigners_Friend_Paradox.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  34,
+        "volume":  "Volume 034",
+        "title":  "Quantum Thermodynamics Landauer",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3078,
+        "file":  "Volume_034_Quantum_Thermodynamics_Landauer.docx",
+        "size_kb":  8.5
+    },
+    {
+        "id":  35,
+        "volume":  "Volume 035",
+        "title":  "Quantum Darwinism Objective Reality",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3095,
+        "file":  "Volume_035_Quantum_Darwinism_Objective_Reality.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  36,
+        "volume":  "Volume 036",
+        "title":  "Retrocausality TSVF",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3112,
+        "file":  "Volume_036_Retrocausality_TSVF.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  37,
+        "volume":  "Volume 037",
+        "title":  "Quantum Zeno Effect",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3129,
+        "file":  "Volume_037_Quantum_Zeno_Effect.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  38,
+        "volume":  "Volume 038",
+        "title":  "Superdeterminism Hidden Variables",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3146,
+        "file":  "Volume_038_Superdeterminism_Hidden_Variables.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  39,
+        "volume":  "Volume 039",
+        "title":  "Penrose Diosi Gravitational Collapse",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3163,
+        "file":  "Volume_039_Penrose_Diosi_Gravitational_Collapse.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  40,
+        "volume":  "Volume 040",
+        "title":  "Quantum Modal Interpretations",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3180,
+        "file":  "Volume_040_Quantum_Modal_Interpretations.docx",
+        "size_kb":  8.6
+    },
+    {
+        "id":  41,
+        "volume":  "Volume 041",
+        "title":  "Haag Kastler Axioms Causal Nets",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3197,
+        "file":  "Volume_041_Haag_Kastler_Axioms_Causal_Nets.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  42,
+        "volume":  "Volume 042",
+        "title":  "Reeh Schlieder Vacuum Cyclicity",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3214,
+        "file":  "Volume_042_Reeh_Schlieder_Vacuum_Cyclicity.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  43,
+        "volume":  "Volume 043",
+        "title":  "Type III1 Hyperfinite Factors",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3231,
+        "file":  "Volume_043_Type_III1_Hyperfinite_Factors.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  44,
+        "volume":  "Volume 044",
+        "title":  "Tomita Takesaki Modular Theory",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3248,
+        "file":  "Volume_044_Tomita_Takesaki_Modular_Theory.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  45,
+        "volume":  "Volume 045",
+        "title":  "Casimir Effect Vacuum Boundaries",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3265,
+        "file":  "Volume_045_Casimir_Effect_Vacuum_Boundaries.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  46,
+        "volume":  "Volume 046",
+        "title":  "Quantum Anomalies WZW Action",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3282,
+        "file":  "Volume_046_Quantum_Anomalies_WZW_Action.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  47,
+        "volume":  "Volume 047",
+        "title":  "Standard Model Higgs Mechanism",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3299,
+        "file":  "Volume_047_Standard_Model_Higgs_Mechanism.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  48,
+        "volume":  "Volume 048",
+        "title":  "QCD Non Abelian Confinement",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3316,
+        "file":  "Volume_048_QCD_Non_Abelian_Confinement.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  49,
+        "volume":  "Volume 049",
+        "title":  "Strong CP Instantons Axion",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3333,
+        "file":  "Volume_049_Strong_CP_Instantons_Axion.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  50,
+        "volume":  "Volume 050",
+        "title":  "Renormalization Callan Symanzik",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3350,
+        "file":  "Volume_050_Renormalization_Callan_Symanzik.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  51,
+        "volume":  "Volume 051",
+        "title":  "Conformal Field Theory Polyakov",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3367,
+        "file":  "Volume_051_Conformal_Field_Theory_Polyakov.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  52,
+        "volume":  "Volume 052",
+        "title":  "Zamolodchikov C Theorem",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3384,
+        "file":  "Volume_052_Zamolodchikov_C_Theorem.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  53,
+        "volume":  "Volume 053",
+        "title":  "Topological Solitons Instantons",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3401,
+        "file":  "Volume_053_Topological_Solitons_Instantons.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  54,
+        "volume":  "Volume 054",
+        "title":  "Supersymmetry Super Poincare",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3418,
+        "file":  "Volume_054_Supersymmetry_Super_Poincare.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  55,
+        "volume":  "Volume 055",
+        "title":  "Spontaneous Symmetry Breaking Goldstone",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3435,
+        "file":  "Volume_055_Spontaneous_Symmetry_Breaking_Goldstone.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  56,
+        "volume":  "Volume 056",
+        "title":  "CPT Invariance Theorem",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3452,
+        "file":  "Volume_056_CPT_Invariance_Theorem.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  57,
+        "volume":  "Volume 057",
+        "title":  "Spin Statistics Permutation Symmetry",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3469,
+        "file":  "Volume_057_Spin_Statistics_Permutation_Symmetry.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  58,
+        "volume":  "Volume 058",
+        "title":  "Effective Field Theories Wilson",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3486,
+        "file":  "Volume_058_Effective_Field_Theories_Wilson.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  59,
+        "volume":  "Volume 059",
+        "title":  "Cosmological Constant Fine Tuning",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3003,
+        "file":  "Volume_059_Cosmological_Constant_Fine_Tuning.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  60,
+        "volume":  "Volume 060",
+        "title":  "Non Hermitian PT Symmetric QM",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3020,
+        "file":  "Volume_060_Non_Hermitian_PT_Symmetric_QM.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  61,
+        "volume":  "Volume 061",
+        "title":  "Tegmark Mathematical Universe",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3037,
+        "file":  "Volume_061_Tegmark_Mathematical_Universe.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  62,
+        "volume":  "Volume 062",
+        "title":  "Grothendieck Toposes Sheaves",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3054,
+        "file":  "Volume_062_Grothendieck_Toposes_Sheaves.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  63,
+        "volume":  "Volume 063",
+        "title":  "Higher Category Theory 2Categories",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3071,
+        "file":  "Volume_063_Higher_Category_Theory_2Categories.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  64,
+        "volume":  "Volume 064",
+        "title":  "Monoidal Categories Tensor Architecture",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3088,
+        "file":  "Volume_064_Monoidal_Categories_Tensor_Architecture.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  65,
+        "volume":  "Volume 065",
+        "title":  "Yoneda Lemma Relationalism",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3105,
+        "file":  "Volume_065_Yoneda_Lemma_Relationalism.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  66,
+        "volume":  "Volume 066",
+        "title":  "Gelfand Duality CStar Algebras",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3122,
+        "file":  "Volume_066_Gelfand_Duality_CStar_Algebras.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  67,
+        "volume":  "Volume 067",
+        "title":  "Model Theory Non Standard Analysis",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3139,
+        "file":  "Volume_067_Model_Theory_Non_Standard_Analysis.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  68,
+        "volume":  "Volume 068",
+        "title":  "Homotopy Type Theory HoTT",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3156,
+        "file":  "Volume_068_Homotopy_Type_Theory_HoTT.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  69,
+        "volume":  "Volume 069",
+        "title":  "Quantum Logic Birkhoff von Neumann",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3173,
+        "file":  "Volume_069_Quantum_Logic_Birkhoff_von_Neumann.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  70,
+        "volume":  "Volume 070",
+        "title":  "Topos Quantum State Contexts",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3190,
+        "file":  "Volume_070_Topos_Quantum_State_Contexts.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  71,
+        "volume":  "Volume 071",
+        "title":  "Sheaf Cohomology Contextuality",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3207,
+        "file":  "Volume_071_Sheaf_Cohomology_Contextuality.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  72,
+        "volume":  "Volume 072",
+        "title":  "Dagger Frobenius Classical Data",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3224,
+        "file":  "Volume_072_Dagger_Frobenius_Classical_Data.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  73,
+        "volume":  "Volume 073",
+        "title":  "Categorical Quantum Reconstruction",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3241,
+        "file":  "Volume_073_Categorical_Quantum_Reconstruction.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  74,
+        "volume":  "Volume 074",
+        "title":  "Cohomological Gauge Theories Donaldson",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3258,
+        "file":  "Volume_074_Cohomological_Gauge_Theories_Donaldson.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  75,
+        "volume":  "Volume 075",
+        "title":  "Exceptional Lie Groups E8",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3275,
+        "file":  "Volume_075_Exceptional_Lie_Groups_E8.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  76,
+        "volume":  "Volume 076",
+        "title":  "Clifford Algebras Spinors Reality",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3292,
+        "file":  "Volume_076_Clifford_Algebras_Spinors_Reality.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  77,
+        "volume":  "Volume 077",
+        "title":  "Non Euclidean Hyperbolic Poincare",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3309,
+        "file":  "Volume_077_Non_Euclidean_Hyperbolic_Poincare.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  78,
+        "volume":  "Volume 078",
+        "title":  "Constructive Mathematics Finite Info",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3326,
+        "file":  "Volume_078_Constructive_Mathematics_Finite_Info.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  79,
+        "volume":  "Volume 079",
+        "title":  "Knot Theory Braid Groups Anyons",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3343,
+        "file":  "Volume_079_Knot_Theory_Braid_Groups_Anyons.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  80,
+        "volume":  "Volume 080",
+        "title":  "Langlands Program SDuality",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3360,
+        "file":  "Volume_080_Langlands_Program_SDuality.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  81,
+        "volume":  "Volume 081",
+        "title":  "Wheelers It From Bit Participatory Principle",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3377,
+        "file":  "Volume_081_Wheelers_It_From_Bit_Participatory_Principle.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  82,
+        "volume":  "Volume 082",
+        "title":  "Algorithmic Information Solomonoff Induction",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3394,
+        "file":  "Volume_082_Algorithmic_Information_Solomonoff_Induction.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  83,
+        "volume":  "Volume 083",
+        "title":  "Bekenstein Bound Universal Information Limits",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3411,
+        "file":  "Volume_083_Bekenstein_Bound_Universal_Information_Limits.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  84,
+        "volume":  "Volume 084",
+        "title":  "Holographic Bound Bousso Covariant Entropy",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3428,
+        "file":  "Volume_084_Holographic_Bound_Bousso_Covariant_Entropy.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  85,
+        "volume":  "Volume 085",
+        "title":  "Landauers Principle Thermodynamic Cost Erasure",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3445,
+        "file":  "Volume_085_Landauers_Principle_Thermodynamic_Cost_Erasure.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  86,
+        "volume":  "Volume 086",
+        "title":  "Quantum Information Scrambling OTOC Chaos",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3462,
+        "file":  "Volume_086_Quantum_Information_Scrambling_OTOC_Chaos.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  87,
+        "volume":  "Volume 087",
+        "title":  "Black Holes Fastest Scramblers Hayden Preskill",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3479,
+        "file":  "Volume_087_Black_Holes_Fastest_Scramblers_Hayden_Preskill.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  88,
+        "volume":  "Volume 088",
+        "title":  "Quantum Complexity Susskind Complexity Volume",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3496,
+        "file":  "Volume_088_Quantum_Complexity_Susskind_Complexity_Volume.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  89,
+        "volume":  "Volume 089",
+        "title":  "Quantum Computational Supremacy Benchmarking",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3013,
+        "file":  "Volume_089_Quantum_Computational_Supremacy_Benchmarking.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  90,
+        "volume":  "Volume 090",
+        "title":  "Digital Physics Reversible Computing Toffoli",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3030,
+        "file":  "Volume_090_Digital_Physics_Reversible_Computing_Toffoli.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  91,
+        "volume":  "Volume 091",
+        "title":  "Wolfram Physics Project Multiway Evolution",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3047,
+        "file":  "Volume_091_Wolfram_Physics_Project_Multiway_Evolution.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  92,
+        "volume":  "Volume 092",
+        "title":  "Seth Lloyd Ultimate Physical Limits Computation",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3064,
+        "file":  "Volume_092_Seth_Lloyd_Ultimate_Physical_Limits_Computation.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  93,
+        "volume":  "Volume 093",
+        "title":  "Quantum Error Correction Fault Tolerance",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3081,
+        "file":  "Volume_093_Quantum_Error_Correction_Fault_Tolerance.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  94,
+        "volume":  "Volume 094",
+        "title":  "Topological Quantum Codes Kitaev Toric Code",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3098,
+        "file":  "Volume_094_Topological_Quantum_Codes_Kitaev_Toric_Code.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  95,
+        "volume":  "Volume 095",
+        "title":  "Entanglement Monotones Concurrence Discord",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3115,
+        "file":  "Volume_095_Entanglement_Monotones_Concurrence_Discord.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  96,
+        "volume":  "Volume 096",
+        "title":  "Quantum Marginal Problem Multipartite States",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3132,
+        "file":  "Volume_096_Quantum_Marginal_Problem_Multipartite_States.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  97,
+        "volume":  "Volume 097",
+        "title":  "Information Flow Non Markovianity Open Systems",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3149,
+        "file":  "Volume_097_Information_Flow_Non_Markovianity_Open_Systems.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  98,
+        "volume":  "Volume 098",
+        "title":  "Holevo Bound Channel Accessible Information",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3166,
+        "file":  "Volume_098_Holevo_Bound_Channel_Accessible_Information.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  99,
+        "volume":  "Volume 099",
+        "title":  "Quantum Cryptography Device Independence",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3183,
+        "file":  "Volume_099_Quantum_Cryptography_Device_Independence.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  100,
+        "volume":  "Volume 100",
+        "title":  "Epistemic Indeterminacy Uncomputable Gaps",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3200,
+        "file":  "Volume_100_Epistemic_Indeterminacy_Uncomputable_Gaps.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  101,
+        "volume":  "Volume 101",
+        "title":  "Non Commutative Geometry Standard Model",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3217,
+        "file":  "Volume_101_Non_Commutative_Geometry_Standard_Model.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  102,
+        "volume":  "Volume 102",
+        "title":  "Moyal Brackets Groenewold Star Products",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3234,
+        "file":  "Volume_102_Moyal_Brackets_Groenewold_Star_Products.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  103,
+        "volume":  "Volume 103",
+        "title":  "Quantum Groups Hopf Algebras QDeformed",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3251,
+        "file":  "Volume_103_Quantum_Groups_Hopf_Algebras_QDeformed.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  104,
+        "volume":  "Volume 104",
+        "title":  "Snyder Non Commutative Spacetime Minimal Length",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3268,
+        "file":  "Volume_104_Snyder_Non_Commutative_Spacetime_Minimal_Length.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  105,
+        "volume":  "Volume 105",
+        "title":  "Kappa Minkowski Spacetime Doubly Special Relativity",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3285,
+        "file":  "Volume_105_Kappa_Minkowski_Spacetime_Doubly_Special_Relativity.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  106,
+        "volume":  "Volume 106",
+        "title":  "Fuzzy Spheres Matrix Models Non Commutative",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3302,
+        "file":  "Volume_106_Fuzzy_Spheres_Matrix_Models_Non_Commutative.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  107,
+        "volume":  "Volume 107",
+        "title":  "Lattice Gauge Theory Wilson Confinement",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3319,
+        "file":  "Volume_107_Lattice_Gauge_Theory_Wilson_Confinement.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  108,
+        "volume":  "Volume 108",
+        "title":  "Chiral Fermions Nielsen Ninomiya NoGo Theorem",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3336,
+        "file":  "Volume_108_Chiral_Fermions_Nielsen_Ninomiya_NoGo_Theorem.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  109,
+        "volume":  "Volume 109",
+        "title":  "Domain Wall Fermions Ginsparg Wilson Symmetry",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3353,
+        "file":  "Volume_109_Domain_Wall_Fermions_Ginsparg_Wilson_Symmetry.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  110,
+        "volume":  "Volume 110",
+        "title":  "Regge Calculus Discrete Einstein Dynamics",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3370,
+        "file":  "Volume_110_Regge_Calculus_Discrete_Einstein_Dynamics.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  111,
+        "volume":  "Volume 111",
+        "title":  "Discrete Differential Geometry Curvature Meshes",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3387,
+        "file":  "Volume_111_Discrete_Differential_Geometry_Curvature_Meshes.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  112,
+        "volume":  "Volume 112",
+        "title":  "Voronoi Delaunay Dual Lattice Quantum Gravity",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3404,
+        "file":  "Volume_112_Voronoi_Delaunay_Dual_Lattice_Quantum_Gravity.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  113,
+        "volume":  "Volume 113",
+        "title":  "CDT Phase C Infrared Classical Emergence",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3421,
+        "file":  "Volume_113_CDT_Phase_C_Infrared_Classical_Emergence.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  114,
+        "volume":  "Volume 114",
+        "title":  "Spectral Dimension Running Planck Reduction",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3438,
+        "file":  "Volume_114_Spectral_Dimension_Running_Planck_Reduction.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  115,
+        "volume":  "Volume 115",
+        "title":  "Matrix Models BFSS IKKT MTheory",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3455,
+        "file":  "Volume_115_Matrix_Models_BFSS_IKKT_MTheory.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  116,
+        "volume":  "Volume 116",
+        "title":  "Kontsevich Matrix Model Topological Gravity",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3472,
+        "file":  "Volume_116_Kontsevich_Matrix_Model_Topological_Gravity.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  117,
+        "volume":  "Volume 117",
+        "title":  "Non Commutative Solitons Instantons",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3489,
+        "file":  "Volume_117_Non_Commutative_Solitons_Instantons.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  118,
+        "volume":  "Volume 118",
+        "title":  "Discrete Causal Sets Benincasa Dowker Action",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3006,
+        "file":  "Volume_118_Discrete_Causal_Sets_Benincasa_Dowker_Action.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  119,
+        "volume":  "Volume 119",
+        "title":  "Topological Defects Cosmic Strings Monopoles",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3023,
+        "file":  "Volume_119_Topological_Defects_Cosmic_Strings_Monopoles.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  120,
+        "volume":  "Volume 120",
+        "title":  "Discrete Holonomy Algebras Quantum Graphity",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3040,
+        "file":  "Volume_120_Discrete_Holonomy_Algebras_Quantum_Graphity.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  121,
+        "volume":  "Volume 121",
+        "title":  "Thermodynamic Arrow Time Loschmidt Paradox",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3057,
+        "file":  "Volume_121_Thermodynamic_Arrow_Time_Loschmidt_Paradox.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  122,
+        "volume":  "Volume 122",
+        "title":  "Boltzmann H Theorem Phase Space Entropy",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3074,
+        "file":  "Volume_122_Boltzmann_H_Theorem_Phase_Space_Entropy.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  123,
+        "volume":  "Volume 123",
+        "title":  "Past Hypothesis Cosmological Initial Conditions",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3091,
+        "file":  "Volume_123_Past_Hypothesis_Cosmological_Initial_Conditions.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  124,
+        "volume":  "Volume 124",
+        "title":  "Weyl Curvature Hypothesis Spacetime Singularities",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3108,
+        "file":  "Volume_124_Weyl_Curvature_Hypothesis_Spacetime_Singularities.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  125,
+        "volume":  "Volume 125",
+        "title":  "Conformal Cyclic Cosmology Aeon Transitions",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3125,
+        "file":  "Volume_125_Conformal_Cyclic_Cosmology_Aeon_Transitions.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  126,
+        "volume":  "Volume 126",
+        "title":  "Black Hole Thermodynamics Four Laws",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3142,
+        "file":  "Volume_126_Black_Hole_Thermodynamics_Four_Laws.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  127,
+        "volume":  "Volume 127",
+        "title":  "Hawking Radiation Bogoliubov Transformations",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3159,
+        "file":  "Volume_127_Hawking_Radiation_Bogoliubov_Transformations.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  128,
+        "volume":  "Volume 128",
+        "title":  "Black Hole Information Paradox Page Curve",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3176,
+        "file":  "Volume_128_Black_Hole_Information_Paradox_Page_Curve.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  129,
+        "volume":  "Volume 129",
+        "title":  "Entanglement Islands Quantum Extremal Surfaces",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3193,
+        "file":  "Volume_129_Entanglement_Islands_Quantum_Extremal_Surfaces.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  130,
+        "volume":  "Volume 130",
+        "title":  "Generalized Second Law Thermodynamics",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3210,
+        "file":  "Volume_130_Generalized_Second_Law_Thermodynamics.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  131,
+        "volume":  "Volume 131",
+        "title":  "Non Equilibrium Thermodynamics Jarzynski Equality",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3227,
+        "file":  "Volume_131_Non_Equilibrium_Thermodynamics_Jarzynski_Equality.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  132,
+        "volume":  "Volume 132",
+        "title":  "Maximum Entropy Production Dissipative Systems",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3244,
+        "file":  "Volume_132_Maximum_Entropy_Production_Dissipative_Systems.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  133,
+        "volume":  "Volume 133",
+        "title":  "Quantum Thermodynamics Resource Theories",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3261,
+        "file":  "Volume_133_Quantum_Thermodynamics_Resource_Theories.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  134,
+        "volume":  "Volume 134",
+        "title":  "Thermal Time Hypothesis KMS States",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3278,
+        "file":  "Volume_134_Thermal_Time_Hypothesis_KMS_States.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  135,
+        "volume":  "Volume 135",
+        "title":  "Relativistic Heat Conduction Israel Stewart",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3295,
+        "file":  "Volume_135_Relativistic_Heat_Conduction_Israel_Stewart.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  136,
+        "volume":  "Volume 136",
+        "title":  "Trans Planckian Problem Modified Dispersion",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3312,
+        "file":  "Volume_136_Trans_Planckian_Problem_Modified_Dispersion.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  137,
+        "volume":  "Volume 137",
+        "title":  "Quantum Phase Transitions Kibble Zurek",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3329,
+        "file":  "Volume_137_Quantum_Phase_Transitions_Kibble_Zurek.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  138,
+        "volume":  "Volume 138",
+        "title":  "Cosmic Inflation Primordial Fluctuations",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3346,
+        "file":  "Volume_138_Cosmic_Inflation_Primordial_Fluctuations.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  139,
+        "volume":  "Volume 139",
+        "title":  "Dark Energy Cosmological Constant Coincidence",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3363,
+        "file":  "Volume_139_Dark_Energy_Cosmological_Constant_Coincidence.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  140,
+        "volume":  "Volume 140",
+        "title":  "Cosmic Heat Death Poincare Recurrence",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3380,
+        "file":  "Volume_140_Cosmic_Heat_Death_Poincare_Recurrence.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  141,
+        "volume":  "Volume 141",
+        "title":  "Superstring Dualities TDuality Mirror Symmetry",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3397,
+        "file":  "Volume_141_Superstring_Dualities_TDuality_Mirror_Symmetry.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  142,
+        "volume":  "Volume 142",
+        "title":  "SDuality Strong Weak Couplings Montonen Olive",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3414,
+        "file":  "Volume_142_SDuality_Strong_Weak_Couplings_Montonen_Olive.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  143,
+        "volume":  "Volume 143",
+        "title":  "MTheory 11D Supergravity M2 M5 Branes",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3431,
+        "file":  "Volume_143_MTheory_11D_Supergravity_M2_M5_Branes.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  144,
+        "volume":  "Volume 144",
+        "title":  "Calabi Yau Moduli Stabilization KKLT",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3448,
+        "file":  "Volume_144_Calabi_Yau_Moduli_Stabilization_KKLT.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  145,
+        "volume":  "Volume 145",
+        "title":  "String Theory Landscape Anthropic Selection",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3465,
+        "file":  "Volume_145_String_Theory_Landscape_Anthropic_Selection.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  146,
+        "volume":  "Volume 146",
+        "title":  "Swampland Program Weak Gravity Conjecture",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3482,
+        "file":  "Volume_146_Swampland_Program_Weak_Gravity_Conjecture.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  147,
+        "volume":  "Volume 147",
+        "title":  "Swampland deSitter TransPlanckian Censorship",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3499,
+        "file":  "Volume_147_Swampland_deSitter_TransPlanckian_Censorship.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  148,
+        "volume":  "Volume 148",
+        "title":  "DBranes Polchinski NonAbelian Gauge Fields",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3016,
+        "file":  "Volume_148_DBranes_Polchinski_NonAbelian_Gauge_Fields.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  149,
+        "volume":  "Volume 149",
+        "title":  "AdS CFT Correspondence Maldacena Holography",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3033,
+        "file":  "Volume_149_AdS_CFT_Correspondence_Maldacena_Holography.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  150,
+        "volume":  "Volume 150",
+        "title":  "Matrix Models BFSS NonPerturbative MTheory",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3050,
+        "file":  "Volume_150_Matrix_Models_BFSS_NonPerturbative_MTheory.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  151,
+        "volume":  "Volume 151",
+        "title":  "String Field Theory Witten Cubic Action",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3067,
+        "file":  "Volume_151_String_Field_Theory_Witten_Cubic_Action.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  152,
+        "volume":  "Volume 152",
+        "title":  "Topological String Theory AModel BModel",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3084,
+        "file":  "Volume_152_Topological_String_Theory_AModel_BModel.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  153,
+        "volume":  "Volume 153",
+        "title":  "Black Hole Attractor Mechanism BPS States",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3101,
+        "file":  "Volume_153_Black_Hole_Attractor_Mechanism_BPS_States.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  154,
+        "volume":  "Volume 154",
+        "title":  "Fuzzball Paradigm Singularity Resolution",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3118,
+        "file":  "Volume_154_Fuzzball_Paradigm_Singularity_Resolution.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  155,
+        "volume":  "Volume 155",
+        "title":  "NonCritical Strings Liouville Quantum Gravity",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3135,
+        "file":  "Volume_155_NonCritical_Strings_Liouville_Quantum_Gravity.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  156,
+        "volume":  "Volume 156",
+        "title":  "Cosmic Strings Superstring Phenomenology",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3152,
+        "file":  "Volume_156_Cosmic_Strings_Superstring_Phenomenology.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  157,
+        "volume":  "Volume 157",
+        "title":  "Heterotic Strings E8xE8 Grand Unification",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3169,
+        "file":  "Volume_157_Heterotic_Strings_E8xE8_Grand_Unification.docx",
+        "size_kb":  7.9
+    },
+    {
+        "id":  158,
+        "volume":  "Volume 158",
+        "title":  "Twistor Strings Amplituhedron Scattering",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3186,
+        "file":  "Volume_158_Twistor_Strings_Amplituhedron_Scattering.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  159,
+        "volume":  "Volume 159",
+        "title":  "SMatrix Bootstrap Scattering Bounds",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3203,
+        "file":  "Volume_159_SMatrix_Bootstrap_Scattering_Bounds.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  160,
+        "volume":  "Volume 160",
+        "title":  "Emergent Spacetime Matrix Entanglement",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3220,
+        "file":  "Volume_160_Emergent_Spacetime_Matrix_Entanglement.docx",
+        "size_kb":  7.8
+    },
+    {
+        "id":  161,
+        "volume":  "Volume 161",
+        "title":  "Wigners Friend MultiAgent Quantum Mechanics",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3237,
+        "file":  "Volume_161_Wigners_Friend_MultiAgent_Quantum_Mechanics.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  162,
+        "volume":  "Volume 162",
+        "title":  "Integrated Information Theory IIT Consciousness",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3254,
+        "file":  "Volume_162_Integrated_Information_Theory_IIT_Consciousness.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  163,
+        "volume":  "Volume 163",
+        "title":  "Von Neumann Measurement Chains Subjective Cut",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3271,
+        "file":  "Volume_163_Von_Neumann_Measurement_Chains_Subjective_Cut.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  164,
+        "volume":  "Volume 164",
+        "title":  "Orchestrated Objective Reduction OrchOR Tubulin",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3288,
+        "file":  "Volume_164_Orchestrated_Objective_Reduction_OrchOR_Tubulin.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  165,
+        "volume":  "Volume 165",
+        "title":  "Quantum Zeno AntiZeno Observation Dynamics",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3305,
+        "file":  "Volume_165_Quantum_Zeno_AntiZeno_Observation_Dynamics.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  166,
+        "volume":  "Volume 166",
+        "title":  "Psi Ontology vs Psi Epistemology PBR Theorem",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3322,
+        "file":  "Volume_166_Psi_Ontology_vs_Psi_Epistemology_PBR_Theorem.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  167,
+        "volume":  "Volume 167",
+        "title":  "Quantum Bayesianism QBism Participatory Realism",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3339,
+        "file":  "Volume_167_Quantum_Bayesianism_QBism_Participatory_Realism.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  168,
+        "volume":  "Volume 168",
+        "title":  "Relational Quantum Mechanics RQM Perspectives",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3356,
+        "file":  "Volume_168_Relational_Quantum_Mechanics_RQM_Perspectives.docx",
+        "size_kb":  5.7
+    },
+    {
+        "id":  169,
+        "volume":  "Volume 169",
+        "title":  "Many Minds Everettian Branching Consciousness",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3373,
+        "file":  "Volume_169_Many_Minds_Everettian_Branching_Consciousness.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  170,
+        "volume":  "Volume 170",
+        "title":  "Delayed Choice Quantum Eraser Retrocausality",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3390,
+        "file":  "Volume_170_Delayed_Choice_Quantum_Eraser_Retrocausality.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  171,
+        "volume":  "Volume 171",
+        "title":  "Continuous Spontaneous Localization CSL Models",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3407,
+        "file":  "Volume_171_Continuous_Spontaneous_Localization_CSL_Models.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  172,
+        "volume":  "Volume 172",
+        "title":  "Non Markovian Decoherence Classical Emergence",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3424,
+        "file":  "Volume_172_Non_Markovian_Decoherence_Classical_Emergence.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  173,
+        "volume":  "Volume 173",
+        "title":  "Quantum Contextuality Kochen Specker Theorem",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3441,
+        "file":  "Volume_173_Quantum_Contextuality_Kochen_Specker_Theorem.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  174,
+        "volume":  "Volume 174",
+        "title":  "Conway Kochen Free Will Theorem",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3458,
+        "file":  "Volume_174_Conway_Kochen_Free_Will_Theorem.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  175,
+        "volume":  "Volume 175",
+        "title":  "Generalized Probabilistic Theories GPTs Axioms",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3475,
+        "file":  "Volume_175_Generalized_Probabilistic_Theories_GPTs_Axioms.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  176,
+        "volume":  "Volume 176",
+        "title":  "Weak Measurements Complex Weak Values",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3492,
+        "file":  "Volume_176_Weak_Measurements_Complex_Weak_Values.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  177,
+        "volume":  "Volume 177",
+        "title":  "Leggett Garg Inequalities Macroscopic Realism",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3009,
+        "file":  "Volume_177_Leggett_Garg_Inequalities_Macroscopic_Realism.docx",
+        "size_kb":  5.7
+    },
+    {
+        "id":  178,
+        "volume":  "Volume 178",
+        "title":  "Quantum Darwinism Classical Redundancy",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3026,
+        "file":  "Volume_178_Quantum_Darwinism_Classical_Redundancy.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  179,
+        "volume":  "Volume 179",
+        "title":  "Quantum Cognition NonCommutative Decisions",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3043,
+        "file":  "Volume_179_Quantum_Cognition_NonCommutative_Decisions.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  180,
+        "volume":  "Volume 180",
+        "title":  "Epistemic Horizons Limits Of Knowability",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3060,
+        "file":  "Volume_180_Epistemic_Horizons_Limits_Of_Knowability.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  181,
+        "volume":  "Volume 181",
+        "title":  "Ontic Structural Realism OSR Pure Structure",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3077,
+        "file":  "Volume_181_Ontic_Structural_Realism_OSR_Pure_Structure.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  182,
+        "volume":  "Volume 182",
+        "title":  "Mereological Nihilism Universalism Physics",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3094,
+        "file":  "Volume_182_Mereological_Nihilism_Universalism_Physics.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  183,
+        "volume":  "Volume 183",
+        "title":  "Nomological Matrix Nature Of Physical Laws",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3111,
+        "file":  "Volume_183_Nomological_Matrix_Nature_Of_Physical_Laws.docx",
+        "size_kb":  5.7
+    },
+    {
+        "id":  184,
+        "volume":  "Volume 184",
+        "title":  "Causal Loop Spaces Closed Timelike Curves",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3128,
+        "file":  "Volume_184_Causal_Loop_Spaces_Closed_Timelike_Curves.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  185,
+        "volume":  "Volume 185",
+        "title":  "Wheeler Feynman Absorber Time Symmetric Physics",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3145,
+        "file":  "Volume_185_Wheeler_Feynman_Absorber_Time_Symmetric_Physics.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  186,
+        "volume":  "Volume 186",
+        "title":  "Quantum Non Separability Metaphysical Holism",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3162,
+        "file":  "Volume_186_Quantum_Non_Separability_Metaphysical_Holism.docx",
+        "size_kb":  5.7
+    },
+    {
+        "id":  187,
+        "volume":  "Volume 187",
+        "title":  "Priority Monism Primacy Cosmic Wavefunction",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3179,
+        "file":  "Volume_187_Priority_Monism_Primacy_Cosmic_Wavefunction.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  188,
+        "volume":  "Volume 188",
+        "title":  "Mathematical Platonism Structural Nominalism",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3196,
+        "file":  "Volume_188_Mathematical_Platonism_Structural_Nominalism.docx",
+        "size_kb":  5.7
+    },
+    {
+        "id":  189,
+        "volume":  "Volume 189",
+        "title":  "Modal Realism Plurality Of Possible Worlds",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3213,
+        "file":  "Volume_189_Modal_Realism_Plurality_Of_Possible_Worlds.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  190,
+        "volume":  "Volume 190",
+        "title":  "Principle Of Sufficient Reason Cosmogenesis",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3230,
+        "file":  "Volume_190_Principle_Of_Sufficient_Reason_Cosmogenesis.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  191,
+        "volume":  "Volume 191",
+        "title":  "Problem Of Induction Algorithmic Probability",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3247,
+        "file":  "Volume_191_Problem_Of_Induction_Algorithmic_Probability.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  192,
+        "volume":  "Volume 192",
+        "title":  "Time Without Time Julian Barbour Platonia",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3264,
+        "file":  "Volume_192_Time_Without_Time_Julian_Barbour_Platonia.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  193,
+        "volume":  "Volume 193",
+        "title":  "Anthropic Principle Multiverse Measure Problem",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3281,
+        "file":  "Volume_193_Anthropic_Principle_Multiverse_Measure_Problem.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  194,
+        "volume":  "Volume 194",
+        "title":  "Fundamental Constants Fine Tuning Habitability",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3298,
+        "file":  "Volume_194_Fundamental_Constants_Fine_Tuning_Habitability.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  195,
+        "volume":  "Volume 195",
+        "title":  "Goedelian Incompleteness Limits Theoretical Physics",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3315,
+        "file":  "Volume_195_Goedelian_Incompleteness_Limits_Theoretical_Physics.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  196,
+        "volume":  "Volume 196",
+        "title":  "Simulation Hypothesis Computational Substrates",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3332,
+        "file":  "Volume_196_Simulation_Hypothesis_Computational_Substrates.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  197,
+        "volume":  "Volume 197",
+        "title":  "Information As Fundamental Ontology It From Bit",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3349,
+        "file":  "Volume_197_Information_As_Fundamental_Ontology_It_From_Bit.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  198,
+        "volume":  "Volume 198",
+        "title":  "Spacetime Emergence Quantum Information ER EPR",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3366,
+        "file":  "Volume_198_Spacetime_Emergence_Quantum_Information_ER_EPR.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  199,
+        "volume":  "Volume 199",
+        "title":  "Cosmological Natural Selection Smolin Universes",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3383,
+        "file":  "Volume_199_Cosmological_Natural_Selection_Smolin_Universes.docx",
+        "size_kb":  5.8
+    },
+    {
+        "id":  200,
+        "volume":  "Volume 200",
+        "title":  "The Final Synthesis Ultimate Nature Of Reality",
+        "cluster":  "Cluster 10: Metaphysics, Mereology, Structural Realism \u0026 Nomology",
+        "pages":  40,
+        "words":  3400,
+        "file":  "Volume_200_The_Final_Synthesis_Ultimate_Nature_Of_Reality.docx",
+        "size_kb":  5.7
+    }
+]

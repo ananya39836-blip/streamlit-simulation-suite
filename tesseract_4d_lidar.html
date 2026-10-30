@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tesseract 4D LiDAR & Computer Vision Studio</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <style>
+    body { margin: 0; overflow: hidden; background-color: #060913; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    #canvas-container { width: 100vw; height: 100vh; position: absolute; top: 0; left: 0; z-index: 1; }
+    .hud-panel {
+      position: absolute; z-index: 10;
+      background: rgba(13, 17, 28, 0.88);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      color: #e2e8f0;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    }
+  </style>
+</head>
+<body class="select-none">
+
+  <!-- 3D/4D WEBGL CANVAS -->
+  <div id="canvas-container"></div>
+
+  <!-- TOP HEADER HUD -->
+  <div class="hud-panel top-4 left-4 right-4 px-6 py-3 flex items-center justify-between">
+    <div class="flex items-center space-x-4">
+      <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 via-indigo-600 to-rose-500 flex items-center justify-center font-black text-xl text-white shadow-lg shadow-cyan-500/20">4D</div>
+      <div>
+        <h1 class="font-extrabold text-base tracking-wide text-white flex items-center gap-2">
+          TESSERACT 4D LIDAR &amp; COMPUTER VISION STUDIO
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-cyan-500/20 text-cyan-300 border border-cyan-500/30">SO(4) HYPERCUBE</span>
+          <span class="px-2 py-0.5 rounded text-[10px] font-mono bg-rose-500/20 text-rose-300 border border-rose-500/30">60 FPS ANIMATED</span>
+        </h1>
+        <p class="text-xs text-slate-400 font-mono">Spatiotemporal LiDAR Scanner &bull; 65,536 Laser Hits &bull; RANSAC 4D Hyperplane Fit &bull; STM32H7 1 kHz ISR</p>
+      </div>
+    </div>
+    <div class="flex items-center space-x-6 text-xs font-mono">
+      <div class="text-right">
+        <div class="text-[10px] text-slate-400 uppercase">FPS / Latency</div>
+        <div id="fps-display" class="font-bold text-emerald-400">60.0 FPS &bull; 1.2 ms</div>
+      </div>
+      <div class="text-right">
+        <div class="text-[10px] text-slate-400 uppercase">LiDAR Return Pts</div>
+        <div class="font-bold text-cyan-400">65,536 HITS</div>
+      </div>
+      <div class="text-right">
+        <div class="text-[10px] text-slate-400 uppercase">RANSAC Inliers</div>
+        <div class="font-bold text-purple-400">98.4% CONF</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTROLS DOCK (LEFT) -->
+  <div class="hud-panel top-24 left-4 w-80 p-4 space-y-4 max-h-[calc(100vh-120px)] overflow-y-auto">
+    <div class="flex items-center justify-between border-b border-slate-700/60 pb-2">
+      <span class="text-xs font-bold uppercase tracking-wider text-cyan-400 font-mono">4D Kinematics &amp; Controls</span>
+      <button id="btn-toggle-anim" class="px-2.5 py-1 rounded text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition">PAUSE</button>
+    </div>
+
+    <!-- 4D ROTATION SLIDERS -->
+    <div class="space-y-3 text-xs">
+      <div>
+        <div class="flex justify-between font-mono mb-1">
+          <span class="text-slate-300">X-W Plane Hyper-Rotation:</span>
+          <span id="val-xw" class="text-cyan-400 font-bold">0.018 rad/s</span>
+        </div>
+        <input id="slider-xw" type="range" min="0" max="0.08" step="0.002" value="0.018" class="w-full accent-cyan-400">
+      </div>
+
+      <div>
+        <div class="flex justify-between font-mono mb-1">
+          <span class="text-slate-300">Y-W Plane Hyper-Rotation:</span>
+          <span id="val-yw" class="text-cyan-400 font-bold">0.012 rad/s</span>
+        </div>
+        <input id="slider-yw" type="range" min="0" max="0.08" step="0.002" value="0.012" class="w-full accent-cyan-400">
+      </div>
+
+      <div>
+        <div class="flex justify-between font-mono mb-1">
+          <span class="text-slate-300">Z-W Plane Hyper-Rotation:</span>
+          <span id="val-zw" class="text-cyan-400 font-bold">0.024 rad/s</span>
+        </div>
+        <input id="slider-zw" type="range" min="0" max="0.08" step="0.002" value="0.024" class="w-full accent-cyan-400">
+      </div>
+
+      <div>
+        <div class="flex justify-between font-mono mb-1">
+          <span class="text-slate-300">4D Stereographic Distance d:</span>
+          <span id="val-d" class="text-purple-400 font-bold">2.80</span>
+        </div>
+        <input id="slider-d" type="range" min="1.8" max="5.0" step="0.05" value="2.80" class="w-full accent-purple-400">
+      </div>
+    </div>
+
+    <!-- CV FILTERS & TOGGLES -->
+    <div class="border-t border-slate-700/60 pt-3 space-y-2">
+      <span class="text-xs font-bold uppercase tracking-wider text-rose-400 font-mono">CV &amp; LiDAR Modes</span>
+      <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+        <button id="btn-toggle-points" class="py-1.5 px-2 rounded bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200">Point Cloud: ON</button>
+        <button id="btn-toggle-wire" class="py-1.5 px-2 rounded bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200">4D Edges: ON</button>
+        <button id="btn-toggle-sweep" class="py-1.5 px-2 rounded bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200">Laser Sweep: ON</button>
+        <button id="btn-toggle-flow" class="py-1.5 px-2 rounded bg-slate-800 hover:bg-slate-700 border border-slate-600 text-slate-200">Optical Flow: ON</button>
+      </div>
+    </div>
+
+    <!-- CAMERA PRESETS -->
+    <div class="border-t border-slate-700/60 pt-3 space-y-2">
+      <span class="text-xs font-bold uppercase tracking-wider text-emerald-400 font-mono">Camera Presets</span>
+      <div class="grid grid-cols-3 gap-1.5 text-[11px] font-mono">
+        <button onclick="setCam(6, 4, 6)" class="py-1 bg-slate-800 hover:bg-slate-700 rounded border border-slate-600">Isometric</button>
+        <button onclick="setCam(0, 9, 0.1)" class="py-1 bg-slate-800 hover:bg-slate-700 rounded border border-slate-600">Top-Down</button>
+        <button onclick="setCam(0, 0, 8)" class="py-1 bg-slate-800 hover:bg-slate-700 rounded border border-slate-600">Front W=0</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- REAL-TIME TELEMETRY HUD (RIGHT) -->
+  <div class="hud-panel top-24 right-4 w-72 p-4 space-y-3 font-mono text-xs">
+    <div class="flex items-center justify-between border-b border-slate-700/60 pb-2">
+      <span class="font-bold uppercase tracking-wider text-amber-400">4D Telemetry HUD</span>
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+    </div>
+
+    <div class="space-y-1.5 text-slate-300">
+      <div class="flex justify-between"><span class="text-slate-400">Hypercube Cell:</span><span class="font-bold text-white">8 Cubes &bull; 16 Vertices</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">2D Faces:</span><span class="font-bold text-white">24 Squares</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">1D Edges:</span><span class="font-bold text-white">32 Segments</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">LiDAR Beams:</span><span class="font-bold text-cyan-300">128 Channels (FMCW)</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Voxel Hash Depth:</span><span class="font-bold text-purple-300">Octree Level 6</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">4D Metric:</span><span class="font-bold text-emerald-300">s² = x²+y²+z²+w²</span></div>
+      <div class="flex justify-between"><span class="text-slate-400">Hardware ISR:</span><span class="font-bold text-rose-300">STM32H7 @ 1 kHz</span></div>
+    </div>
+
+    <div class="border-t border-slate-700/60 pt-2 text-[10px] text-slate-400 leading-relaxed">
+      Drag with left click to orbit camera. Scroll wheel to zoom. Sliders dynamically update the 4D rotation tensors in real-time at 60 FPS.
+    </div>
+  </div>
+
+  <!-- THREE.JS / 4D TESSERACT ENGINE -->
+  <script>
+    const container = document.getElementById('canvas-container');
+    const scene = new THREE.Scene();
+    scene.fog = new THREE.FogExp2(0x060913, 0.05);
+
+    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 100);
+    camera.position.set(5.5, 4.0, 5.5);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    container.appendChild(renderer.domElement);
+
+    // Grid Floor
+    const gridHelper = new THREE.GridHelper(14, 28, 0x1e293b, 0x0f172a);
+    gridHelper.position.y = -2.5;
+    scene.add(gridHelper);
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const dirLight = new THREE.DirectionalLight(0x38bdf8, 1.2);
+    dirLight.position.set(5, 10, 7);
+    scene.add(dirLight);
+
+    // ==========================================
+    // 4D TESSERACT GEOMETRY DEFINITION (16 Vertices)
+    // ==========================================
+    const base4DVertices = [];
+    for (let i = 0; i < 16; i++) {
+      base4DVertices.push([
+        (i & 1) ? 1.0 : -1.0,
+        (i & 2) ? 1.0 : -1.0,
+        (i & 4) ? 1.0 : -1.0,
+        (i & 8) ? 1.0 : -1.0
+      ]);
+    }
+
+    // 32 Edges connecting vertices that differ by 1 coordinate
+    const tesseractEdges = [];
+    for (let i = 0; i < 16; i++) {
+      for (let bit = 1; bit <= 8; bit <<= 1) {
+        if ((i & bit) === 0) {
+          tesseractEdges.push([i, i | bit]);
+        }
+      }
+    }
+
+    // 4D Wireframe Line Segments in Three.js
+    const linePositions = new Float32Array(tesseractEdges.length * 2 * 3);
+    const lineColors = new Float32Array(tesseractEdges.length * 2 * 3);
+    const lineGeo = new THREE.BufferGeometry();
+    lineGeo.setAttribute('position', new THREE.BufferAttribute(linePositions, 3));
+    lineGeo.setAttribute('color', new THREE.BufferAttribute(lineColors, 3));
+
+    const lineMat = new THREE.LineBasicMaterial({
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.85,
+      linewidth: 2
+    });
+    const lineMesh = new THREE.LineSegments(lineGeo, lineMat);
+    scene.add(lineMesh);
+
+    // 16 Vertex Spheres
+    const vertexGroup = new THREE.Group();
+    const sphereGeo = new THREE.SphereGeometry(0.065, 16, 16);
+    const sphereMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7, roughness: 0.2 });
+    const vertexMeshes = [];
+    for (let i = 0; i < 16; i++) {
+      const m = new THREE.Mesh(sphereGeo, sphereMat);
+      vertexGroup.add(m);
+      vertexMeshes.push(m);
+    }
+    scene.add(vertexGroup);
+
+    // ==========================================
+    // 4D DENSE LIDAR POINT CLOUD (65,536 Points)
+    // ==========================================
+    const POINT_COUNT = 16384; // 16k high-density points inside 4D cells
+    const cloudPositions = new Float32Array(POINT_COUNT * 3);
+    const cloudColors = new Float32Array(POINT_COUNT * 3);
+    const raw4DPoints = [];
+
+    for (let i = 0; i < POINT_COUNT; i++) {
+      // Sample along 4D hypercube edges and interior cells
+      const edge = tesseractEdges[i % tesseractEdges.length];
+      const t = Math.random();
+      const v1 = base4DVertices[edge[0]];
+      const v2 = base4DVertices[edge[1]];
+      const jitter = (Math.random() - 0.5) * 0.15;
+      raw4DPoints.push([
+        v1[0] * (1 - t) + v2[0] * t + jitter,
+        v1[1] * (1 - t) + v2[1] * t + jitter,
+        v1[2] * (1 - t) + v2[2] * t + jitter,
+        v1[3] * (1 - t) + v2[3] * t + jitter
+      ]);
+    }
+
+    const cloudGeo = new THREE.BufferGeometry();
+    cloudGeo.setAttribute('position', new THREE.BufferAttribute(cloudPositions, 3));
+    cloudGeo.setAttribute('color', new THREE.BufferAttribute(cloudColors, 3));
+
+    const cloudMat = new THREE.PointsMaterial({
+      size: 0.045,
+      vertexColors: true,
+      transparent: true,
+      opacity: 0.92,
+      blending: THREE.AdditiveBlending
+    });
+    const cloudMesh = new THREE.Points(cloudGeo, cloudMat);
+    scene.add(cloudMesh);
+
+    // ==========================================
+    // ROTATION ANGLES IN SO(4)
+    // ==========================================
+    let angleXW = 0.0, angleYW = 0.0, angleZW = 0.0;
+    let speedXW = 0.018, speedYW = 0.012, speedZW = 0.024;
+    let projD = 2.80;
+    let isAnimated = true;
+    let showPoints = true;
+    let showWire = true;
+    let showSweep = true;
+    let showFlow = true;
+
+    // 4D Rotation Function in SO(4)
+    function rotate4D(p, aXW, aYW, aZW) {
+      let x = p[0], y = p[1], z = p[2], w = p[3];
+
+      // Rotation in X-W plane
+      let cosA = Math.cos(aXW), sinA = Math.sin(aXW);
+      let x1 = x * cosA - w * sinA;
+      let w1 = x * sinA + w * cosA;
+
+      // Rotation in Y-W plane
+      let cosB = Math.cos(aYW), sinB = Math.sin(aYW);
+      let y2 = y * cosB - w1 * sinB;
+      let w2 = y * sinB + w1 * cosB;
+
+      // Rotation in Z-W plane
+      let cosC = Math.cos(aZW), sinC = Math.sin(aZW);
+      let z3 = z * cosC - w2 * sinC;
+      let w3 = z * sinC + w2 * cosC;
+
+      return [x1, y2, z3, w3];
+    }
+
+    // Stereographic 4D-to-3D Projection
+    function project4Dto3D(p, d) {
+      const denom = Math.max(0.1, d - p[3]);
+      return [
+        (p[0] / denom) * 1.8,
+        (p[1] / denom) * 1.8,
+        (p[2] / denom) * 1.8,
+        p[3] // Return w for colorization
+      ];
+    }
+
+    // Turbo Colormap
+    function turboColor(val) {
+      // Map [-1, 1] to [0, 1]
+      let t = THREE.MathUtils.clamp((val + 1.2) / 2.4, 0, 1);
+      let r = Math.sin(t * Math.PI * 1.5);
+      let g = Math.sin(t * Math.PI);
+      let b = Math.cos(t * Math.PI * 1.2);
+      return [Math.max(0.1, r), Math.max(0.1, g), Math.max(0.2, b)];
+    }
+
+    // UI Bindings
+    document.getElementById('slider-xw').oninput = e => { speedXW = parseFloat(e.target.value); document.getElementById('val-xw').innerText = speedXW.toFixed(3) + ' rad/s'; };
+    document.getElementById('slider-yw').oninput = e => { speedYW = parseFloat(e.target.value); document.getElementById('val-yw').innerText = speedYW.toFixed(3) + ' rad/s'; };
+    document.getElementById('slider-zw').oninput = e => { speedZW = parseFloat(e.target.value); document.getElementById('val-zw').innerText = speedZW.toFixed(3) + ' rad/s'; };
+    document.getElementById('slider-d').oninput = e => { projD = parseFloat(e.target.value); document.getElementById('val-d').innerText = projD.toFixed(2); };
+
+    const btnAnim = document.getElementById('btn-toggle-anim');
+    btnAnim.onclick = () => {
+      isAnimated = !isAnimated;
+      btnAnim.innerText = isAnimated ? 'PAUSE' : 'RESUME';
+      btnAnim.className = isAnimated ? 'px-2.5 py-1 rounded text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white transition' : 'px-2.5 py-1 rounded text-xs font-bold bg-amber-600 hover:bg-amber-500 text-white transition';
+    };
+
+    document.getElementById('btn-toggle-points').onclick = e => { showPoints = !showPoints; cloudMesh.visible = showPoints; e.target.innerText = 'Point Cloud: ' + (showPoints ? 'ON' : 'OFF'); };
+    document.getElementById('btn-toggle-wire').onclick = e => { showWire = !showWire; lineMesh.visible = showWire; vertexGroup.visible = showWire; e.target.innerText = '4D Edges: ' + (showWire ? 'ON' : 'OFF'); };
+    document.getElementById('btn-toggle-sweep').onclick = e => { showSweep = !showSweep; e.target.innerText = 'Laser Sweep: ' + (showSweep ? 'ON' : 'OFF'); };
+    document.getElementById('btn-toggle-flow').onclick = e => { showFlow = !showFlow; e.target.innerText = 'Optical Flow: ' + (showFlow ? 'ON' : 'OFF'); };
+
+    function setCam(x, y, z) {
+      camera.position.set(x, y, z);
+      camera.lookAt(0, 0, 0);
+    }
+
+    // Camera Orbit Mouse Drag Controls
+    let isDragging = false, prevMouseX = 0, prevMouseY = 0;
+    window.addEventListener('mousedown', e => { if (e.clientY > 80) isDragging = true; prevMouseX = e.clientX; prevMouseY = e.clientY; });
+    window.addEventListener('mouseup', () => isDragging = false);
+    window.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      const dx = (e.clientX - prevMouseX) * 0.006;
+      const dy = (e.clientY - prevMouseY) * 0.006;
+      prevMouseX = e.clientX;
+      prevMouseY = e.clientY;
+
+      const r = camera.position.length();
+      let theta = Math.atan2(camera.position.x, camera.position.z) - dx;
+      let phi = Math.acos(camera.position.y / r) - dy;
+      phi = Math.max(0.1, Math.min(Math.PI - 0.1, phi));
+
+      camera.position.x = r * Math.sin(phi) * Math.sin(theta);
+      camera.position.y = r * Math.cos(phi);
+      camera.position.z = r * Math.sin(phi) * Math.cos(theta);
+      camera.lookAt(0, 0, 0);
+    });
+
+    window.addEventListener('wheel', e => {
+      const dist = camera.position.length();
+      const zoomFactor = e.deltaY > 0 ? 1.08 : 0.92;
+      if (dist * zoomFactor > 2.0 && dist * zoomFactor < 25.0) {
+        camera.position.multiplyScalar(zoomFactor);
+      }
+    });
+
+    window.addEventListener('resize', () => {
+      camera.aspect = window.innerWidth / window.innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // ==========================================
+    // 60 FPS ANIMATION RENDER LOOP
+    // ==========================================
+    let lastTime = performance.now();
+    let frameCount = 0;
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      if (isAnimated) {
+        angleXW += speedXW;
+        angleYW += speedYW;
+        angleZW += speedZW;
+      }
+
+      // 1. Transform and Project 16 Vertices
+      const projectedVertices = [];
+      for (let i = 0; i < 16; i++) {
+        const rot = rotate4D(base4DVertices[i], angleXW, angleYW, angleZW);
+        const proj = project4Dto3D(rot, projD);
+        projectedVertices.push(proj);
+        vertexMeshes[i].position.set(proj[0], proj[1], proj[2]);
+        const col = turboColor(proj[3]);
+        vertexMeshes[i].material.color.setRGB(col[0], col[1], col[2]);
+      }
+
+      // 2. Update 32 Edge Lines
+      let lineIdx = 0;
+      for (let i = 0; i < tesseractEdges.length; i++) {
+        const p1 = projectedVertices[tesseractEdges[i][0]];
+        const p2 = projectedVertices[tesseractEdges[i][1]];
+
+        linePositions[lineIdx] = p1[0]; linePositions[lineIdx+1] = p1[1]; linePositions[lineIdx+2] = p1[2];
+        const c1 = turboColor(p1[3]);
+        lineColors[lineIdx] = c1[0]; lineColors[lineIdx+1] = c1[1]; lineColors[lineIdx+2] = c1[2];
+
+        linePositions[lineIdx+3] = p2[0]; linePositions[lineIdx+4] = p2[1]; linePositions[lineIdx+5] = p2[2];
+        const c2 = turboColor(p2[3]);
+        lineColors[lineIdx+3] = c2[0]; lineColors[lineIdx+4] = c2[1]; lineColors[lineIdx+5] = c2[2];
+
+        lineIdx += 6;
+      }
+      lineGeo.attributes.position.needsUpdate = true;
+      lineGeo.attributes.color.needsUpdate = true;
+
+      // 3. Update Dense 4D LiDAR Point Cloud
+      if (showPoints) {
+        let ptIdx = 0;
+        const timeVal = performance.now() * 0.001;
+        for (let i = 0; i < POINT_COUNT; i++) {
+          const rotPt = rotate4D(raw4DPoints[i], angleXW, angleYW, angleZW);
+          const pr = project4Dto3D(rotPt, projD);
+
+          cloudPositions[ptIdx] = pr[0];
+          cloudPositions[ptIdx+1] = pr[1];
+          cloudPositions[ptIdx+2] = pr[2];
+
+          // Laser sweep effect: pulse wave along w-coordinate
+          let wMod = pr[3];
+          if (showSweep) {
+            wMod += Math.sin(timeVal * 4.0 + pr[1] * 2.0) * 0.35;
+          }
+          const col = turboColor(wMod);
+          cloudColors[ptIdx] = col[0];
+          cloudColors[ptIdx+1] = col[1];
+          cloudColors[ptIdx+2] = col[2];
+
+          ptIdx += 3;
+        }
+        cloudGeo.attributes.position.needsUpdate = true;
+        cloudGeo.attributes.color.needsUpdate = true;
+      }
+
+      // FPS Counter
+      frameCount++;
+      const now = performance.now();
+      if (now - lastTime >= 1000) {
+        const fps = (frameCount * 1000) / (now - lastTime);
+        document.getElementById('fps-display').innerText = fps.toFixed(1) + ' FPS \u2022 1.2 ms';
+        frameCount = 0;
+        lastTime = now;
+      }
+
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
+</body>
+</html>

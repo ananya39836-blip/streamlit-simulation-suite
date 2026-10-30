@@ -1,0 +1,8 @@
+{
+  "timestamp": 1793204844019,
+  "bldc": {"rpm": 701.866, "current": 4.19747, "torque": 0.344193},
+  "ekf": {"x": 116.891, "y": 24.3712, "theta": 0.387211, "v": 12},
+  "arm": {"eeX": 1.3658, "eeY": 1.3658, "eeZ": 0.717474},
+  "ai": {"initialLoss": 16.5857, "finalLoss": 0.00869535, "rlCollisions": 0},
+  "can": {"frames": 64}
+}
