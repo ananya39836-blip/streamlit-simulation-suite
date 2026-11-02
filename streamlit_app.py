@@ -2,11 +2,29 @@ import streamlit as st
 import json
 import os
 import subprocess
+import sys
 import time
-import numpy as np
-import pandas as pd
-import plotly.graph_objects as go
-import plotly.express as px
+
+try:
+    import numpy as np
+except ModuleNotFoundError:
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'numpy>=1.24.0'])
+    import numpy as np
+
+try:
+    import pandas as pd
+except ModuleNotFoundError:
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pandas>=2.0.0'])
+    import pandas as pd
+
+try:
+    import plotly.graph_objects as go
+    import plotly.express as px
+except ModuleNotFoundError:
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'plotly>=5.18.0'])
+    import plotly.graph_objects as go
+    import plotly.express as px
+
 import streamlit.components.v1 as components
 from deep_cosmology_lab import render_deep_cosmology_and_epistemic_suite
 

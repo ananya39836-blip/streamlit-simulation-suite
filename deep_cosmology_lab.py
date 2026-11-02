@@ -1,19 +1,27 @@
 # -*- coding: utf-8 -*-
-"""
-Deep Cosmology & Epistemic Limits Master Suite:
-1. Dark Matter and Dark Energy: Phenomenological & Theoretical Foundations
-2. Question 10: Can Intelligence Discover Every Truth About the Universe? (Gödel, Turing, Heisenberg, AI Limits)
-3. 3D LiDAR & Empirical Sensor Applications: Bermuda Triangle Reality, Black Holes, Wormholes
-4. Earth Planetary Destruction Rate: Multi-factor LiDAR & Regression Analysis
-5. Embedded Hardware Architecture: Microprocessors (STM32H7), FPGA, Quantum Sensors & RF Electronics
-6. Interactive Movable Regression Studio: Dynamic sliders, real-time polynomial & nonlinear curve fitting
-"""
-
 import streamlit as st
-import numpy as np
-import pandas as pd
-import plotly.graph_objects as go
-from plotly.subplots import make_subplots
+import sys
+import subprocess
+
+try:
+    import numpy as np
+except ModuleNotFoundError:
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'numpy>=1.24.0'])
+    import numpy as np
+
+try:
+    import pandas as pd
+except ModuleNotFoundError:
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'pandas>=2.0.0'])
+    import pandas as pd
+
+try:
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
+except ModuleNotFoundError:
+    subprocess.check_call([sys.executable, '-m', 'pip', 'install', 'plotly>=5.18.0'])
+    import plotly.graph_objects as go
+    from plotly.subplots import make_subplots
 
 def render_deep_cosmology_and_epistemic_suite():
     st.title("🔭 Deep Cosmology, Dark Sector & Epistemic Limits Laboratory")
